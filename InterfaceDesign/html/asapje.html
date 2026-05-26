@@ -1,0 +1,1788 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AsapJe — Доставка еды</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --primary: #00C896;
+  --primary-dark: #00A87E;
+  --primary-light: #E0FFF5;
+  --accent: #FFD60A;
+  --accent-dark: #E6BE00;
+  --purple: #7C3AED;
+  --purple-light: #EDE9FE;
+  --bg: #F4FBF8;
+  --surface: #FFFFFF;
+  --surface-2: #F0FBF6;
+  --border: #D4EDE6;
+  --text: #0D2B1E;
+  --text-2: #3D6057;
+  --text-3: #7FA99A;
+  --dark: #0D1B2A;
+  --sidebar-bg: #0D2B1E;
+  --red: #EF4444;
+  --red-light: #FEF2F2;
+  --blue: #3B82F6;
+  --blue-light: #EFF6FF;
+  --yellow: #FFD60A;
+  --yellow-light: #FFFBEB;
+  --shadow: 0 2px 12px rgba(0,200,150,0.10);
+  --shadow-md: 0 4px 24px rgba(0,0,0,0.09);
+  --radius: 14px;
+  --radius-sm: 8px;
+  --topbar-h: 60px;
+}
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:'DM Sans',sans-serif;background:#E8F5EF;color:var(--text);line-height:1.5;min-height:100vh;}
+
+/* ——— PAGES ——— */
+.page{display:none;flex-direction:column;min-height:100vh;}
+.page.active{display:flex;}
+
+/* ——— TOPBAR ——— */
+.topbar{height:var(--topbar-h);background:var(--surface);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 24px;gap:16px;position:sticky;top:0;z-index:100;flex-shrink:0;}
+.logo{display:flex;align-items:center;gap:8px;text-decoration:none;cursor:pointer;}
+.logo-mark{width:32px;height:32px;background:var(--primary);border-radius:8px;display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:800;font-size:14px;color:#fff;}
+.logo-text{font-family:'Syne',sans-serif;font-weight:800;font-size:18px;color:var(--text);letter-spacing:-0.5px;}
+.nav-links{display:flex;gap:4px;margin-left:24px;}
+.nav-link{padding:7px 14px;border-radius:8px;font-size:13.5px;font-weight:500;color:var(--text-2);cursor:pointer;transition:all .15s;}
+.nav-link:hover{background:var(--surface-2);}
+.nav-link.active{background:var(--primary-light);color:var(--primary-dark);font-weight:600;}
+.topbar-right{margin-left:auto;display:flex;align-items:center;gap:10px;}
+.search-bar{display:flex;align-items:center;gap:8px;background:var(--surface-2);border:1.5px solid var(--border);border-radius:24px;padding:7px 16px;width:240px;font-size:13px;color:var(--text-3);}
+.search-bar input{border:none;background:none;outline:none;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text);width:100%;}
+.search-bar input::placeholder{color:var(--text-3);}
+.icon-btn{width:36px;height:36px;border-radius:10px;background:var(--surface-2);border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:16px;color:var(--text-2);position:relative;}
+.badge-dot{position:absolute;top:5px;right:5px;width:8px;height:8px;background:var(--primary);border-radius:50%;border:2px solid #fff;}
+.avatar{width:36px;height:36px;border-radius:10px;background:var(--primary);display:flex;align-items:center;justify-content:center;font-size:14px;color:#fff;font-weight:700;font-family:'Syne',sans-serif;cursor:pointer;}
+
+/* ——— BUTTONS ——— */
+.btn{padding:8px 18px;border-radius:10px;font-family:'DM Sans',sans-serif;font-weight:600;font-size:13.5px;cursor:pointer;border:none;display:inline-flex;align-items:center;gap:6px;transition:opacity .15s;}
+.btn:hover{opacity:.88;}
+.btn-primary{background:var(--primary);color:#fff;}
+.btn-secondary{background:var(--surface-2);color:var(--text);border:1.5px solid var(--border);}
+.btn-accent{background:var(--accent);color:var(--dark);}
+.btn-sm{padding:6px 14px;font-size:12.5px;border-radius:8px;}
+.btn-danger{background:var(--red-light);color:var(--red);border:1px solid #fca5a5;}
+.btn-success{background:#D1FAE5;color:#065F46;border:1px solid #6EE7B7;}
+
+/* ——— BADGES & TAGS ——— */
+.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:20px;font-size:11.5px;font-weight:600;}
+.badge-green{background:#D1FAE5;color:#065F46;}
+.badge-blue{background:var(--blue-light);color:#1D4ED8;}
+.badge-yellow{background:var(--yellow-light);color:#92400E;}
+.badge-red{background:var(--red-light);color:#991B1B;}
+.badge-purple{background:var(--purple-light);color:var(--purple);}
+.badge-gray{background:#F3F4F6;color:#374151;}
+.tag{display:inline-block;padding:5px 14px;border-radius:20px;font-size:12.5px;font-weight:500;background:var(--surface);color:var(--text-2);border:1.5px solid var(--border);cursor:pointer;transition:all .15s;}
+.tag:hover{border-color:var(--primary);}
+.tag.active{background:var(--primary);color:#fff;border-color:var(--primary);}
+
+/* ——— LAYOUT ——— */
+.layout-sidebar{display:flex;flex:1;}
+.sidebar{width:220px;flex-shrink:0;background:var(--sidebar-bg);padding:20px 12px;display:flex;flex-direction:column;gap:4px;}
+.sidebar-item{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:10px;font-size:13px;font-weight:500;color:rgba(255,255,255,0.55);cursor:pointer;transition:all .15s;}
+.sidebar-item.active{background:var(--primary);color:#fff;}
+.sidebar-item:not(.active):hover{background:rgba(255,255,255,0.07);color:rgba(255,255,255,0.85);}
+.sidebar-icon{font-size:16px;flex-shrink:0;}
+.sidebar-sep{height:1px;background:rgba(255,255,255,0.08);margin:8px 0;}
+.main{flex:1;padding:20px 24px;background:var(--bg);display:flex;flex-direction:column;gap:16px;overflow:auto;}
+
+/* ——— CARDS ——— */
+.card{background:var(--surface);border-radius:var(--radius);border:1px solid var(--border);overflow:hidden;}
+.card-body{padding:16px;}
+
+/* ——— GRID ——— */
+.grid-4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;}
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+
+/* ——— TABLE ——— */
+.table-wrap{background:var(--surface);border-radius:var(--radius);border:1px solid var(--border);overflow:hidden;}
+.table-head{display:grid;padding:11px 16px;background:var(--surface-2);border-bottom:1px solid var(--border);font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text-3);}
+.table-row{display:grid;padding:12px 16px;border-bottom:1px solid var(--border);align-items:center;font-size:13px;}
+.table-row:last-child{border-bottom:none;}
+.table-row:hover{background:var(--surface-2);}
+
+/* ——— METRIC CARD ——— */
+.metric-card{background:var(--surface);border-radius:var(--radius);border:1px solid var(--border);padding:16px 18px;display:flex;flex-direction:column;gap:6px;}
+.metric-label{font-size:11.5px;font-weight:600;text-transform:uppercase;letter-spacing:.06em;color:var(--text-3);}
+.metric-value{font-family:'Syne',sans-serif;font-weight:700;font-size:26px;color:var(--text);line-height:1;}
+.metric-change{font-size:12px;font-weight:500;color:var(--primary-dark);}
+
+/* ——— FORM ——— */
+.form-group{display:flex;flex-direction:column;gap:5px;}
+.form-label{font-size:12px;font-weight:600;color:var(--text-2);}
+.form-input{padding:10px 14px;border-radius:10px;border:1.5px solid var(--border);font-family:'DM Sans',sans-serif;font-size:13.5px;color:var(--text);background:var(--surface);outline:none;width:100%;}
+.form-input:focus{border-color:var(--primary);}
+.form-input::placeholder{color:var(--text-3);}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+
+/* ——— RADIO ——— */
+.radio-option{display:flex;align-items:center;gap:10px;padding:12px 14px;border-radius:10px;border:2px solid var(--border);cursor:pointer;transition:all .15s;}
+.radio-option.selected{border-color:var(--primary);background:var(--primary-light);}
+.radio-circle{width:18px;height:18px;border-radius:50%;border:2px solid var(--border);flex-shrink:0;display:flex;align-items:center;justify-content:center;}
+.radio-option.selected .radio-circle{border-color:var(--primary);background:var(--primary);}
+.radio-inner{width:7px;height:7px;border-radius:50%;background:#fff;}
+
+/* ——— RESTAURANT CARD ——— */
+.rest-card{background:var(--surface);border-radius:var(--radius);border:1px solid var(--border);overflow:hidden;cursor:pointer;transition:box-shadow .15s;}
+.rest-card:hover{box-shadow:var(--shadow-md);}
+.rest-img{height:100px;display:flex;align-items:center;justify-content:center;font-size:42px;}
+.rest-body{padding:12px 14px;}
+.rest-name{font-weight:600;font-size:14.5px;color:var(--text);margin-bottom:3px;}
+.rest-meta{font-size:12px;color:var(--text-3);display:flex;gap:8px;align-items:center;}
+.star{color:#F59E0B;font-size:12px;}
+
+/* ——— FOOD CARD ——— */
+.food-card{background:var(--surface);border-radius:var(--radius);border:1px solid var(--border);overflow:hidden;display:flex;flex-direction:column;transition:box-shadow .15s;}
+.food-card:hover{box-shadow:var(--shadow-md);}
+.food-card-img{height:110px;display:flex;align-items:center;justify-content:center;font-size:44px;}
+.food-card-body{padding:12px 14px;display:flex;flex-direction:column;gap:6px;flex:1;}
+.food-name{font-weight:600;font-size:14px;color:var(--text);}
+.food-desc{font-size:12px;color:var(--text-3);line-height:1.4;}
+.food-footer{display:flex;align-items:center;justify-content:space-between;margin-top:auto;padding-top:8px;}
+.food-price{font-family:'Syne',sans-serif;font-weight:700;font-size:15px;color:var(--text);}
+.add-btn{width:30px;height:30px;border-radius:8px;background:var(--primary);color:#fff;border:none;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.add-btn:hover{background:var(--primary-dark);}
+
+/* ——— SIDEBAR FILTER ——— */
+.sidebar-filter{width:200px;flex-shrink:0;background:var(--surface);border-right:1px solid var(--border);padding:16px;display:flex;flex-direction:column;gap:14px;overflow-y:auto;}
+.filter-title{font-family:'Syne',sans-serif;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--text-3);}
+.filter-options{display:flex;flex-direction:column;gap:4px;}
+.filter-opt{display:flex;align-items:center;gap:8px;padding:7px 10px;border-radius:8px;font-size:13px;font-weight:500;color:var(--text-2);cursor:pointer;transition:all .15s;}
+.filter-opt:hover{background:var(--surface-2);}
+.filter-opt.active{background:var(--primary-light);color:var(--primary-dark);}
+
+/* ——— STEPPER ——— */
+.stepper{display:flex;align-items:center;}
+.step{display:flex;flex-direction:column;align-items:center;gap:6px;flex:1;}
+.step-circle{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:700;}
+.step-circle.done{background:var(--primary);color:#fff;}
+.step-circle.active{background:var(--accent);color:var(--dark);}
+.step-circle.pending{background:var(--border);color:var(--text-3);}
+.step-label{font-size:11px;font-weight:600;color:var(--text-2);text-align:center;}
+.step-label.done{color:var(--primary-dark);}
+.step-line{flex:1;height:2px;background:var(--border);margin-bottom:18px;}
+.step-line.done{background:var(--primary);}
+
+/* ——— STATUS MAP ——— */
+.status-map{background:linear-gradient(135deg,#E0FFF5 0%,#D4EDE6 100%);border-radius:var(--radius);height:140px;position:relative;overflow:hidden;display:flex;align-items:center;justify-content:center;}
+.map-pin{font-size:28px;position:absolute;animation:bounce 1.5s infinite;}
+@keyframes bounce{0%,100%{transform:translateY(0);}50%{transform:translateY(-6px);}}
+
+/* ——— CHART ——— */
+.chart-area{background:var(--surface);border-radius:var(--radius);border:1px solid var(--border);padding:16px;}
+.chart-bars{display:flex;align-items:flex-end;gap:6px;height:90px;}
+.bar{flex:1;background:var(--primary-light);border-radius:4px 4px 0 0;border:1.5px solid var(--primary);border-bottom:none;min-width:0;}
+.bar.accent{background:var(--accent);border-color:var(--accent-dark);}
+
+/* ——— QTY CTRL ——— */
+.qty-ctrl{display:flex;align-items:center;gap:8px;}
+.qty-btn{width:26px;height:26px;border-radius:7px;border:1.5px solid var(--border);background:var(--surface);font-size:15px;color:var(--text);cursor:pointer;display:flex;align-items:center;justify-content:center;font-weight:500;}
+.qty-val{font-weight:600;font-size:14px;min-width:20px;text-align:center;}
+
+/* ——— HELPERS ——— */
+.row{display:flex;align-items:center;gap:8px;}
+.flex1{flex:1;}
+.ml-auto{margin-left:auto;}
+.text-sm{font-size:12.5px;}
+.fw-600{font-weight:600;}
+.color-muted{color:var(--text-3);}
+.gap-4{gap:4px;}
+.gap-8{gap:8px;}
+.gap-12{gap:12px;}
+.divider{height:1px;background:var(--border);}
+.page-title{font-family:'Syne',sans-serif;font-weight:700;font-size:20px;color:var(--text);}
+.filter-bar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;}
+
+/* ——— AUTH ——— */
+.auth-wrap{display:grid;grid-template-columns:1fr 1fr;flex:1;}
+.auth-hero{background:linear-gradient(145deg,var(--primary) 0%,#00A07A 100%);padding:40px;display:flex;flex-direction:column;justify-content:flex-end;gap:12px;}
+.auth-hero-title{font-family:'Syne',sans-serif;font-weight:800;font-size:30px;color:#fff;line-height:1.2;}
+.auth-hero-sub{font-size:14px;color:rgba(255,255,255,0.8);}
+.auth-form-area{padding:40px;display:flex;flex-direction:column;justify-content:center;gap:16px;background:var(--surface);}
+
+/* ——— MODAL ——— */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:1000;align-items:center;justify-content:center;}
+.modal-overlay.active{display:flex;}
+.modal{background:var(--surface);border-radius:20px;padding:28px;max-width:480px;width:92%;max-height:90vh;overflow-y:auto;box-shadow:var(--shadow-md);}
+.modal-title{font-family:'Syne',sans-serif;font-weight:700;font-size:18px;color:var(--text);margin-bottom:16px;}
+
+/* ——— TOAST ——— */
+.toast{position:fixed;bottom:24px;right:24px;background:var(--text);color:#fff;padding:12px 20px;border-radius:12px;font-size:13px;font-weight:500;z-index:9999;opacity:0;transform:translateY(10px);transition:all .3s;pointer-events:none;}
+.toast.show{opacity:1;transform:translateY(0);}
+.toast.success{background:var(--primary-dark);}
+.toast.error{background:var(--red);}
+
+/* ——— CART PANEL ——— */
+.cart-panel{position:fixed;right:0;top:0;width:360px;height:100vh;background:var(--surface);border-left:1px solid var(--border);z-index:500;transform:translateX(100%);transition:transform .3s;display:flex;flex-direction:column;box-shadow:-4px 0 20px rgba(0,0,0,0.1);}
+.cart-panel.open{transform:translateX(0);}
+.cart-header{padding:20px 20px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;}
+.cart-items{flex:1;overflow-y:auto;padding:16px;}
+.cart-footer{padding:16px;border-top:1px solid var(--border);}
+.cart-item{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border);}
+.cart-item:last-child{border-bottom:none;}
+.cart-item-emoji{font-size:28px;width:44px;height:44px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:var(--surface-2);flex-shrink:0;}
+
+/* ——— ORDER STATUS BADGE ——— */
+.order-status-bar{padding:10px 14px;border-radius:10px;font-size:13px;font-weight:500;}
+
+/* ——— REVIEW STARS ——— */
+.star-rating{display:flex;gap:4px;}
+.star-rating span{font-size:20px;cursor:pointer;color:var(--border);}
+.star-rating span.lit{color:#F59E0B;}
+
+::-webkit-scrollbar{width:5px;}
+::-webkit-scrollbar-track{background:transparent;}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px;}
+</style>
+</head>
+<body>
+
+<!-- ========== TOAST ========== -->
+<div class="toast" id="toast"></div>
+
+<!-- ========== CART PANEL ========== -->
+<div class="cart-panel" id="cartPanel">
+  <div class="cart-header">
+    <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:16px">🛒 Корзина</div>
+    <div class="ml-auto" style="font-size:12px;color:var(--text-3)" id="cartRestName"></div>
+    <button class="btn btn-sm btn-secondary" onclick="closeCart()">✕</button>
+  </div>
+  <div class="cart-items" id="cartItems"></div>
+  <div class="cart-footer">
+    <div style="display:flex;flex-direction:column;gap:8px;margin-bottom:14px;" id="cartSummary"></div>
+    <button class="btn btn-primary" style="width:100%;justify-content:center;padding:12px;font-size:14px" onclick="goToCheckout()">Оформить заказ →</button>
+  </div>
+</div>
+
+<!-- ========== MODAL: ADD REVIEW ========== -->
+<div class="modal-overlay" id="reviewModal">
+  <div class="modal">
+    <div class="modal-title">⭐ Оставить отзыв</div>
+    <div class="form-group" style="margin-bottom:12px">
+      <div class="form-label">Оценка</div>
+      <div class="star-rating" id="starRating">
+        <span onclick="setStars(1)">★</span><span onclick="setStars(2)">★</span>
+        <span onclick="setStars(3)">★</span><span onclick="setStars(4)">★</span><span onclick="setStars(5)">★</span>
+      </div>
+    </div>
+    <div class="form-group" style="margin-bottom:16px">
+      <div class="form-label">Комментарий</div>
+      <textarea class="form-input" rows="3" placeholder="Поделитесь впечатлением..." id="reviewText" style="resize:none;"></textarea>
+    </div>
+    <div class="row gap-8">
+      <button class="btn btn-primary flex1" style="justify-content:center" onclick="submitReview()">Отправить</button>
+      <button class="btn btn-secondary" onclick="closeModal('reviewModal')">Отмена</button>
+    </div>
+  </div>
+</div>
+
+<!-- ========== MODAL: ADD DISH (MANAGER) ========== -->
+<div class="modal-overlay" id="addDishModal">
+  <div class="modal">
+    <div class="modal-title">🍔 Новое блюдо</div>
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div class="form-group"><div class="form-label">Название</div><input class="form-input" placeholder="Классик Бургер" id="newDishName"></div>
+      <div class="form-group"><div class="form-label">Описание</div><textarea class="form-input" rows="2" placeholder="Говядина, свежие овощи..." id="newDishDesc" style="resize:none;"></textarea></div>
+      <div class="form-row">
+        <div class="form-group"><div class="form-label">Цена (₸)</div><input class="form-input" type="number" placeholder="1200" id="newDishPrice"></div>
+        <div class="form-group"><div class="form-label">Категория</div>
+          <select class="form-input" id="newDishCat"><option>Бургеры</option><option>Картошка</option><option>Снэки</option><option>Напитки</option><option>Десерты</option></select>
+        </div>
+      </div>
+      <div class="row gap-8" style="margin-top:4px">
+        <button class="btn btn-primary flex1" style="justify-content:center" onclick="saveDish()">Добавить блюдо</button>
+        <button class="btn btn-secondary" onclick="closeModal('addDishModal')">Отмена</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ========== MODAL: PAYMENT SUCCESS ========== -->
+<div class="modal-overlay" id="payModal">
+  <div class="modal" style="text-align:center">
+    <div style="font-size:60px;margin-bottom:16px">🎉</div>
+    <div class="modal-title" style="text-align:center">Заказ оформлен!</div>
+    <div style="color:var(--text-3);font-size:13px;margin-bottom:20px">Ваш заказ #4822 принят. Слежение за статусом доступно в разделе «Заказы».</div>
+    <div style="background:var(--primary-light);border-radius:12px;padding:14px;margin-bottom:20px;font-size:13px;color:var(--primary-dark);font-weight:500;">
+      ⏱️ Ориентировочное время: <strong>30–40 минут</strong>
+    </div>
+    <button class="btn btn-primary" style="width:100%;justify-content:center" onclick="afterPayment()">Отследить заказ</button>
+  </div>
+</div>
+
+<!-- ========== MODAL: ADD USER (ADMIN) ========== -->
+<div class="modal-overlay" id="addUserModal">
+  <div class="modal">
+    <div class="modal-title">👤 Новый пользователь</div>
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div class="form-group"><div class="form-label">Имя пользователя</div><input class="form-input" placeholder="Айгерим Сейткалиева" id="newUserName"></div>
+      <div class="form-group"><div class="form-label">Email</div><input class="form-input" placeholder="user@gmail.com" id="newUserEmail"></div>
+      <div class="form-row">
+        <div class="form-group"><div class="form-label">Пароль</div><input class="form-input" type="password" placeholder="••••••••" id="newUserPass"></div>
+        <div class="form-group"><div class="form-label">Роль</div>
+          <select class="form-input" id="newUserRole"><option value="client">Клиент</option><option value="manager">Менеджер</option></select>
+        </div>
+      </div>
+      <div class="row gap-8" style="margin-top:4px">
+        <button class="btn btn-primary flex1" style="justify-content:center" onclick="saveUser()">Создать</button>
+        <button class="btn btn-secondary" onclick="closeModal('addUserModal')">Отмена</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================================================================== -->
+<!-- PAGE: LOGIN -->
+<!-- ===================================================================== -->
+<div class="page active" id="page-login">
+  <div class="auth-wrap" style="flex:1">
+    <div class="auth-hero">
+      <div style="font-size:60px;margin-bottom:8px">🍔</div>
+      <div class="auth-hero-title">Еда рядом.<br>Быстро. Вкусно.</div>
+      <div class="auth-hero-sub">Сотни ресторанов, доставка за 30 минут. Закажи прямо сейчас.</div>
+    </div>
+    <div class="auth-form-area">
+      <div>
+        <div class="logo" style="margin-bottom:24px;cursor:default">
+          <div class="logo-mark">A</div><div class="logo-text">AsapJe</div>
+        </div>
+        <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:22px;color:var(--text);margin-bottom:4px" id="authTitle">Добро пожаловать!</div>
+        <div style="font-size:13px;color:var(--text-3)" id="authSub">Войдите в свой аккаунт</div>
+      </div>
+      <div id="registerFields" style="display:none">
+        <div class="form-group"><div class="form-label">Имя</div><input class="form-input" placeholder="Айгерим Сейткалиева" id="regName"></div>
+      </div>
+      <div class="form-group"><div class="form-label">Email</div><input class="form-input" placeholder="name@example.com" id="loginEmail" value="user@gmail.com"></div>
+      <div class="form-group"><div class="form-label">Пароль</div><input class="form-input" type="password" placeholder="••••••••" id="loginPass" value="password"></div>
+      <div id="roleSelect" style="display:none">
+        <div class="form-group"><div class="form-label">Войти как</div>
+          <select class="form-input" id="loginRole">
+            <option value="client">Клиент</option>
+            <option value="manager">Менеджер ресторана</option>
+            <option value="admin">Администратор</option>
+          </select>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;font-size:12px;color:var(--text-3);margin:-8px 0">
+        <input type="checkbox" id="showRoleToggle" onchange="toggleRoleSelect()">
+        <label for="showRoleToggle" style="cursor:pointer">Выбрать роль для демо</label>
+      </div>
+      <button class="btn btn-primary" style="width:100%;justify-content:center;padding:11px 0;font-size:14px" id="authBtn" onclick="doLogin()">Войти →</button>
+      <div style="text-align:center;font-size:13px;color:var(--text-3)" id="authToggle">
+        Нет аккаунта? <span style="color:var(--primary-dark);font-weight:600;cursor:pointer" onclick="toggleAuth()">Зарегистрироваться</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================================================================== -->
+<!-- PAGE: CLIENT HOME -->
+<!-- ===================================================================== -->
+<div class="page" id="page-home">
+  <div class="topbar">
+    <div class="logo" onclick="navigate('home')"><div class="logo-mark">A</div><div class="logo-text">AsapJe</div></div>
+    <div class="nav-links">
+      <div class="nav-link active" onclick="navigate('home')">Рестораны</div>
+      <div class="nav-link" onclick="navigate('orders')">Заказы</div>
+      <div class="nav-link" onclick="navigate('favorites')">Избранное</div>
+    </div>
+    <div class="topbar-right">
+      <div class="search-bar"><span>🔍</span><input placeholder="Поиск блюд, ресторанов..." id="homeSearch" oninput="filterRestaurants()"></div>
+      <div class="icon-btn" onclick="openCart()">🛒<div class="badge-dot" id="cartDot" style="display:none"></div></div>
+      <div class="avatar" onclick="navigate('profile')">А</div>
+    </div>
+  </div>
+  <div style="display:flex;flex:1;overflow:hidden">
+    <!-- Filter -->
+    <div class="sidebar-filter">
+      <div class="filter-title">Категория</div>
+      <div class="filter-options" id="catFilters">
+        <div class="filter-opt active" onclick="filterCat('all',this)"><span>🍽️</span>Все</div>
+        <div class="filter-opt" onclick="filterCat('fast',this)"><span>🍔</span>Фастфуд</div>
+        <div class="filter-opt" onclick="filterCat('pizza',this)"><span>🍕</span>Пицца</div>
+        <div class="filter-opt" onclick="filterCat('sushi',this)"><span>🍣</span>Суши</div>
+        <div class="filter-opt" onclick="filterCat('dessert',this)"><span>🍰</span>Десерты</div>
+        <div class="filter-opt" onclick="filterCat('salad',this)"><span>🥗</span>Салаты</div>
+        <div class="filter-opt" onclick="filterCat('drinks',this)"><span>🧃</span>Напитки</div>
+      </div>
+      <div class="divider"></div>
+      <div class="filter-title">Рейтинг</div>
+      <div style="font-size:12px;color:var(--text-3)">от <strong id="ratingVal" style="color:var(--text)">3.0</strong></div>
+      <input type="range" min="30" max="50" value="30" style="width:100%;accent-color:var(--primary)" oninput="document.getElementById('ratingVal').textContent=(this.value/10).toFixed(1);filterRestaurants()">
+      <div class="divider"></div>
+      <div class="filter-title">Открыто сейчас</div>
+      <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer">
+        <input type="checkbox" id="openOnly" onchange="filterRestaurants()" style="accent-color:var(--primary)"> Только открытые
+      </label>
+    </div>
+    <!-- Main -->
+    <div class="main">
+      <!-- Hero banner -->
+      <div style="background:linear-gradient(135deg,var(--primary) 0%,#00A07A 100%);border-radius:var(--radius);padding:18px 24px;display:flex;align-items:center;gap:16px">
+        <div style="flex:1">
+          <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:18px;color:#fff;margin-bottom:4px">🎉 Бесплатная доставка сегодня!</div>
+          <div style="font-size:13px;color:rgba(255,255,255,0.85)">Используй промокод: <strong>ASAP2024</strong></div>
+        </div>
+        <button class="btn" style="background:var(--accent);color:var(--dark);flex-shrink:0" onclick="showToast('Промокод ASAP2024 скопирован!','success')">Применить</button>
+      </div>
+      <div class="row">
+        <div class="page-title">Рестораны рядом</div>
+        <div class="ml-auto" style="font-size:13px;color:var(--text-3)">Показано: <strong style="color:var(--text)" id="restCount">8</strong></div>
+      </div>
+      <div class="grid-4" id="restaurantGrid"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================================================================== -->
+<!-- PAGE: RESTAURANT MENU -->
+<!-- ===================================================================== -->
+<div class="page" id="page-restaurant">
+  <div class="topbar">
+    <div class="logo" onclick="navigate('home')"><div class="logo-mark">A</div><div class="logo-text">AsapJe</div></div>
+    <div class="nav-links">
+      <div class="nav-link color-muted" onclick="navigate('home')" style="color:var(--text-3)">← Рестораны</div>
+      <div class="nav-link active" id="restNavName">Burger House</div>
+    </div>
+    <div class="topbar-right">
+      <div class="icon-btn" id="favBtn" onclick="toggleFavorite()">🤍</div>
+      <div class="icon-btn" onclick="openCart()">🛒<div class="badge-dot" id="cartDot2" style="display:none"></div></div>
+      <div class="avatar">А</div>
+    </div>
+  </div>
+  <div style="display:flex;flex:1;overflow:hidden">
+    <!-- Cat sidebar -->
+    <div class="sidebar-filter" style="width:180px">
+      <div class="filter-title">Меню</div>
+      <div class="filter-options" id="menuCatList"></div>
+    </div>
+    <div style="flex:1;display:flex;flex-direction:column;overflow:hidden">
+      <!-- Hero -->
+      <div style="padding:16px 20px;background:var(--surface);border-bottom:1px solid var(--border);display:flex;gap:16px;align-items:center;flex-shrink:0">
+        <div style="width:70px;height:60px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:32px;flex-shrink:0" id="restHeroEmoji"></div>
+        <div style="flex:1">
+          <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:20px;color:var(--text)" id="restHeroName"></div>
+          <div style="font-size:13px;color:var(--text-3);margin-top:2px" id="restHeroAddress"></div>
+          <div class="row" style="margin-top:8px;gap:10px">
+            <span class="badge badge-blue" id="restHeroRating"></span>
+            <span style="font-size:12.5px;color:var(--text-3)" id="restHeroTime"></span>
+            <span style="font-size:12.5px;color:var(--text-3)" id="restHeroDelivery"></span>
+          </div>
+        </div>
+      </div>
+      <!-- Food grid -->
+      <div class="main" style="overflow-y:auto">
+        <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:16px" id="activeCatTitle">🍔 Бургеры</div>
+        <div class="grid-4" id="foodGrid"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================================================================== -->
+<!-- PAGE: CHECKOUT -->
+<!-- ===================================================================== -->
+<div class="page" id="page-checkout">
+  <div class="topbar">
+    <div class="logo" onclick="navigate('home')"><div class="logo-mark">A</div><div class="logo-text">AsapJe</div></div>
+    <div class="nav-links">
+      <div class="nav-link color-muted" onclick="navigate('restaurant')" style="color:var(--text-3)">← Меню</div>
+      <div class="nav-link active">Оформление</div>
+    </div>
+    <div class="topbar-right"><div class="avatar">А</div></div>
+  </div>
+  <div style="display:flex;flex:1;gap:20px;padding:20px 24px;background:var(--bg);overflow-y:auto">
+    <!-- Left -->
+    <div style="flex:1;display:flex;flex-direction:column;gap:16px">
+      <!-- Delivery type -->
+      <div class="card">
+        <div class="card-body">
+          <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:15px;margin-bottom:12px">Способ получения</div>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <div class="radio-option selected" id="radioDelivery" onclick="selectDelivery('delivery')">
+              <div class="radio-circle"><div class="radio-inner"></div></div>
+              <span style="font-size:13px;font-weight:500">🚚 Доставка на дом</span>
+            </div>
+            <div class="radio-option" id="radioPickup" onclick="selectDelivery('pickup')">
+              <div class="radio-circle"></div>
+              <span style="font-size:13px;font-weight:500">🏪 Самовывоз</span>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Address (shown for delivery) -->
+      <div class="card" id="addressCard">
+        <div class="card-body" style="display:flex;flex-direction:column;gap:12px">
+          <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:15px">Адрес доставки</div>
+          <div class="form-group"><div class="form-label">Улица и дом</div><input class="form-input" placeholder="ул. Достык, 42" id="addrStreet" value="ул. Достык, 42"></div>
+          <div class="form-row">
+            <div class="form-group"><div class="form-label">Квартира</div><input class="form-input" placeholder="18" id="addrApt" value="18"></div>
+            <div class="form-group"><div class="form-label">Подъезд</div><input class="form-input" placeholder="3" id="addrEntry" value="3"></div>
+          </div>
+          <div class="form-group"><div class="form-label">Комментарий курьеру</div><input class="form-input" placeholder="Оставить у двери" id="addrComment"></div>
+        </div>
+      </div>
+      <!-- Payment -->
+      <div class="card">
+        <div class="card-body">
+          <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:15px;margin-bottom:12px">Способ оплаты</div>
+          <div style="display:flex;flex-direction:column;gap:10px">
+            <div class="radio-option selected" id="payCard" onclick="selectPayment('card')">
+              <div class="radio-circle"><div class="radio-inner"></div></div>
+              <span style="font-size:13px;font-weight:500">💳 Банковская карта •••• 4231</span>
+            </div>
+            <div class="radio-option" id="payKaspi" onclick="selectPayment('kaspi')">
+              <div class="radio-circle"></div>
+              <span style="font-size:13px;font-weight:500">📱 Kaspi Pay</span>
+            </div>
+            <div class="radio-option" id="payCash" onclick="selectPayment('cash')">
+              <div class="radio-circle"></div>
+              <span style="font-size:13px;font-weight:500">💵 Наличными при получении</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Right: Order summary -->
+    <div style="width:320px;flex-shrink:0;display:flex;flex-direction:column;gap:12px">
+      <div class="card">
+        <div class="card-body" style="display:flex;flex-direction:column;gap:10px">
+          <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:15px">Ваш заказ</div>
+          <div style="font-size:13px;color:var(--text-3);font-weight:500" id="checkoutRestName"></div>
+          <div class="divider"></div>
+          <div id="checkoutItems" style="display:flex;flex-direction:column;gap:6px;font-size:13px"></div>
+          <div class="divider"></div>
+          <div id="checkoutTotals" style="display:flex;flex-direction:column;gap:6px;font-size:13px"></div>
+          <button class="btn btn-primary" style="width:100%;justify-content:center;padding:12px 0;font-size:14px" onclick="pay()">Оплатить →</button>
+          <div style="text-align:center;font-size:11.5px;color:var(--text-3)">🔒 Безопасная оплата</div>
+        </div>
+      </div>
+      <!-- Promo -->
+      <div class="card">
+        <div class="card-body">
+          <div style="font-size:12.5px;font-weight:600;color:var(--text-2);margin-bottom:8px">Промокод</div>
+          <div style="display:flex;gap:8px">
+            <input class="form-input" id="promoInput" placeholder="ASAP2024" style="flex:1">
+            <button class="btn btn-primary btn-sm" onclick="applyPromo()">Применить</button>
+          </div>
+          <div id="promoMsg" style="font-size:12px;margin-top:6px;display:none"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================================================================== -->
+<!-- PAGE: ORDER TRACKING -->
+<!-- ===================================================================== -->
+<div class="page" id="page-tracking">
+  <div class="topbar">
+    <div class="logo" onclick="navigate('home')"><div class="logo-mark">A</div><div class="logo-text">AsapJe</div></div>
+    <div class="nav-links">
+      <div class="nav-link" style="color:var(--text-3)" onclick="navigate('orders')">← Заказы</div>
+      <div class="nav-link active" id="trackOrderTitle">Заказ #4822</div>
+    </div>
+    <div class="topbar-right"><div class="avatar">А</div></div>
+  </div>
+  <div style="padding:20px 24px;background:var(--bg);flex:1;display:grid;grid-template-columns:1fr 320px;gap:20px;overflow-y:auto">
+    <div style="display:flex;flex-direction:column;gap:14px">
+      <!-- Stepper -->
+      <div class="card">
+        <div class="card-body">
+          <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:15px;margin-bottom:16px">Статус заказа</div>
+          <div class="stepper" id="orderStepper"></div>
+          <div style="margin-top:14px;padding:10px 14px;background:var(--primary-light);border-radius:10px;font-size:13px;color:var(--primary-dark);font-weight:500">
+            ⏱️ Ориентировочное время доставки: <strong id="etaText">30–40 минут</strong>
+          </div>
+        </div>
+      </div>
+      <!-- Map -->
+      <div class="status-map">
+        <div style="position:absolute;inset:0;opacity:.1;background:repeating-linear-gradient(0deg,transparent,transparent 24px,var(--primary) 24px,var(--primary) 25px),repeating-linear-gradient(90deg,transparent,transparent 24px,var(--primary) 24px,var(--primary) 25px)"></div>
+        <div class="map-pin" style="top:35%;left:42%">📍</div>
+        <div style="position:absolute;bottom:12px;left:12px;background:rgba(255,255,255,.9);border-radius:8px;padding:6px 12px;font-size:12px;font-weight:600">🚚 Курьер: Алибек М.</div>
+      </div>
+      <!-- Timeline -->
+      <div class="card">
+        <div class="card-body" style="display:flex;flex-direction:column;gap:10px">
+          <div style="font-family:'Syne',sans-serif;font-weight:600;font-size:14px">История</div>
+          <div id="orderTimeline" style="display:flex;flex-direction:column;gap:8px"></div>
+        </div>
+      </div>
+    </div>
+    <!-- Details -->
+    <div style="display:flex;flex-direction:column;gap:12px">
+      <div class="card">
+        <div class="card-body" style="display:flex;flex-direction:column;gap:10px">
+          <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:15px" id="trackOrderId">Заказ #4822</div>
+          <div style="font-size:12.5px;color:var(--text-3)" id="trackRestInfo">Burger House</div>
+          <div class="divider"></div>
+          <div id="trackItems" style="display:flex;flex-direction:column;gap:6px;font-size:13px"></div>
+          <div class="divider"></div>
+          <div id="trackTotal" style="font-family:'Syne',sans-serif;font-weight:700;font-size:17px;display:flex;justify-content:space-between"></div>
+          <div class="divider"></div>
+          <div id="trackAddress" style="font-size:12.5px;color:var(--text-2)"></div>
+        </div>
+      </div>
+      <button class="btn btn-danger" style="width:100%;justify-content:center" onclick="cancelOrder()" id="cancelBtn">Отменить заказ</button>
+    </div>
+  </div>
+</div>
+
+<!-- ===================================================================== -->
+<!-- PAGE: ORDER HISTORY -->
+<!-- ===================================================================== -->
+<div class="page" id="page-orders">
+  <div class="topbar">
+    <div class="logo" onclick="navigate('home')"><div class="logo-mark">A</div><div class="logo-text">AsapJe</div></div>
+    <div class="nav-links">
+      <div class="nav-link" onclick="navigate('home')">Рестораны</div>
+      <div class="nav-link active">Мои заказы</div>
+      <div class="nav-link" onclick="navigate('favorites')">Избранное</div>
+    </div>
+    <div class="topbar-right"><div class="avatar">А</div></div>
+  </div>
+  <div style="padding:20px 24px;background:var(--bg);flex:1;display:flex;flex-direction:column;gap:14px;overflow-y:auto">
+    <div class="row">
+      <div class="page-title">Мои заказы</div>
+      <div class="ml-auto filter-bar">
+        <span class="tag active" onclick="filterOrders('all',this)">Все</span>
+        <span class="tag" onclick="filterOrders('active',this)">Активные</span>
+        <span class="tag" onclick="filterOrders('done',this)">Доставлены</span>
+        <span class="tag" onclick="filterOrders('cancelled',this)">Отменены</span>
+      </div>
+    </div>
+    <div class="table-wrap">
+      <div class="table-head" style="grid-template-columns:1.5fr 1fr 2.5fr 1fr 1fr 160px">
+        <span>Ресторан</span><span>Дата</span><span>Состав</span><span>Сумма</span><span>Статус</span><span></span>
+      </div>
+      <div id="ordersBody"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ===================================================================== -->
+<!-- PAGE: FAVORITES -->
+<!-- ===================================================================== -->
+<div class="page" id="page-favorites">
+  <div class="topbar">
+    <div class="logo" onclick="navigate('home')"><div class="logo-mark">A</div><div class="logo-text">AsapJe</div></div>
+    <div class="nav-links">
+      <div class="nav-link" onclick="navigate('home')">Рестораны</div>
+      <div class="nav-link" onclick="navigate('orders')">Заказы</div>
+      <div class="nav-link active">Избранное</div>
+    </div>
+    <div class="topbar-right"><div class="avatar">А</div></div>
+  </div>
+  <div style="padding:20px 24px;background:var(--bg);flex:1;display:flex;flex-direction:column;gap:14px;overflow-y:auto">
+    <div class="page-title">❤️ Избранное</div>
+    <div id="favGrid" class="grid-4"></div>
+  </div>
+</div>
+
+<!-- ===================================================================== -->
+<!-- PAGE: MANAGER DASHBOARD -->
+<!-- ===================================================================== -->
+<div class="page" id="page-manager">
+  <div class="topbar">
+    <div class="logo" onclick="null"><div class="logo-mark">A</div><div class="logo-text">AsapJe</div></div>
+    <div style="margin-left:16px;font-size:13px;color:var(--text-3)">Burger House <span style="color:var(--border)">|</span> Менеджер</div>
+    <div class="topbar-right">
+      <div class="icon-btn">🔔<div class="badge-dot"></div></div>
+      <div class="avatar" style="background:var(--purple)">М</div>
+    </div>
+  </div>
+  <div class="layout-sidebar" style="flex:1;overflow:hidden">
+    <div class="sidebar">
+      <div class="sidebar-item active" onclick="mgr('dashboard')"><span class="sidebar-icon">📊</span>Дашборд</div>
+      <div class="sidebar-item" onclick="mgr('orders')"><span class="sidebar-icon">📋</span>Заказы</div>
+      <div class="sidebar-item" onclick="mgr('menu')"><span class="sidebar-icon">🍔</span>Меню</div>
+      <div class="sidebar-sep"></div>
+      <div class="sidebar-item" onclick="mgr('reviews')"><span class="sidebar-icon">⭐</span>Отзывы</div>
+      <div class="sidebar-item" onclick="mgr('analytics')"><span class="sidebar-icon">📈</span>Аналитика</div>
+      <div class="sidebar-item" onclick="logout()"><span class="sidebar-icon">🚪</span>Выйти</div>
+    </div>
+    <div class="main" id="mgrMain" style="overflow-y:auto"></div>
+  </div>
+</div>
+
+<!-- ===================================================================== -->
+<!-- PAGE: ADMIN DASHBOARD -->
+<!-- ===================================================================== -->
+<div class="page" id="page-admin">
+  <div class="topbar">
+    <div class="logo" onclick="null"><div class="logo-mark">A</div><div class="logo-text">AsapJe</div></div>
+    <div style="margin-left:16px;font-size:13px;padding:4px 12px;background:var(--red-light);color:var(--red);border-radius:20px;font-weight:600">Администратор</div>
+    <div class="topbar-right">
+      <div class="icon-btn">🔔<div class="badge-dot"></div></div>
+      <div class="avatar" style="background:#0D1B2A">AD</div>
+    </div>
+  </div>
+  <div class="layout-sidebar" style="flex:1;overflow:hidden">
+    <div class="sidebar">
+      <div class="sidebar-item active" onclick="adm('dashboard')"><span class="sidebar-icon">📊</span>Дашборд</div>
+      <div class="sidebar-item" onclick="adm('users')"><span class="sidebar-icon">👥</span>Пользователи</div>
+      <div class="sidebar-item" onclick="adm('restaurants')"><span class="sidebar-icon">🏪</span>Рестораны</div>
+      <div class="sidebar-item" onclick="adm('orders')"><span class="sidebar-icon">📦</span>Заказы</div>
+      <div class="sidebar-sep"></div>
+      <div class="sidebar-item" onclick="adm('analytics')"><span class="sidebar-icon">📈</span>Аналитика</div>
+      <div class="sidebar-item" onclick="adm('complaints')"><span class="sidebar-icon">🚩</span>Жалобы</div>
+      <div class="sidebar-item" onclick="logout()"><span class="sidebar-icon">🚪</span>Выйти</div>
+    </div>
+    <div class="main" id="admMain" style="overflow-y:auto"></div>
+  </div>
+</div>
+
+<script>
+// =========================================================================
+// DATA
+// =========================================================================
+const RESTAURANTS = [
+  {id:1,name:'Burger House',emoji:'🍔',bg:'linear-gradient(135deg,#FFF3CC,#FFE999)',rating:4.7,time:'20–30',delivery:290,open:true,cat:'fast',address:'ул. Абая 15',
+    menu:{
+      'Бургеры':[
+        {id:101,emoji:'🍔',name:'Классик Бургер',desc:'Говядина, свежие овощи, соус',price:1200},
+        {id:102,emoji:'🧀',name:'Чизбургер',desc:'Двойной чиз, говядина, огурец',price:1450},
+        {id:103,emoji:'🌶️',name:'Острый Бургер',desc:'Говядина, халапеньо, чили-соус',price:1350},
+        {id:104,emoji:'🥓',name:'Бекон Бургер',desc:'Хрустящий бекон, сыр, горчица',price:1600},
+      ],
+      'Картошка':[
+        {id:105,emoji:'🍟',name:'Картошка фри',desc:'Хрустящая, солёная',price:490},
+        {id:106,emoji:'🍠',name:'Картошка по-деревенски',desc:'Со специями',price:590},
+      ],
+      'Напитки':[
+        {id:107,emoji:'🥤',name:'Кола',desc:'Газированный напиток, 0.5л',price:290},
+        {id:108,emoji:'🧃',name:'Апельсиновый сок',desc:'Свежевыжатый, 0.3л',price:490},
+      ]
+    }
+  },
+  {id:2,name:'Pizza Milano',emoji:'🍕',bg:'linear-gradient(135deg,#FFE4E1,#FECDD3)',rating:4.5,time:'30–45',delivery:350,open:true,cat:'pizza',address:'пр. Назарбаева 22',
+    menu:{
+      'Пицца':[
+        {id:201,emoji:'🍕',name:'Маргарита',desc:'Томат, моцарелла, базилик',price:2400},
+        {id:202,emoji:'🌶️',name:'Пепперони',desc:'Острая колбаса, томат, сыр',price:2800},
+        {id:203,emoji:'🥗',name:'Вегетарианская',desc:'Овощи гриль, оливки',price:2200},
+      ],
+      'Напитки':[
+        {id:204,emoji:'🥤',name:'Кола',desc:'0.5л',price:290},
+        {id:205,emoji:'🍺',name:'Лимонад',desc:'Домашний, 0.4л',price:390},
+      ]
+    }
+  },
+  {id:3,name:'Sushi Zen',emoji:'🍣',bg:'linear-gradient(135deg,#E0F2FE,#BAE6FD)',rating:4.8,time:'25–35',delivery:400,open:true,cat:'sushi',address:'ул. Кунаева 8',
+    menu:{
+      'Роллы':[
+        {id:301,emoji:'🍣',name:'Филадельфия',desc:'Лосось, сливочный сыр, огурец',price:2200},
+        {id:302,emoji:'🦞',name:'Унаги',desc:'Копчёный угорь, авокадо',price:2600},
+        {id:303,emoji:'🌊',name:'Калифорния',desc:'Краб, авокадо, тобико',price:1900},
+      ],
+      'Супы':[
+        {id:304,emoji:'🍜',name:'Мисо-суп',desc:'Тофу, водоросли, лук',price:490},
+      ]
+    }
+  },
+  {id:4,name:'Green Bowl',emoji:'🥗',bg:'linear-gradient(135deg,#F3E8FF,#DDD6FE)',rating:4.3,time:'20–25',delivery:0,open:true,cat:'salad',address:'ул. Панфилова 5',
+    menu:{
+      'Боулы':[
+        {id:401,emoji:'🥗',name:'Боул Цезарь',desc:'Курица, листья, пармезан',price:1800},
+        {id:402,emoji:'🥑',name:'Боул Авокадо',desc:'Авокадо, тунец, рис',price:2100},
+      ],
+      'Напитки':[
+        {id:403,emoji:'🍋',name:'Лимонад',desc:'Домашний, без сахара',price:390},
+      ]
+    }
+  },
+  {id:5,name:'Shawarma City',emoji:'🌯',bg:'linear-gradient(135deg,#D1FAE5,#A7F3D0)',rating:4.6,time:'15–20',delivery:250,open:true,cat:'fast',address:'пр. Республики 11',
+    menu:{
+      'Шаурма':[
+        {id:501,emoji:'🌯',name:'Классическая',desc:'Курица, овощи, соус',price:990},
+        {id:502,emoji:'🌮',name:'Двойная',desc:'Двойная порция мяса',price:1390},
+      ]
+    }
+  },
+  {id:6,name:'Noodle Bar',emoji:'🍜',bg:'linear-gradient(135deg,#FEF3C7,#FDE68A)',rating:4.4,time:'35–40',delivery:300,open:false,cat:'fast',address:'ул. Байтурсынова 3',
+    menu:{
+      'Лапша':[
+        {id:601,emoji:'🍜',name:'Рамэн классик',desc:'Бульон тонкоцу, яйцо, нори',price:1600},
+        {id:602,emoji:'🔥',name:'Острый рамэн',desc:'Острый бульон, кимчи',price:1800},
+      ]
+    }
+  },
+  {id:7,name:'Grill Master',emoji:'🥩',bg:'linear-gradient(135deg,#ECFDF5,#D1FAE5)',rating:4.9,time:'40–50',delivery:500,open:true,cat:'fast',address:'пр. Аль-Фараби 77',
+    menu:{
+      'Гриль':[
+        {id:701,emoji:'🥩',name:'Стейк Рибай',desc:'250г, мраморная говядина',price:5900},
+        {id:702,emoji:'🍗',name:'Куриные крылья',desc:'Острые, 6 штук',price:1490},
+      ]
+    }
+  },
+  {id:8,name:'Sweet Dreams',emoji:'🎂',bg:'linear-gradient(135deg,#FFF1F2,#FFE4E6)',rating:4.7,time:'25–35',delivery:200,open:true,cat:'dessert',address:'ул. Жибек Жолы 14',
+    menu:{
+      'Десерты':[
+        {id:801,emoji:'🎂',name:'Торт Наполеон',desc:'Слоёный, со сливочным кремом',price:1200},
+        {id:802,emoji:'🍰',name:'Чизкейк',desc:'Нью-Йоркский стиль',price:990},
+        {id:803,emoji:'🍩',name:'Пончики х4',desc:'Глазированные, ассорти',price:690},
+      ],
+      'Напитки':[
+        {id:804,emoji:'☕',name:'Какао',desc:'Горячий, со сливками',price:390},
+      ]
+    }
+  },
+];
+
+// =========================================================================
+// STATE
+// =========================================================================
+let currentPage = 'login';
+let currentUser = null; // 'client'|'manager'|'admin'
+let currentRestId = 1;
+let currentCat = null;
+let cart = {}; // {restId, items:[{id,name,price,emoji,qty}]}
+let favorites = new Set();
+let promoApplied = false;
+let deliveryType = 'delivery';
+let paymentType = 'card';
+let reviewStars = 5;
+let isRegistering = false;
+let orders = [
+  {id:4820,restName:'Sushi Zen',date:'22.05.2024',items:'Филадельфия × 2, Унаги',total:6200,status:'done'},
+  {id:4819,restName:'Pizza Milano',date:'18.05.2024',items:'Маргарита, Пепперони, Кола',total:5800,status:'done'},
+  {id:4818,restName:'Green Bowl',date:'15.05.2024',items:'Боул Цезарь, Лимонад',total:2100,status:'cancelled'},
+];
+let mgrOrders = [
+  {id:4821,client:'Аяулым К.',items:'Классик × 1, Чизбургер × 2, Картошка × 1',total:4590,status:'cooking',time:'14:12'},
+  {id:4820,client:'Нурлан Ж.',items:'Острый Бургер × 1, Кола × 2',total:1930,status:'new',time:'14:08'},
+  {id:4819,client:'Мадина С.',items:'Бекон Бургер × 2',total:3200,status:'new',time:'14:01'},
+];
+let mgrMenu = [
+  {id:101,emoji:'🍔',name:'Классик Бургер',cat:'Бургеры',price:1200,available:true,orders:482},
+  {id:102,emoji:'🧀',name:'Чизбургер',cat:'Бургеры',price:1450,available:true,orders:341},
+  {id:105,emoji:'🍟',name:'Картошка фри',cat:'Картошка',price:490,available:true,orders:612},
+  {id:108,emoji:'🧃',name:'Молочный шейк',cat:'Напитки',price:650,available:false,orders:31},
+];
+let adminUsers = [
+  {id:1,name:'Аяулым Касымова',email:'ayaulym@gmail.com',role:'client',status:'active',date:'12.01.2024',initial:'А',color:'var(--primary)'},
+  {id:2,name:'Марат Сейткали',email:'marat.s@burgerhouse.kz',role:'manager',status:'active',date:'05.03.2023',initial:'М',color:'var(--purple)'},
+  {id:3,name:'Дина Тулегенова',email:'dina.t@mail.ru',role:'client',status:'blocked',date:'20.07.2023',initial:'Д',color:'var(--text-3)'},
+  {id:4,name:'Болат Ахметов',email:'bolat.a@sushizen.kz',role:'manager',status:'active',date:'14.11.2022',initial:'Б',color:'#F59E0B'},
+];
+let currentTrackOrder = null;
+let trackStatusIdx = 2; // 0=received,1=cooking,2=delivering,3=delivered
+
+// =========================================================================
+// NAVIGATION
+// =========================================================================
+function navigate(page) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  const el = document.getElementById('page-' + page);
+  if (el) el.classList.add('active');
+  currentPage = page;
+  closeCart();
+  if (page === 'home') renderRestaurants();
+  if (page === 'restaurant') renderRestaurant();
+  if (page === 'orders') renderOrders('all');
+  if (page === 'favorites') renderFavorites();
+  if (page === 'checkout') renderCheckout();
+  if (page === 'tracking') renderTracking();
+  if (page === 'manager') { renderMgrSection('dashboard'); }
+  if (page === 'admin') { renderAdmSection('dashboard'); }
+}
+
+// =========================================================================
+// AUTH
+// =========================================================================
+function toggleAuth() {
+  isRegistering = !isRegistering;
+  document.getElementById('authTitle').textContent = isRegistering ? 'Создать аккаунт' : 'Добро пожаловать!';
+  document.getElementById('authSub').textContent = isRegistering ? 'Заполните данные' : 'Войдите в свой аккаунт';
+  document.getElementById('authBtn').textContent = isRegistering ? 'Зарегистрироваться →' : 'Войти →';
+  document.getElementById('authToggle').innerHTML = isRegistering
+    ? 'Уже есть аккаунт? <span style="color:var(--primary-dark);font-weight:600;cursor:pointer" onclick="toggleAuth()">Войти</span>'
+    : 'Нет аккаунта? <span style="color:var(--primary-dark);font-weight:600;cursor:pointer" onclick="toggleAuth()">Зарегистрироваться</span>';
+  document.getElementById('registerFields').style.display = isRegistering ? 'block' : 'none';
+}
+
+function toggleRoleSelect() {
+  const show = document.getElementById('showRoleToggle').checked;
+  document.getElementById('roleSelect').style.display = show ? 'block' : 'none';
+}
+
+function doLogin() {
+  const email = document.getElementById('loginEmail').value.trim();
+  const pass = document.getElementById('loginPass').value.trim();
+  if (!email || !pass) { showToast('Введите email и пароль','error'); return; }
+  const showRole = document.getElementById('showRoleToggle').checked;
+  const role = showRole ? document.getElementById('loginRole').value : 'client';
+  currentUser = role;
+  if (isRegistering) { showToast('Аккаунт создан! Добро пожаловать!','success'); }
+  else { showToast('Добро пожаловать!','success'); }
+  setTimeout(() => {
+    if (role === 'manager') navigate('manager');
+    else if (role === 'admin') navigate('admin');
+    else { navigate('home'); }
+  }, 400);
+}
+
+function logout() {
+  currentUser = null; cart = {}; favorites = new Set(); orders = orders.filter(o=>o.id<4821);
+  navigate('login');
+  showToast('Вы вышли из системы');
+}
+
+// =========================================================================
+// RESTAURANTS
+// =========================================================================
+let activeCat = 'all';
+
+function filterCat(cat, el) {
+  activeCat = cat;
+  document.querySelectorAll('#catFilters .filter-opt').forEach(e => e.classList.remove('active'));
+  el.classList.add('active');
+  filterRestaurants();
+}
+
+function filterRestaurants() {
+  const q = (document.getElementById('homeSearch').value || '').toLowerCase();
+  const onlyOpen = document.getElementById('openOnly').checked;
+  const minRating = parseFloat(document.getElementById('ratingVal').textContent) || 3.0;
+  const filtered = RESTAURANTS.filter(r => {
+    if (activeCat !== 'all' && r.cat !== activeCat) return false;
+    if (onlyOpen && !r.open) return false;
+    if (r.rating < minRating) return false;
+    if (q && !r.name.toLowerCase().includes(q)) return false;
+    return true;
+  });
+  document.getElementById('restCount').textContent = filtered.length;
+  const grid = document.getElementById('restaurantGrid');
+  grid.innerHTML = filtered.map(r => `
+    <div class="rest-card" onclick="openRestaurant(${r.id})">
+      <div class="rest-img" style="background:${r.bg}">${r.emoji}</div>
+      <div class="rest-body">
+        <div class="rest-name">${r.name}</div>
+        <div class="rest-meta"><span class="star">⭐</span>${r.rating} · ${r.time} мин · ${r.delivery ? r.delivery+'₸' : 'Бесплатно'}</div>
+        <div style="margin-top:6px"><span class="badge ${r.open ? 'badge-green' : 'badge-gray'}">${r.open ? 'Открыто' : 'Закрыто'}</span></div>
+      </div>
+    </div>`).join('');
+}
+
+function renderRestaurants() {
+  filterRestaurants();
+}
+
+// =========================================================================
+// RESTAURANT PAGE
+// =========================================================================
+function openRestaurant(id) {
+  const r = RESTAURANTS.find(x => x.id === id);
+  if (!r) return;
+  if (!r.open) { showToast('Ресторан сейчас закрыт'); return; }
+  currentRestId = id;
+  const cats = Object.keys(r.menu);
+  currentCat = cats[0];
+  navigate('restaurant');
+}
+
+function renderRestaurant() {
+  const r = RESTAURANTS.find(x => x.id === currentRestId);
+  if (!r) return;
+  document.getElementById('restNavName').textContent = r.name;
+  document.getElementById('restHeroEmoji').textContent = r.emoji;
+  document.getElementById('restHeroName').textContent = r.name;
+  document.getElementById('restHeroAddress').textContent = 'Лучшее заведение · ' + r.address;
+  document.getElementById('restHeroRating').textContent = '⭐ ' + r.rating;
+  document.getElementById('restHeroTime').textContent = '🕐 ' + r.time + ' мин';
+  document.getElementById('restHeroDelivery').textContent = r.delivery ? '🚚 ' + r.delivery + '₸' : '🚚 Бесплатно';
+  const favBtn = document.getElementById('favBtn');
+  favBtn.textContent = favorites.has(currentRestId) ? '❤️' : '🤍';
+  const cats = Object.keys(r.menu);
+  document.getElementById('menuCatList').innerHTML = cats.map((c,i) => {
+    const icons = {Бургеры:'🍔',Картошка:'🍟',Снэки:'🌮',Напитки:'🥤',Десерты:'🍰',Роллы:'🍣',Супы:'🍜',Боулы:'🥗',Шаурма:'🌯',Лапша:'🍜',Гриль:'🥩',Пицца:'🍕'};
+    const icon = icons[c] || '🍽️';
+    return `<div class="filter-opt ${i===0?'active':''}" onclick="selectCat('${c}',this)">${icon} ${c}</div>`;
+  }).join('');
+  renderFoodGrid(cats[0]);
+}
+
+function selectCat(cat, el) {
+  currentCat = cat;
+  document.querySelectorAll('#menuCatList .filter-opt').forEach(e => e.classList.remove('active'));
+  el.classList.add('active');
+  renderFoodGrid(cat);
+}
+
+function renderFoodGrid(cat) {
+  const r = RESTAURANTS.find(x => x.id === currentRestId);
+  const icons = {Бургеры:'🍔',Картошка:'🍟',Снэки:'🌮',Напитки:'🥤',Десерты:'🍰',Роллы:'🍣',Супы:'🍜',Боулы:'🥗',Шаурма:'🌯',Лапша:'🍜',Гриль:'🥩',Пицца:'🍕'};
+  document.getElementById('activeCatTitle').textContent = (icons[cat]||'🍽️') + ' ' + cat;
+  const bgs = {'Бургеры':'linear-gradient(135deg,#FFF8E1,#FFF3CC)','Картошка':'linear-gradient(135deg,#FFF3CC,#FFE999)','Напитки':'linear-gradient(135deg,#E0F2FE,#BAE6FD)','Роллы':'linear-gradient(135deg,#E0F2FE,#BAE6FD)','Десерты':'linear-gradient(135deg,#FFF1F2,#FFE4E6)','Боулы':'linear-gradient(135deg,#F0FDF4,#DCFCE7)','Пицца':'linear-gradient(135deg,#FFE4E1,#FECDD3)'};
+  const bg = bgs[cat] || 'linear-gradient(135deg,#F0FBF6,#E0FFF5)';
+  const foods = r.menu[cat] || [];
+  document.getElementById('foodGrid').innerHTML = foods.map(f => {
+    const inCart = getCartQty(f.id);
+    return `<div class="food-card">
+      <div class="food-card-img" style="background:${bg}">${f.emoji}</div>
+      <div class="food-card-body">
+        <div class="food-name">${f.name}</div>
+        <div class="food-desc">${f.desc}</div>
+        <div class="food-footer">
+          <div class="food-price">${f.price.toLocaleString('ru')} ₸</div>
+          ${inCart > 0
+            ? `<div class="qty-ctrl"><button class="qty-btn" onclick="changeQty(${f.id},-1,${currentRestId})">−</button><span class="qty-val">${inCart}</span><button class="qty-btn" onclick="changeQty(${f.id},1,${currentRestId})">+</button></div>`
+            : `<button class="add-btn" onclick="addToCart(${f.id},${currentRestId})">+</button>`}
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function toggleFavorite() {
+  const favBtn = document.getElementById('favBtn');
+  if (favorites.has(currentRestId)) {
+    favorites.delete(currentRestId);
+    favBtn.textContent = '🤍';
+    showToast('Удалено из избранного');
+  } else {
+    favorites.add(currentRestId);
+    favBtn.textContent = '❤️';
+    showToast('Добавлено в избранное', 'success');
+  }
+}
+
+// =========================================================================
+// CART
+// =========================================================================
+function getCartQty(foodId) {
+  if (!cart.items) return 0;
+  const it = cart.items.find(x => x.id === foodId);
+  return it ? it.qty : 0;
+}
+
+function addToCart(foodId, restId) {
+  const r = RESTAURANTS.find(x => x.id === restId);
+  if (!r) return;
+  if (cart.restId && cart.restId !== restId) {
+    if (!confirm('В корзине уже есть блюда из другого ресторана. Очистить корзину?')) return;
+    cart = {};
+  }
+  if (!cart.restId) { cart = {restId, restName: r.name, items:[]}; }
+  const allFoods = Object.values(r.menu).flat();
+  const food = allFoods.find(f => f.id === foodId);
+  if (!food) return;
+  const existing = cart.items.find(x => x.id === foodId);
+  if (existing) existing.qty++; else cart.items.push({id:food.id,name:food.name,price:food.price,emoji:food.emoji,qty:1});
+  updateCartDot();
+  renderFoodGrid(currentCat);
+  showToast(food.name + ' добавлен', 'success');
+}
+
+function changeQty(foodId, delta, restId) {
+  if (!cart.items) return;
+  const idx = cart.items.findIndex(x => x.id === foodId);
+  if (idx === -1) { if (delta > 0) addToCart(foodId, restId); return; }
+  cart.items[idx].qty += delta;
+  if (cart.items[idx].qty <= 0) cart.items.splice(idx, 1);
+  if (cart.items.length === 0) cart = {};
+  updateCartDot();
+  renderFoodGrid(currentCat);
+  if (document.getElementById('cartPanel').classList.contains('open')) renderCartPanel();
+}
+
+function updateCartDot() {
+  const count = cart.items ? cart.items.reduce((a,b)=>a+b.qty,0) : 0;
+  ['cartDot','cartDot2'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = count > 0 ? 'block' : 'none';
+  });
+}
+
+function openCart() {
+  document.getElementById('cartPanel').classList.add('open');
+  renderCartPanel();
+}
+
+function closeCart() {
+  document.getElementById('cartPanel').classList.remove('open');
+}
+
+function renderCartPanel() {
+  const panel = document.getElementById('cartPanel');
+  document.getElementById('cartRestName').textContent = cart.restName || '';
+  if (!cart.items || cart.items.length === 0) {
+    document.getElementById('cartItems').innerHTML = '<div style="text-align:center;padding:40px 0;color:var(--text-3)">🛒<br><br>Корзина пуста</div>';
+    document.getElementById('cartSummary').innerHTML = '';
+    return;
+  }
+  document.getElementById('cartItems').innerHTML = cart.items.map(it => `
+    <div class="cart-item">
+      <div class="cart-item-emoji">${it.emoji}</div>
+      <div style="flex:1">
+        <div style="font-weight:600;font-size:13px">${it.name}</div>
+        <div style="font-size:12px;color:var(--text-3)">${it.price.toLocaleString('ru')} ₸</div>
+      </div>
+      <div class="qty-ctrl">
+        <button class="qty-btn" onclick="changeQty(${it.id},-1,${cart.restId})">−</button>
+        <span class="qty-val">${it.qty}</span>
+        <button class="qty-btn" onclick="changeQty(${it.id},1,${cart.restId})">+</button>
+      </div>
+    </div>`).join('');
+  const sub = cart.items.reduce((a,b)=>a+b.price*b.qty,0);
+  const r = RESTAURANTS.find(x => x.id === cart.restId);
+  const del = r ? r.delivery : 0;
+  document.getElementById('cartSummary').innerHTML = `
+    <div style="display:flex;justify-content:space-between;font-size:13px;color:var(--text-2)"><span>Сумма</span><span>${sub.toLocaleString('ru')} ₸</span></div>
+    <div style="display:flex;justify-content:space-between;font-size:13px;color:var(--text-2)"><span>Доставка</span><span>${del ? del.toLocaleString('ru')+' ₸' : 'Бесплатно'}</span></div>
+    <div style="display:flex;justify-content:space-between;font-family:'Syne',sans-serif;font-weight:700;font-size:16px;color:var(--text)"><span>Итого</span><span>${(sub+del).toLocaleString('ru')} ₸</span></div>`;
+}
+
+function goToCheckout() {
+  if (!cart.items || cart.items.length === 0) { showToast('Корзина пуста'); return; }
+  closeCart();
+  promoApplied = false;
+  deliveryType = 'delivery';
+  paymentType = 'card';
+  navigate('checkout');
+}
+
+// =========================================================================
+// CHECKOUT
+// =========================================================================
+function renderCheckout() {
+  document.getElementById('checkoutRestName').textContent = cart.restName || '';
+  renderCheckoutItems();
+}
+
+function renderCheckoutItems() {
+  if (!cart.items) return;
+  const sub = cart.items.reduce((a,b)=>a+b.price*b.qty,0);
+  const r = RESTAURANTS.find(x => x.id === cart.restId);
+  const del = deliveryType === 'pickup' ? 0 : (r ? r.delivery : 0);
+  const discount = promoApplied ? del : 0;
+  const total = sub + del - discount;
+  document.getElementById('checkoutItems').innerHTML = cart.items.map(it =>
+    `<div style="display:flex;justify-content:space-between"><span>${it.name} × ${it.qty}</span><span style="font-weight:500">${(it.price*it.qty).toLocaleString('ru')} ₸</span></div>`).join('');
+  document.getElementById('checkoutTotals').innerHTML = `
+    <div style="display:flex;justify-content:space-between;color:var(--text-2)"><span>Сумма</span><span>${sub.toLocaleString('ru')} ₸</span></div>
+    <div style="display:flex;justify-content:space-between;color:var(--text-2)"><span>Доставка</span><span>${del ? del.toLocaleString('ru')+' ₸' : 'Бесплатно'}</span></div>
+    ${promoApplied && del ? `<div style="display:flex;justify-content:space-between;color:var(--primary-dark)"><span>Промокод ASAP2024</span><span>−${del.toLocaleString('ru')} ₸</span></div>` : ''}
+    <div class="divider"></div>
+    <div style="display:flex;justify-content:space-between;font-family:'Syne',sans-serif;font-weight:700;font-size:16px"><span>Итого</span><span>${total.toLocaleString('ru')} ₸</span></div>`;
+}
+
+function selectDelivery(type) {
+  deliveryType = type;
+  document.getElementById('radioDelivery').className = 'radio-option' + (type==='delivery'?' selected':'');
+  document.getElementById('radioDelivery').querySelector('.radio-circle').innerHTML = type==='delivery' ? '<div class="radio-inner"></div>' : '';
+  document.getElementById('radioPickup').className = 'radio-option' + (type==='pickup'?' selected':'');
+  document.getElementById('radioPickup').querySelector('.radio-circle').innerHTML = type==='pickup' ? '<div class="radio-inner"></div>' : '';
+  document.getElementById('addressCard').style.display = type==='delivery' ? 'block' : 'none';
+  renderCheckoutItems();
+}
+
+function selectPayment(type) {
+  paymentType = type;
+  ['card','kaspi','cash'].forEach(t => {
+    const el = document.getElementById('pay'+t.charAt(0).toUpperCase()+t.slice(1));
+    if (!el) return;
+    el.className = 'radio-option' + (type===t?' selected':'');
+    el.querySelector('.radio-circle').innerHTML = type===t ? '<div class="radio-inner"></div>' : '';
+  });
+}
+
+function applyPromo() {
+  const code = document.getElementById('promoInput').value.trim().toUpperCase();
+  const msg = document.getElementById('promoMsg');
+  if (code === 'ASAP2024') {
+    promoApplied = true;
+    msg.style.display = 'block';
+    msg.style.color = 'var(--primary-dark)';
+    msg.textContent = '✓ Промокод применён — бесплатная доставка!';
+    renderCheckoutItems();
+  } else {
+    msg.style.display = 'block';
+    msg.style.color = 'var(--red)';
+    msg.textContent = '✕ Неверный промокод';
+  }
+}
+
+function pay() {
+  if (!cart.items || cart.items.length === 0) { showToast('Корзина пуста'); return; }
+  document.getElementById('payModal').classList.add('active');
+}
+
+function afterPayment() {
+  // Create order
+  const r = RESTAURANTS.find(x => x.id === cart.restId);
+  const del = deliveryType==='pickup' ? 0 : (r ? r.delivery : 0);
+  const discount = promoApplied ? del : 0;
+  const sub = cart.items.reduce((a,b)=>a+b.price*b.qty,0);
+  const total = sub + del - discount;
+  const newOrder = {
+    id: 4821 + orders.filter(o=>o.id>=4821).length + 1,
+    restId: cart.restId,
+    restName: cart.restName,
+    date: new Date().toLocaleDateString('ru'),
+    items: cart.items.map(it=>it.name+' × '+it.qty).join(', '),
+    total,
+    status: 'active',
+    cartItems: [...cart.items],
+    deliveryType,
+    address: deliveryType==='delivery' ? (document.getElementById('addrStreet').value + ', кв. ' + document.getElementById('addrApt').value) : 'Самовывоз'
+  };
+  orders.unshift(newOrder);
+  currentTrackOrder = newOrder;
+  trackStatusIdx = 0;
+  cart = {}; updateCartDot();
+  closeModal('payModal');
+  navigate('tracking');
+  // Simulate order progress
+  simulateOrderProgress();
+}
+
+function simulateOrderProgress() {
+  const steps = [
+    {delay:3000,idx:1,eta:'25–30 минут'},
+    {delay:8000,idx:2,eta:'12–18 минут'},
+    {delay:15000,idx:3,eta:'Доставлен!'},
+  ];
+  steps.forEach(s => setTimeout(() => {
+    trackStatusIdx = s.idx;
+    if (currentPage === 'tracking') renderTracking();
+    if (s.idx === 3) {
+      const o = orders.find(x=>x.id===currentTrackOrder.id);
+      if (o) o.status = 'done';
+      showToast('🎉 Заказ доставлен!', 'success');
+      document.getElementById('cancelBtn').style.display = 'none';
+    }
+  }, s.delay));
+}
+
+// =========================================================================
+// TRACKING
+// =========================================================================
+const TRACK_STEPS = ['Принят','Готовится','В пути','Доставлен'];
+const TRACK_ICONS = ['✓','🍳','🚚','✓'];
+
+function renderTracking() {
+  if (!currentTrackOrder) return;
+  const o = currentTrackOrder;
+  document.getElementById('trackOrderTitle').textContent = 'Заказ #' + o.id;
+  document.getElementById('trackOrderId').textContent = 'Заказ #' + o.id;
+  document.getElementById('trackRestInfo').textContent = o.restName + ' · ' + (o.date || new Date().toLocaleDateString('ru'));
+  // Stepper
+  let html = '';
+  TRACK_STEPS.forEach((s,i) => {
+    const done = i < trackStatusIdx;
+    const active = i === trackStatusIdx;
+    const pending = i > trackStatusIdx;
+    html += `<div class="step"><div class="step-circle ${done?'done':active?'active':'pending'}">${done?'✓':TRACK_ICONS[i]}</div><div class="step-label ${done?'done':''}">${s}</div></div>`;
+    if (i < TRACK_STEPS.length-1) html += `<div class="step-line ${i < trackStatusIdx?'done':''}"></div>`;
+  });
+  document.getElementById('orderStepper').innerHTML = html;
+  // ETA
+  const etas = ['35–45 минут','25–30 минут','12–18 минут','Доставлен!'];
+  document.getElementById('etaText').textContent = etas[trackStatusIdx] || '—';
+  // Timeline
+  const times = ['14:12','14:18','14:28','14:42'];
+  const labels = ['Заказ принят','Ресторан начал готовить','Заказ готов, курьер едет','Заказ доставлен'];
+  let tl = '';
+  for (let i = trackStatusIdx; i >= 0; i--) {
+    tl += `<div style="display:flex;gap:12px;align-items:flex-start">
+      <div style="width:8px;height:8px;background:${i===trackStatusIdx?'var(--primary)':'var(--border)'};border-radius:50%;margin-top:5px;flex-shrink:0"></div>
+      <div><div style="font-size:13px;font-weight:500">${labels[i]}</div><div style="font-size:11.5px;color:var(--text-3)">${times[i]}</div></div>
+    </div>`;
+  }
+  document.getElementById('orderTimeline').innerHTML = tl;
+  // Items
+  document.getElementById('trackItems').innerHTML = (o.cartItems||[]).map(it =>
+    `<div style="display:flex;justify-content:space-between"><span>${it.name} × ${it.qty}</span><span style="font-weight:500">${(it.price*it.qty).toLocaleString('ru')} ₸</span></div>`).join('');
+  document.getElementById('trackTotal').innerHTML = `<span>Итого</span><span>${o.total.toLocaleString('ru')} ₸</span>`;
+  document.getElementById('trackAddress').innerHTML = `📍 ${o.address}<br><span class="badge badge-green" style="margin-top:6px">Оплачено</span>`;
+  // Hide cancel if delivered
+  document.getElementById('cancelBtn').style.display = trackStatusIdx >= 3 ? 'none' : 'flex';
+}
+
+function cancelOrder() {
+  if (!currentTrackOrder) return;
+  if (confirm('Отменить заказ?')) {
+    const o = orders.find(x => x.id === currentTrackOrder.id);
+    if (o) o.status = 'cancelled';
+    showToast('Заказ отменён');
+    navigate('orders');
+  }
+}
+
+// =========================================================================
+// ORDER HISTORY
+// =========================================================================
+function renderOrders(filter) {
+  const statusMap = {active:'В пути',done:'Доставлен',cancelled:'Отменён'};
+  const badgeMap = {active:'badge-blue',done:'badge-green',cancelled:'badge-red'};
+  let filtered = orders;
+  if (filter === 'active') filtered = orders.filter(o=>o.status==='active');
+  else if (filter === 'done') filtered = orders.filter(o=>o.status==='done');
+  else if (filter === 'cancelled') filtered = orders.filter(o=>o.status==='cancelled');
+  document.getElementById('ordersBody').innerHTML = filtered.length === 0
+    ? '<div style="padding:32px;text-align:center;color:var(--text-3)">Нет заказов</div>'
+    : filtered.map(o => `<div class="table-row" style="grid-template-columns:1.5fr 1fr 2.5fr 1fr 1fr 160px">
+      <div class="fw-600" style="font-size:13.5px">${o.restName}</div>
+      <div class="text-sm color-muted">${o.date}</div>
+      <div class="text-sm color-muted">${o.items}</div>
+      <div class="fw-600" style="font-size:13.5px">${o.total.toLocaleString('ru')} ₸</div>
+      <div><span class="badge ${badgeMap[o.status]}">${statusMap[o.status]}</span></div>
+      <div class="row gap-4">
+        ${o.status==='active' ? `<button class="btn btn-primary btn-sm" onclick="trackOrder(${o.id})">Отследить</button>` : ''}
+        ${o.status==='done' ? `<button class="btn btn-secondary btn-sm" onclick="reorder(${o.id})">Повторить</button><button class="btn btn-secondary btn-sm" onclick="openReview()">⭐</button>` : ''}
+      </div>
+    </div>`).join('');
+}
+
+function filterOrders(filter, el) {
+  document.querySelectorAll('#page-orders .filter-bar .tag').forEach(e => e.classList.remove('active'));
+  el.classList.add('active');
+  renderOrders(filter);
+}
+
+function trackOrder(id) {
+  const o = orders.find(x=>x.id===id);
+  if (!o) return;
+  currentTrackOrder = o;
+  trackStatusIdx = 2;
+  navigate('tracking');
+}
+
+function reorder(id) {
+  const o = orders.find(x=>x.id===id);
+  if (!o) return;
+  showToast('Ресторан открыт — добавьте блюда заново', 'success');
+  if (o.restId) openRestaurant(o.restId);
+}
+
+// =========================================================================
+// FAVORITES
+// =========================================================================
+function renderFavorites() {
+  const grid = document.getElementById('favGrid');
+  if (favorites.size === 0) {
+    grid.innerHTML = `<div style="grid-column:1/-1;text-align:center;padding:60px 0;color:var(--text-3)">❤️<br><br>Нет избранных ресторанов<br><span style="font-size:12px">Нажмите 🤍 в карточке ресторана</span></div>`;
+    return;
+  }
+  grid.innerHTML = [...favorites].map(id => {
+    const r = RESTAURANTS.find(x => x.id === id);
+    if (!r) return '';
+    return `<div class="rest-card" onclick="openRestaurant(${r.id})">
+      <div class="rest-img" style="background:${r.bg}">${r.emoji}</div>
+      <div class="rest-body">
+        <div class="rest-name">${r.name}</div>
+        <div class="rest-meta"><span class="star">⭐</span>${r.rating} · ${r.time} мин</div>
+        <div style="margin-top:6px;display:flex;gap:6px">
+          <span class="badge ${r.open ? 'badge-green' : 'badge-gray'}">${r.open ? 'Открыто' : 'Закрыто'}</span>
+          <span style="font-size:13px;cursor:pointer" onclick="event.stopPropagation();removeFav(${r.id})">🗑️</span>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function removeFav(id) {
+  favorites.delete(id);
+  renderFavorites();
+  showToast('Удалено из избранного');
+}
+
+// =========================================================================
+// REVIEW
+// =========================================================================
+function openReview() { document.getElementById('reviewModal').classList.add('active'); }
+
+function setStars(n) {
+  reviewStars = n;
+  document.querySelectorAll('#starRating span').forEach((s,i) => s.className = i < n ? 'lit' : '');
+}
+
+function submitReview() {
+  showToast('Спасибо за отзыв!', 'success');
+  closeModal('reviewModal');
+}
+
+// =========================================================================
+// MANAGER
+// =========================================================================
+function mgr(section) {
+  document.querySelectorAll('#page-manager .sidebar-item').forEach(el => el.classList.remove('active'));
+  const items = document.querySelectorAll('#page-manager .sidebar-item');
+  const map = {dashboard:0,orders:1,menu:2,reviews:3,analytics:4};
+  if (map[section] !== undefined && items[map[section]]) items[map[section]].classList.add('active');
+  renderMgrSection(section);
+}
+
+function renderMgrSection(section) {
+  const main = document.getElementById('mgrMain');
+  if (section === 'dashboard') {
+    main.innerHTML = `
+      <div class="grid-4">
+        <div class="metric-card" style="border-left:3px solid var(--primary)"><div class="metric-label">Заказов сегодня</div><div class="metric-value">47</div><div class="metric-change">+12% вчера</div></div>
+        <div class="metric-card" style="border-left:3px solid var(--accent)"><div class="metric-label">В обработке</div><div class="metric-value" id="mgrActiveCount">${mgrOrders.filter(o=>o.status!=='done').length}</div><div class="metric-change" style="color:var(--text-3)">Активных</div></div>
+        <div class="metric-card" style="border-left:3px solid var(--blue)"><div class="metric-label">Выручка сегодня</div><div class="metric-value">186К ₸</div><div class="metric-change">+8% вчера</div></div>
+        <div class="metric-card" style="border-left:3px solid var(--purple)"><div class="metric-label">Средний чек</div><div class="metric-value">3 957 ₸</div><div class="metric-change">+3% вчера</div></div>
+      </div>
+      <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:16px">🔔 Новые заказы</div>
+      <div style="display:flex;flex-direction:column;gap:10px" id="mgrNewOrders">
+        ${mgrOrders.filter(o=>o.status==='new').map(o=>mgrOrderCard(o)).join('')}
+      </div>
+      ${mgrOrders.filter(o=>o.status==='cooking').length>0?`<div style="font-family:'Syne',sans-serif;font-weight:700;font-size:16px">🍳 Готовятся</div><div id="mgrCookingOrders">${mgrOrders.filter(o=>o.status==='cooking').map(o=>mgrOrderCard(o)).join('')}</div>`:''}
+    `;
+  } else if (section === 'orders') {
+    main.innerHTML = `
+      <div class="row"><div class="page-title">Заказы</div></div>
+      <div class="table-wrap">
+        <div class="table-head" style="grid-template-columns:80px 1fr 2.5fr 1fr 1.5fr 160px"><span>#</span><span>Клиент</span><span>Состав</span><span>Сумма</span><span>Статус</span><span>Действия</span></div>
+        ${mgrOrders.map(o=>`<div class="table-row" style="grid-template-columns:80px 1fr 2.5fr 1fr 1.5fr 160px">
+          <div class="fw-600">#${o.id}</div>
+          <div style="font-size:13px">${o.client}</div>
+          <div class="text-sm color-muted">${o.items}</div>
+          <div class="fw-600">${o.total.toLocaleString('ru')} ₸</div>
+          <div>${mgrStatusBadge(o.status)}</div>
+          <div class="row gap-4">${mgrActions(o)}</div>
+        </div>`).join('')}
+      </div>`;
+  } else if (section === 'menu') {
+    main.innerHTML = `
+      <div class="row"><div class="page-title">Меню</div><button class="btn btn-primary ml-auto" onclick="openModal('addDishModal')">+ Добавить блюдо</button></div>
+      <div class="table-wrap">
+        <div class="table-head" style="grid-template-columns:60px 2fr 1fr 1fr 1fr 1fr 160px"><span></span><span>Блюдо</span><span>Категория</span><span>Цена</span><span>Наличие</span><span>Заказов</span><span>Действия</span></div>
+        <div id="mgrMenuBody">${renderMgrMenuRows()}</div>
+      </div>`;
+  } else if (section === 'reviews') {
+    main.innerHTML = `
+      <div class="page-title" style="margin-bottom:12px">Отзывы клиентов</div>
+      ${[{name:'Аяулым К.',stars:5,text:'Всё отлично! Быстро и вкусно. Классик Бургер — лучший!',date:'26.05.2024'},
+         {name:'Нурлан Ж.',stars:4,text:'Хорошее качество, но немного долго ждали.',date:'22.05.2024'},
+         {name:'Мадина С.',stars:5,text:'Обожаю это место! Заказываю каждую неделю.',date:'18.05.2024'}
+      ].map(r=>`<div class="card" style="margin-bottom:10px"><div class="card-body">
+        <div class="row gap-8" style="margin-bottom:8px">
+          <div class="avatar" style="width:32px;height:32px;font-size:13px;border-radius:8px">${r.name[0]}</div>
+          <div style="font-weight:600;font-size:13px">${r.name}</div>
+          <div style="color:#F59E0B">${'★'.repeat(r.stars)}${'☆'.repeat(5-r.stars)}</div>
+          <div class="ml-auto text-sm color-muted">${r.date}</div>
+        </div>
+        <div style="font-size:13px;color:var(--text-2)">${r.text}</div>
+      </div></div>`).join('')}`;
+  } else if (section === 'analytics') {
+    main.innerHTML = `
+      <div class="page-title" style="margin-bottom:12px">📈 Аналитика</div>
+      <div class="grid-2">
+        <div class="chart-area">
+          <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:14px;margin-bottom:12px">Доход по дням</div>
+          <div class="chart-bars">${[45,60,55,70,65,80,90,75,68,85,72,78,95,82].map((h,i)=>`<div class="bar ${i===12?'accent':''}" style="height:${h}%"></div>`).join('')}</div>
+          <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text-3);margin-top:6px"><span>1 мая</span><span>8 мая</span><span>15 мая</span><span>22 мая</span><span>26 мая</span></div>
+        </div>
+        <div class="card"><div class="card-body">
+          <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:14px;margin-bottom:12px">🏆 Топ блюда</div>
+          ${[['🍟','Картошка фри',612],['🍔','Классик Бургер',482],['🧀','Чизбургер',341]].map(([e,n,c])=>
+            `<div class="row gap-8" style="padding:8px 0;border-bottom:1px solid var(--border)">
+              <span style="font-size:20px">${e}</span><span style="font-size:13px;font-weight:500">${n}</span>
+              <span class="badge badge-green ml-auto">${c}</span>
+            </div>`).join('')}
+        </div></div>
+      </div>`;
+  }
+}
+
+function mgrOrderCard(o) {
+  return `<div class="card"><div class="card-body" style="display:flex;flex-direction:column;gap:10px">
+    <div class="row gap-8">
+      <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:14px">#${o.id}</div>
+      <div style="font-size:13px;color:var(--text-3)">${o.client} · ${o.time}</div>
+      <div class="ml-auto">${mgrStatusBadge(o.status)}</div>
+    </div>
+    <div style="font-size:13px;color:var(--text-2)">${o.items}</div>
+    <div class="row gap-8">
+      <div style="font-weight:700;font-size:15px">${o.total.toLocaleString('ru')} ₸</div>
+      <div class="ml-auto row gap-4">${mgrActions(o)}</div>
+    </div>
+  </div></div>`;
+}
+
+function mgrStatusBadge(s) {
+  const m={new:'<span class="badge badge-yellow">Новый</span>',cooking:'<span class="badge badge-blue">Готовится</span>',done:'<span class="badge badge-green">Выдан</span>'};
+  return m[s]||'';
+}
+
+function mgrActions(o) {
+  if (o.status==='new') return `<button class="btn btn-primary btn-sm" onclick="mgrAccept(${o.id})">✓ Принять</button><button class="btn btn-danger btn-sm" onclick="mgrReject(${o.id})">✕</button>`;
+  if (o.status==='cooking') return `<button class="btn btn-success btn-sm" onclick="mgrReady(${o.id})">Готово →</button>`;
+  return '<span class="text-sm color-muted">Завершён</span>';
+}
+
+function mgrAccept(id) {
+  const o = mgrOrders.find(x=>x.id===id);
+  if(o){o.status='cooking';showToast('Заказ #'+id+' принят','success');renderMgrSection('dashboard');}
+}
+function mgrReject(id) {
+  if(confirm('Отклонить заказ #'+id+'?')){
+    const o=mgrOrders.find(x=>x.id===id);if(o)o.status='done';
+    showToast('Заказ отклонён');renderMgrSection('dashboard');
+  }
+}
+function mgrReady(id) {
+  const o=mgrOrders.find(x=>x.id===id);if(o){o.status='done';showToast('Заказ #'+id+' выдан','success');renderMgrSection('dashboard');}
+}
+
+function renderMgrMenuRows() {
+  return mgrMenu.map(m=>`<div class="table-row" style="grid-template-columns:60px 2fr 1fr 1fr 1fr 1fr 160px" id="dish${m.id}">
+    <div style="font-size:24px">${m.emoji}</div>
+    <div style="font-weight:600;font-size:13.5px">${m.name}</div>
+    <div><span class="badge badge-gray">${m.cat}</span></div>
+    <div style="font-weight:700">${m.price.toLocaleString('ru')} ₸</div>
+    <div><span class="badge ${m.available?'badge-green':'badge-red'}">${m.available?'✓ Есть':'✕ Нет'}</span></div>
+    <div style="font-size:13px;font-weight:600">${m.orders}</div>
+    <div class="row gap-4">
+      <button class="btn btn-secondary btn-sm" style="padding:5px 10px" onclick="toggleDishAvail(${m.id})">${m.available?'Скрыть':'Включить'}</button>
+      <button class="btn btn-danger btn-sm" style="padding:5px 10px" onclick="deleteDish(${m.id})">✕</button>
+    </div>
+  </div>`).join('');
+}
+
+function toggleDishAvail(id) {
+  const d=mgrMenu.find(x=>x.id===id);if(!d)return;d.available=!d.available;
+  showToast(d.name+' — '+(d.available?'доступно':'скрыто'));
+  document.getElementById('mgrMenuBody').innerHTML=renderMgrMenuRows();
+}
+function deleteDish(id) {
+  if(!confirm('Удалить блюдо?'))return;
+  mgrMenu=mgrMenu.filter(x=>x.id!==id);
+  showToast('Блюдо удалено');
+  document.getElementById('mgrMenuBody').innerHTML=renderMgrMenuRows();
+}
+
+function saveDish() {
+  const name=document.getElementById('newDishName').value.trim();
+  const price=parseInt(document.getElementById('newDishPrice').value)||0;
+  const cat=document.getElementById('newDishCat').value;
+  if(!name||!price){showToast('Заполните название и цену','error');return;}
+  mgrMenu.unshift({id:Date.now(),emoji:'🍽️',name,cat,price,available:true,orders:0});
+  showToast('Блюдо «'+name+'» добавлено','success');
+  closeModal('addDishModal');
+  document.getElementById('newDishName').value='';
+  document.getElementById('newDishPrice').value='';
+  if(document.getElementById('mgrMenuBody'))document.getElementById('mgrMenuBody').innerHTML=renderMgrMenuRows();
+}
+
+// =========================================================================
+// ADMIN
+// =========================================================================
+function adm(section) {
+  document.querySelectorAll('#page-admin .sidebar-item').forEach(el=>el.classList.remove('active'));
+  const items=document.querySelectorAll('#page-admin .sidebar-item');
+  const map={dashboard:0,users:1,restaurants:2,orders:3,analytics:4,complaints:5};
+  if(map[section]!==undefined&&items[map[section]])items[map[section]].classList.add('active');
+  renderAdmSection(section);
+}
+
+function renderAdmSection(section) {
+  const main=document.getElementById('admMain');
+  if(section==='dashboard'){
+    main.innerHTML=`
+      <div class="grid-4">
+        <div class="metric-card" style="border-left:3px solid var(--primary)"><div class="metric-label">Пользователи</div><div class="metric-value">${adminUsers.length+12476}</div><div class="metric-change">+340 за месяц</div></div>
+        <div class="metric-card" style="border-left:3px solid var(--blue)"><div class="metric-label">Рестораны</div><div class="metric-value">86</div><div class="metric-change">+4 за месяц</div></div>
+        <div class="metric-card" style="border-left:3px solid var(--accent)"><div class="metric-label">Заказов всего</div><div class="metric-value">94 712</div><div class="metric-change">+1 240 сегодня</div></div>
+        <div class="metric-card" style="border-left:3px solid var(--purple)"><div class="metric-label">Общий доход</div><div class="metric-value">₸ 38.4М</div><div class="metric-change">+12% к прошлому мес.</div></div>
+      </div>
+      <div class="grid-2">
+        <div class="chart-area">
+          <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:14px;margin-bottom:12px">📈 Доход по дням (Май)</div>
+          <div class="chart-bars">${[45,60,55,70,65,80,90,75,68,85,72,78,95,82].map((h,i)=>`<div class="bar ${i===12?'accent':''}" style="height:${h}%"></div>`).join('')}</div>
+          <div style="display:flex;justify-content:space-between;font-size:10px;color:var(--text-3);margin-top:6px;padding-top:6px;border-top:1px solid var(--border)"><span>1 мая</span><span>8 мая</span><span>15 мая</span><span>22 мая</span><span>26 мая</span></div>
+        </div>
+        <div class="card"><div class="card-body" style="display:flex;flex-direction:column;gap:10px">
+          <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:14px">🏆 Топ рестораны</div>
+          <div class="table-wrap" style="border:none">
+            <div class="table-head" style="grid-template-columns:2fr 1fr 1fr"><span>Ресторан</span><span>Заказов</span><span>Рейтинг</span></div>
+            ${[['Burger House',4218,4.8],['Sushi Zen',3870,4.7],['Pizza Milano',3442,4.5],['Grill Master',2950,4.9]].map(([n,o,r])=>`
+            <div class="table-row" style="grid-template-columns:2fr 1fr 1fr"><div style="font-weight:600;font-size:13px">${n}</div><div>${o.toLocaleString('ru')}</div><div><span class="badge badge-blue">⭐ ${r}</span></div></div>`).join('')}
+          </div>
+        </div></div>
+      </div>`;
+  } else if(section==='users'){
+    main.innerHTML=`
+      <div class="row" style="margin-bottom:4px">
+        <div class="page-title">Пользователи</div>
+        <div class="ml-auto row gap-8">
+          <div class="search-bar" style="width:220px"><span>🔍</span><input placeholder="Поиск..." id="userSearch" oninput="renderUserTable()"></div>
+          <button class="btn btn-primary" onclick="openModal('addUserModal')">+ Добавить</button>
+        </div>
+      </div>
+      <div class="filter-bar" style="margin-bottom:4px">
+        <span class="tag active" onclick="filterUsers('all',this)">Все (${adminUsers.length})</span>
+        <span class="tag" onclick="filterUsers('client',this)">Клиенты</span>
+        <span class="tag" onclick="filterUsers('manager',this)">Менеджеры</span>
+        <span class="tag" onclick="filterUsers('active',this)">Активные</span>
+        <span class="tag" onclick="filterUsers('blocked',this)">Заблокированные</span>
+      </div>
+      <div class="table-wrap">
+        <div class="table-head" style="grid-template-columns:2.2fr 2.2fr 1fr 1fr 1fr 150px"><span>Пользователь</span><span>Email</span><span>Роль</span><span>Статус</span><span>Дата</span><span>Действия</span></div>
+        <div id="userTableBody">${renderUserRows(adminUsers)}</div>
+      </div>`;
+  } else if(section==='restaurants'){
+    main.innerHTML=`
+      <div class="row"><div class="page-title">Рестораны</div><button class="btn btn-primary ml-auto" onclick="showToast('Функция добавления ресторана')">+ Добавить</button></div>
+      <div class="table-wrap">
+        <div class="table-head" style="grid-template-columns:60px 2fr 1fr 1fr 1fr 120px"><span></span><span>Название</span><span>Категория</span><span>Рейтинг</span><span>Статус</span><span>Действия</span></div>
+        ${RESTAURANTS.map(r=>`<div class="table-row" style="grid-template-columns:60px 2fr 1fr 1fr 1fr 120px">
+          <div style="font-size:24px">${r.emoji}</div>
+          <div style="font-weight:600;font-size:13.5px">${r.name}</div>
+          <div><span class="badge badge-gray">${r.cat}</span></div>
+          <div><span class="badge badge-blue">⭐ ${r.rating}</span></div>
+          <div><span class="badge ${r.open?'badge-green':'badge-gray'}">${r.open?'Открыто':'Закрыто'}</span></div>
+          <div class="row gap-4">
+            <button class="btn btn-secondary btn-sm" onclick="showToast('Ресторан: '+${JSON.stringify(r.name)})">✎</button>
+          </div>
+        </div>`).join('')}
+      </div>`;
+  } else if(section==='orders'){
+    main.innerHTML=`
+      <div class="page-title" style="margin-bottom:12px">Все заказы системы</div>
+      <div class="table-wrap">
+        <div class="table-head" style="grid-template-columns:1fr 2fr 2fr 1fr 1fr"><span>#</span><span>Клиент</span><span>Ресторан</span><span>Сумма</span><span>Статус</span></div>
+        ${[...orders,...mgrOrders.map(o=>({id:o.id,restName:'Burger House',date:o.time,items:o.items,total:o.total,status:o.status==='new'||o.status==='cooking'?'active':'done'}))].slice(0,8).map(o=>`
+        <div class="table-row" style="grid-template-columns:1fr 2fr 2fr 1fr 1fr">
+          <div class="fw-600">#${o.id}</div>
+          <div class="text-sm">${o.client||'Клиент'}</div>
+          <div class="text-sm">${o.restName}</div>
+          <div class="fw-600">${o.total.toLocaleString('ru')} ₸</div>
+          <div>${o.status==='active'?'<span class="badge badge-blue">Активен</span>':o.status==='done'?'<span class="badge badge-green">Выполнен</span>':'<span class="badge badge-red">Отменён</span>'}</div>
+        </div>`).join('')}
+      </div>`;
+  } else if(section==='analytics'){
+    main.innerHTML=`
+      <div class="page-title" style="margin-bottom:12px">📈 Статистика платформы</div>
+      <div class="grid-2" style="margin-bottom:16px">
+        <div class="chart-area">
+          <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:14px;margin-bottom:12px">Заказы по ресторанам</div>
+          <div class="chart-bars">${[90,75,68,50,45,38,30,25].map((h,i)=>`<div class="bar ${i===0?'accent':''}" style="height:${h}%"></div>`).join('')}</div>
+          <div style="display:flex;gap:4px;flex-wrap:wrap;margin-top:8px;font-size:10px;color:var(--text-3)">
+            ${RESTAURANTS.slice(0,8).map(r=>`<span style="flex:1;text-align:center">${r.emoji}</span>`).join('')}
+          </div>
+        </div>
+        <div class="chart-area">
+          <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:14px;margin-bottom:12px">Новые пользователи (мес.)</div>
+          <div class="chart-bars">${[40,60,50,70,55,80,75,90,65,85,95,100].map((h,i)=>`<div class="bar" style="height:${h}%"></div>`).join('')}</div>
+        </div>
+      </div>
+      <div class="grid-4">
+        <div class="metric-card"><div class="metric-label">Конверсия</div><div class="metric-value">68%</div><div class="metric-change">+4% к прошлому</div></div>
+        <div class="metric-card"><div class="metric-label">Ср. доставка</div><div class="metric-value">28 мин</div><div class="metric-change">−3 мин</div></div>
+        <div class="metric-card"><div class="metric-label">Отмены</div><div class="metric-value">3.2%</div><div class="metric-change" style="color:var(--red)">+0.5%</div></div>
+        <div class="metric-card"><div class="metric-label">NPS</div><div class="metric-value">72</div><div class="metric-change">+5 п.</div></div>
+      </div>`;
+  } else if(section==='complaints'){
+    main.innerHTML=`
+      <div class="page-title" style="margin-bottom:12px">🚩 Жалобы</div>
+      ${[{from:'Аяулым К.',about:'Burger House',text:'Заказ пришёл холодным.',status:'new',date:'26.05.2024'},
+         {from:'Ержан М.',about:'Sushi Zen',text:'Не привезли один ролл.',status:'processing',date:'24.05.2024'},
+         {from:'Гүлнар С.',about:'Pizza Milano',text:'Курьер нагрубил.',status:'resolved',date:'20.05.2024'}
+      ].map(c=>`<div class="card" style="margin-bottom:10px"><div class="card-body">
+        <div class="row gap-8" style="margin-bottom:8px">
+          <div style="font-weight:600;font-size:13px">${c.from}</div>
+          <span class="badge badge-gray">→ ${c.about}</span>
+          <div class="ml-auto">
+            ${c.status==='new'?'<span class="badge badge-red">Новая</span>':c.status==='processing'?'<span class="badge badge-yellow">В обработке</span>':'<span class="badge badge-green">Решена</span>'}
+          </div>
+          <div class="text-sm color-muted">${c.date}</div>
+        </div>
+        <div style="font-size:13px;color:var(--text-2);margin-bottom:10px">${c.text}</div>
+        ${c.status!=='resolved'?`<button class="btn btn-primary btn-sm" onclick="showToast('Жалоба отмечена как решённая','success')">Отметить решённой</button>`:''}
+      </div></div>`).join('')}`;
+  }
+}
+
+let userFilter = 'all';
+function filterUsers(f, el) {
+  userFilter = f;
+  document.querySelectorAll('#page-admin .filter-bar .tag').forEach(e=>e.classList.remove('active'));
+  el.classList.add('active');
+  renderUserTable();
+}
+
+function renderUserTable() {
+  const q = (document.getElementById('userSearch')?.value||'').toLowerCase();
+  let users = adminUsers;
+  if (userFilter==='client') users=users.filter(u=>u.role==='client');
+  else if (userFilter==='manager') users=users.filter(u=>u.role==='manager');
+  else if (userFilter==='active') users=users.filter(u=>u.status==='active');
+  else if (userFilter==='blocked') users=users.filter(u=>u.status==='blocked');
+  if (q) users=users.filter(u=>u.name.toLowerCase().includes(q)||u.email.toLowerCase().includes(q));
+  const tbody = document.getElementById('userTableBody');
+  if (tbody) tbody.innerHTML = renderUserRows(users);
+}
+
+function renderUserRows(users) {
+  return users.map(u=>`<div class="table-row" style="grid-template-columns:2.2fr 2.2fr 1fr 1fr 1fr 150px">
+    <div class="row gap-8"><div class="avatar" style="width:30px;height:30px;border-radius:8px;font-size:12px;background:${u.color}">${u.initial}</div><div style="font-weight:600;font-size:13px">${u.name}</div></div>
+    <div class="text-sm color-muted">${u.email}</div>
+    <div><span class="badge ${u.role==='manager'?'badge-purple':'badge-blue'}">${u.role==='manager'?'Менеджер':'Клиент'}</span></div>
+    <div><span class="badge ${u.status==='active'?'badge-green':'badge-red'}">${u.status==='active'?'Активен':'Заблок.'}</span></div>
+    <div class="text-sm color-muted">${u.date}</div>
+    <div class="row gap-4">
+      ${u.status==='active'
+        ?`<button class="btn btn-danger btn-sm" style="padding:5px 9px" onclick="blockUser(${u.id})">🚫</button>`
+        :`<button class="btn btn-success btn-sm" style="padding:5px 9px;font-size:11px" onclick="unblockUser(${u.id})">Разблок.</button>`}
+      <button class="btn btn-danger btn-sm" style="padding:5px 9px;background:var(--red-light);color:var(--red)" onclick="deleteUser(${u.id})">✕</button>
+    </div>
+  </div>`).join('');
+}
+
+function blockUser(id) {
+  const u=adminUsers.find(x=>x.id===id);if(!u)return;u.status='blocked';showToast('Пользователь заблокирован');renderUserTable();
+}
+function unblockUser(id) {
+  const u=adminUsers.find(x=>x.id===id);if(!u)return;u.status='active';showToast('Пользователь разблокирован','success');renderUserTable();
+}
+function deleteUser(id) {
+  if(!confirm('Удалить пользователя?'))return;
+  adminUsers=adminUsers.filter(x=>x.id!==id);showToast('Пользователь удалён');renderUserTable();
+}
+
+function saveUser() {
+  const name=document.getElementById('newUserName').value.trim();
+  const email=document.getElementById('newUserEmail').value.trim();
+  const role=document.getElementById('newUserRole').value;
+  if(!name||!email){showToast('Заполните имя и email','error');return;}
+  adminUsers.push({id:Date.now(),name,email,role,status:'active',date:new Date().toLocaleDateString('ru'),initial:name[0],color:'var(--primary)'});
+  showToast('Пользователь создан','success');closeModal('addUserModal');
+  document.getElementById('newUserName').value='';document.getElementById('newUserEmail').value='';document.getElementById('newUserPass').value='';
+  if(document.getElementById('userTableBody'))renderUserTable();
+}
+
+// =========================================================================
+// MODALS / UTILS
+// =========================================================================
+function openModal(id) { document.getElementById(id).classList.add('active'); }
+function closeModal(id) { document.getElementById(id).classList.remove('active'); }
+
+// Close modals on overlay click
+document.querySelectorAll('.modal-overlay').forEach(overlay => {
+  overlay.addEventListener('click', e => { if (e.target === overlay) overlay.classList.remove('active'); });
+});
+
+let toastTimeout;
+function showToast(msg, type='') {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'toast' + (type ? ' '+type : '') + ' show';
+  clearTimeout(toastTimeout);
+  toastTimeout = setTimeout(() => t.className = 'toast', 3000);
+}
+
+// Init
+renderRestaurants();
+</script>
+</body>
+</html>
