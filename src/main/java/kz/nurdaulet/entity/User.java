@@ -2,7 +2,6 @@ package kz.nurdaulet.entity;
 
 import kz.nurdaulet.entity.enums.Role;
 
-import java.sql.Timestamp;
 import java.time.LocalDateTime;
 
 public class User {

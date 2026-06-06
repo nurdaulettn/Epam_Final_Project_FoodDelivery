@@ -6,6 +6,7 @@ import kz.nurdaulet.entity.User;
 import kz.nurdaulet.entity.enums.Role;
 import kz.nurdaulet.exception.UserCreatingException;
 import kz.nurdaulet.exception.UserNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -13,9 +14,11 @@ import java.time.LocalDateTime;
 @Service
 public class UserService {
     private final UserDao userDao;
+    private final PasswordEncoder encoder;
 
-    public UserService(UserDao userDao) {
+    public UserService(UserDao userDao, PasswordEncoder passwordEncoder) {
         this.userDao = userDao;
+        this.encoder = passwordEncoder;
     }
 
     public User create(UserCreateDto dto) {
@@ -29,8 +32,7 @@ public class UserService {
             user.setLastName(dto.getLastName());
             user.setUsername(dto.getUsername());
             user.setEmail(dto.getEmail());
-            // TODO: there should be a encrypting a password when add security
-            user.setPassword(dto.getPassword());
+            user.setPassword(encoder.encode(dto.getPassword()));
             user.setRole(getRole(dto.getRole()));
             user.setStatus(true);
             user.setCreatedAt(LocalDateTime.now());
