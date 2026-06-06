@@ -20,7 +20,7 @@ public class WebConfig implements WebMvcConfigurer {
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
 
         registry.addResourceHandler("/static/**")
-                .addResourceLocations("/static/");
+                .addResourceLocations("classpath:/static/");
     }
 
     @Bean
@@ -28,7 +28,7 @@ public class WebConfig implements WebMvcConfigurer {
         SpringResourceTemplateResolver resolver =
                 new SpringResourceTemplateResolver();
 
-        resolver.setPrefix("/WEB-INF/views/");
+        resolver.setPrefix("classpath:/templates/");
         resolver.setSuffix(".html");
         resolver.setCharacterEncoding("UTF-8");
         resolver.setTemplateMode("HTML");

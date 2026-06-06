@@ -29,6 +29,12 @@ public class DatabaseConfig {
 
     @Bean
     public CustomConnectionPool connectionPool() throws SQLException {
+        try {
+            Class.forName(DB_DRIVER);
+        } catch (ClassNotFoundException e) {
+            throw new SQLException("Database driver not found: " + DB_DRIVER, e);
+        }
+
         return new CustomConnectionPool(DB_URL, DB_USERNAME, DB_PASSWORD, CONNECTION_POOL_SIZE);
     }
 
