@@ -7,6 +7,8 @@ import kz.nurdaulet.entity.enums.Role;
 import kz.nurdaulet.exception.UserCreatingException;
 import kz.nurdaulet.exception.UserNotFoundException;
 import kz.nurdaulet.service.UserService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -17,6 +19,9 @@ public class UserServiceImpl implements UserService {
     public static final String EMAIL_ALREADY_EXISTS = "Email already exists";
     public static final String USERNAME_ALREADY_EXISTS = "Username already exists";
     public static final String USER_NOT_FOUND = "User not found";
+    public static final Logger log = LoggerFactory.getLogger(UserServiceImpl.class);
+    public static final String LOG_USER_CREATED = "User {} created";
+    public static final String LOG_USER_DELETE = "User {} deleted";
     private final UserDao userDao;
     private final PasswordEncoder encoder;
 
@@ -33,11 +38,16 @@ public class UserServiceImpl implements UserService {
             User user = createUser(dto);
 
             userDao.save(user);
+            log.info(LOG_USER_CREATED, dto.getUsername());
 
             return user;
         } else if (emailExists) {
+            log.warn(EMAIL_ALREADY_EXISTS);
+
             throw new UserCreatingException(EMAIL_ALREADY_EXISTS);
         } else {
+            log.warn(USERNAME_ALREADY_EXISTS);
+
             throw new UserCreatingException(USERNAME_ALREADY_EXISTS);
         }
     }
@@ -45,7 +55,11 @@ public class UserServiceImpl implements UserService {
     public void delete(Long id) {
         if (userDao.existsById(id)) {
             userDao.deleteById(id);
+
+            log.info(LOG_USER_DELETE, id);
         } else {
+            log.warn(USER_NOT_FOUND);
+
             throw new UserNotFoundException(USER_NOT_FOUND);
         }
     }

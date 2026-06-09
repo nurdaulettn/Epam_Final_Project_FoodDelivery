@@ -3,6 +3,8 @@ package kz.nurdaulet.dao.impl;
 import kz.nurdaulet.dao.UserDao;
 import kz.nurdaulet.entity.User;
 import kz.nurdaulet.entity.enums.Role;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
@@ -18,6 +20,7 @@ public class UserDaoImpl implements UserDao {
     private static final String FIND_BY_USERNAME = "SELECT * FROM users WHERE username = ?";
     private static final String SAVE_USER = "INSERT INTO users (first_name, last_name, username, email, password, role, status, created_at) VALUES (?, ?, ?, ?, ?, CAST(? AS user_role), ?, ?)";
     private static final String DELETE_USER = "DELETE FROM users WHERE id = ?";
+    private static final Logger log = LoggerFactory.getLogger(UserDaoImpl.class);
 
     private final JdbcTemplate jdbcTemplate;
     private final RowMapper<User> userRowMapper = (rs, rowNum) -> {
@@ -41,23 +44,31 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public List<User> findAll() {
+        log.info("Fetching all users");
+
         return jdbcTemplate.query(FIND_ALL, userRowMapper);
     }
 
     @Override
     public User findById(Long id) {
+        log.info("Fetching user by id: {}", id);
+
         return jdbcTemplate.query(FIND_BY_ID, userRowMapper, id)
                 .stream().findFirst().orElse(null);
     }
 
     @Override
     public User findByEmail(String email) {
+        log.info("Fetching user by email {}", email);
+
         return jdbcTemplate.query(FIND_BY_EMAIL, userRowMapper, email)
                 .stream().findFirst().orElse(null);
     }
 
     @Override
     public User findByUsername(String username) {
+        log.info("Fetching user by username {}", username);
+
         return jdbcTemplate.query(FIND_BY_USERNAME, userRowMapper, username)
                 .stream().findFirst().orElse(null);
     }
@@ -84,10 +95,14 @@ public class UserDaoImpl implements UserDao {
                 user.getUsername(), user.getEmail(),
                 user.getPassword(), user.getRole().name(),
                 user.getStatus(), user.getCreatedAt());
+
+        log.info("User {} saved", user.getUsername());
     }
 
     @Override
     public void deleteById(Long id) {
         jdbcTemplate.update(DELETE_USER, id);
+
+        log.info("User {} deleted", id);
     }
 }
