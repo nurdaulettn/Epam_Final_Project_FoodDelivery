@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AsapJe - доставка еды</title>
+    <link rel="stylesheet" th:href="@{/static/css/index.css}">
+</head>
+<body>
+<header class="topbar">
+    <a class="brand" th:href="@{/}">
+        <span class="brand-mark">AJ</span>
+        <span>AsapJe</span>
+    </a>
+    <nav class="nav">
+        <a href="#restaurants">Рестораны</a>
+        <a href="#how-it-works">Как работает</a>
+        <a href="#roles">Для бизнеса</a>
+    </nav>
+    <div class="actions">
+        <a class="btn btn-ghost" th:href="@{/login}">Войти</a>
+        <a class="btn btn-primary" th:href="@{/register}">Создать аккаунт</a>
+    </div>
+</header>
+
+<main>
+    <section class="hero">
+        <div class="hero-content">
+            <p class="eyebrow">Доставка еды для города</p>
+            <h1>Заказывайте любимые блюда без лишних шагов</h1>
+            <p class="hero-text">
+                AsapJe соединяет клиентов, рестораны и менеджеров заказов в одном удобном сервисе.
+            </p>
+            <div class="hero-actions">
+                <a class="btn btn-primary btn-large" th:href="@{/register}">Начать заказ</a>
+                <a class="btn btn-light btn-large" href="#restaurants">Посмотреть рестораны</a>
+            </div>
+        </div>
+        <div class="hero-panel" aria-label="Пример заказа">
+            <div class="order-card">
+                <div>
+                    <span class="status">В пути</span>
+                    <h2>Burger House</h2>
+                    <p>Бургер, картофель фри, напиток</p>
+                </div>
+                <strong>28 мин</strong>
+            </div>
+            <div class="dish-grid">
+                <article>Бургеры <span>от 1 590 ₸</span></article>
+                <article>Пицца <span>от 2 200 ₸</span></article>
+                <article>Суши <span>от 2 890 ₸</span></article>
+                <article>Напитки <span>от 490 ₸</span></article>
+            </div>
+        </div>
+    </section>
+
+    <section class="section" id="restaurants">
+        <div class="section-head">
+            <p class="eyebrow">Популярное</p>
+            <h2>Рестораны рядом</h2>
+        </div>
+        <div class="cards">
+            <article class="restaurant">
+                <div class="restaurant-image green">BH</div>
+                <h3>Burger House</h3>
+                <p>Бургеры, комбо, закуски</p>
+                <span>4.8 • 25-35 мин</span>
+            </article>
+            <article class="restaurant">
+                <div class="restaurant-image yellow">PM</div>
+                <h3>Pizza Milano</h3>
+                <p>Пицца, паста, салаты</p>
+                <span>4.6 • 30-40 мин</span>
+            </article>
+            <article class="restaurant">
+                <div class="restaurant-image blue">SZ</div>
+                <h3>Sushi Zen</h3>
+                <p>Роллы, сеты, лапша</p>
+                <span>4.7 • 35-45 мин</span>
+            </article>
+        </div>
+    </section>
+
+    <section class="section split" id="how-it-works">
+        <div>
+            <p class="eyebrow">Процесс</p>
+            <h2>Три шага до заказа</h2>
+        </div>
+        <div class="steps">
+            <article><strong>01</strong><span>Выберите ресторан и блюда</span></article>
+            <article><strong>02</strong><span>Оформите заказ в корзине</span></article>
+            <article><strong>03</strong><span>Следите за статусом доставки</span></article>
+        </div>
+    </section>
+
+    <section class="section roles" id="roles">
+        <article>
+            <h3>Для клиентов</h3>
+            <p>Быстрый выбор ресторанов, история заказов и понятный статус доставки.</p>
+        </article>
+        <article>
+            <h3>Для менеджеров</h3>
+            <p>Управление меню, обработка заказов и контроль доступности блюд.</p>
+        </article>
+        <article>
+            <h3>Для администраторов</h3>
+            <p>Контроль пользователей, ресторанов и общей статистики платформы.</p>
+        </article>
+    </section>
+</main>
+</body>
+</html>

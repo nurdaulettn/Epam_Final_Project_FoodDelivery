@@ -20,6 +20,7 @@ public class CustomConnectionPool {
 
     public Connection getConnection() throws InterruptedException {
         Connection real = pool.take();
+
         return new ProxyConnection(real, this);
     }
 

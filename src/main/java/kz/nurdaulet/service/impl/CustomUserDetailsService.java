@@ -1,15 +1,19 @@
-package kz.nurdaulet.service;
+package kz.nurdaulet.service.impl;
 
-import kz.nurdaulet.dao.UserDao;
+import kz.nurdaulet.dao.impl.UserDaoImpl;
 import kz.nurdaulet.entity.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.stereotype.Service;
 
+@Service
 public class CustomUserDetailsService implements UserDetailsService {
-    private final UserDao userDao;
+    private static final String USER_NOT_FOUND_TEMPLATE = "User with username %s not found";
 
-    public CustomUserDetailsService(UserDao userDao) {
+    private final UserDaoImpl userDao;
+
+    public CustomUserDetailsService(UserDaoImpl userDao) {
         this.userDao = userDao;
     }
 
@@ -25,7 +29,7 @@ public class CustomUserDetailsService implements UserDetailsService {
                     .disabled(!user.getStatus())
                     .build();
         }else {
-            throw new UsernameNotFoundException("User not found with username: " + username);
+            throw new UsernameNotFoundException(USER_NOT_FOUND_TEMPLATE.formatted(username));
         }
     }
 }

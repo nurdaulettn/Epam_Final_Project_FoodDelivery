@@ -1,0 +1,342 @@
+:root {
+    --green: #00a878;
+    --green-dark: #063f32;
+    --yellow: #ffd166;
+    --blue: #4c7dff;
+    --ink: #10231f;
+    --muted: #60746f;
+    --line: #d7e7e1;
+    --bg: #f3faf7;
+    --surface: #ffffff;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    color: var(--ink);
+    background: var(--bg);
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+}
+
+.topbar {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    gap: 28px;
+    min-height: 68px;
+    padding: 0 48px;
+    background: rgba(255, 255, 255, 0.94);
+    border-bottom: 1px solid var(--line);
+}
+
+.brand {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 800;
+    font-size: 20px;
+}
+
+.brand-mark {
+    display: grid;
+    place-items: center;
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    color: #fff;
+    background: var(--green);
+    font-size: 13px;
+}
+
+.nav {
+    display: flex;
+    gap: 20px;
+    color: var(--muted);
+    font-size: 14px;
+}
+
+.actions {
+    display: flex;
+    gap: 10px;
+    margin-left: auto;
+}
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 40px;
+    padding: 0 18px;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 14px;
+}
+
+.btn-primary {
+    color: #fff;
+    background: var(--green);
+}
+
+.btn-ghost {
+    border: 1px solid var(--line);
+    background: #fff;
+}
+
+.btn-light {
+    background: #fff;
+}
+
+.btn-large {
+    min-height: 48px;
+    padding: 0 24px;
+}
+
+.hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1.05fr) minmax(320px, 0.95fr);
+    gap: 42px;
+    align-items: center;
+    min-height: calc(100vh - 68px);
+    padding: 64px 48px;
+    background: linear-gradient(135deg, #e4fff4 0%, #f8fbff 55%, #fff5cc 100%);
+}
+
+.hero-content {
+    max-width: 680px;
+}
+
+.eyebrow {
+    margin: 0 0 12px;
+    color: var(--green);
+    font-weight: 800;
+    text-transform: uppercase;
+    font-size: 12px;
+}
+
+h1,
+h2,
+h3,
+p {
+    margin-top: 0;
+}
+
+h1 {
+    margin-bottom: 18px;
+    font-size: clamp(42px, 7vw, 76px);
+    line-height: 0.95;
+}
+
+h2 {
+    margin-bottom: 18px;
+    font-size: 34px;
+}
+
+.hero-text {
+    max-width: 560px;
+    color: var(--muted);
+    font-size: 20px;
+    line-height: 1.55;
+}
+
+.hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 28px;
+}
+
+.hero-panel {
+    display: grid;
+    gap: 16px;
+}
+
+.order-card,
+.restaurant,
+.roles article,
+.steps article {
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--surface);
+    box-shadow: 0 18px 50px rgba(16, 35, 31, 0.08);
+}
+
+.order-card {
+    display: flex;
+    justify-content: space-between;
+    gap: 18px;
+    padding: 28px;
+}
+
+.status {
+    display: inline-flex;
+    margin-bottom: 14px;
+    padding: 5px 10px;
+    border-radius: 999px;
+    color: var(--green-dark);
+    background: #dff9ef;
+    font-weight: 800;
+    font-size: 12px;
+}
+
+.dish-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+}
+
+.dish-grid article {
+    min-height: 120px;
+    padding: 18px;
+    border-radius: 8px;
+    color: #fff;
+    background: var(--green-dark);
+    font-weight: 800;
+}
+
+.dish-grid article:nth-child(2) {
+    color: var(--ink);
+    background: var(--yellow);
+}
+
+.dish-grid article:nth-child(3) {
+    background: var(--blue);
+}
+
+.dish-grid article span {
+    display: block;
+    margin-top: 10px;
+    font-weight: 500;
+    opacity: 0.82;
+}
+
+.section {
+    padding: 72px 48px;
+}
+
+.section-head {
+    margin-bottom: 24px;
+}
+
+.cards,
+.roles {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 18px;
+}
+
+.restaurant,
+.roles article {
+    padding: 20px;
+}
+
+.restaurant-image {
+    display: grid;
+    place-items: center;
+    height: 150px;
+    margin-bottom: 18px;
+    border-radius: 8px;
+    color: #fff;
+    font-size: 34px;
+    font-weight: 900;
+}
+
+.restaurant-image.green {
+    background: var(--green);
+}
+
+.restaurant-image.yellow {
+    color: var(--ink);
+    background: var(--yellow);
+}
+
+.restaurant-image.blue {
+    background: var(--blue);
+}
+
+.restaurant p,
+.roles p {
+    color: var(--muted);
+}
+
+.restaurant span {
+    color: var(--green-dark);
+    font-weight: 700;
+}
+
+.split {
+    display: grid;
+    grid-template-columns: 0.8fr 1.2fr;
+    gap: 34px;
+    align-items: start;
+    background: #fff;
+}
+
+.steps {
+    display: grid;
+    gap: 12px;
+}
+
+.steps article {
+    display: flex;
+    gap: 18px;
+    align-items: center;
+    padding: 18px;
+    box-shadow: none;
+}
+
+.steps strong {
+    color: var(--green);
+}
+
+@media (max-width: 860px) {
+    .topbar {
+        flex-wrap: wrap;
+        padding: 14px 20px;
+    }
+
+    .nav {
+        order: 3;
+        width: 100%;
+        overflow-x: auto;
+    }
+
+    .hero,
+    .split,
+    .cards,
+    .roles {
+        grid-template-columns: 1fr;
+    }
+
+    .hero,
+    .section {
+        padding: 42px 20px;
+    }
+
+    .actions {
+        margin-left: auto;
+    }
+}
+
+@media (max-width: 520px) {
+    .actions {
+        width: 100%;
+    }
+
+    .actions .btn {
+        flex: 1;
+    }
+
+    .dish-grid {
+        grid-template-columns: 1fr;
+    }
+}
