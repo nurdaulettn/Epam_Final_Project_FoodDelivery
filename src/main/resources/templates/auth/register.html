@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AsapJe - регистрация</title>
+    <link rel="stylesheet" th:href="@{/static/css/index.css}">
+</head>
+<body class="auth-page">
+<main class="auth-shell">
+    <section class="auth-card auth-card-register">
+        <div class="auth-hero">
+            <a class="auth-back" th:href="@{/}">О. ВХОД / РЕГИСТРАЦИЯ</a>
+            <div class="auth-hero-content">
+                <div class="auth-food-mark">🥗</div>
+                <h1>Создай аккаунт.<br>Заказывай быстрее.</h1>
+                <p>Сохраняй любимые рестораны, отслеживай заказы и управляй доставкой в одном месте.</p>
+            </div>
+        </div>
+
+        <div class="auth-form-area">
+            <a class="auth-logo" th:href="@{/}">
+                <span class="brand-mark">A</span>
+                <span>AsapJe</span>
+            </a>
+
+            <div class="auth-heading">
+                <h2>Регистрация</h2>
+                <p>Заполните данные для нового аккаунта</p>
+            </div>
+
+            <div class="auth-alert auth-alert-error" th:if="${registrationError}" th:text="${registrationError}">
+                Ошибка регистрации.
+            </div>
+
+            <form class="auth-form"
+                  th:action="@{/register}"
+                  th:object="${user}"
+                  method="post">
+                <div class="form-row">
+                    <label class="form-group">
+                        <span class="form-label">Имя</span>
+                        <input class="form-input"
+                               type="text"
+                               th:field="*{firstName}"
+                               placeholder="Nurdaulet"
+                               autocomplete="given-name"
+                               minlength="2"
+                               required>
+                        <span class="form-error" th:if="${#fields.hasErrors('firstName')}" th:errors="*{firstName}">Ошибка</span>
+                    </label>
+
+                    <label class="form-group">
+                        <span class="form-label">Фамилия</span>
+                        <input class="form-input"
+                               type="text"
+                               th:field="*{lastName}"
+                               placeholder="Tolegen"
+                               autocomplete="family-name"
+                               minlength="2"
+                               required>
+                        <span class="form-error" th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}">Ошибка</span>
+                    </label>
+                </div>
+
+                <label class="form-group">
+                    <span class="form-label">Логин</span>
+                    <input class="form-input"
+                           type="text"
+                           th:field="*{username}"
+                           placeholder="nurdaulet"
+                           autocomplete="username"
+                           minlength="3"
+                           required>
+                    <span class="form-error" th:if="${#fields.hasErrors('username')}" th:errors="*{username}">Ошибка</span>
+                </label>
+
+                <label class="form-group">
+                    <span class="form-label">Email</span>
+                    <input class="form-input"
+                           type="email"
+                           th:field="*{email}"
+                           placeholder="user@gmail.com"
+                           autocomplete="email"
+                           required>
+                    <span class="form-error" th:if="${#fields.hasErrors('email')}" th:errors="*{email}">Ошибка</span>
+                </label>
+
+                <label class="form-group">
+                    <span class="form-label">Пароль</span>
+                    <input class="form-input"
+                           type="password"
+                           th:field="*{password}"
+                           placeholder="••••••••"
+                           autocomplete="new-password"
+                           minlength="6"
+                           required>
+                    <span class="form-error" th:if="${#fields.hasErrors('password')}" th:errors="*{password}">Ошибка</span>
+                </label>
+
+                <button class="btn btn-primary auth-submit" type="submit">Создать аккаунт →</button>
+            </form>
+
+            <p class="auth-switch">
+                Уже есть аккаунт?
+                <a th:href="@{/login}">Войти</a>
+            </p>
+        </div>
+    </section>
+</main>
+</body>
+</html>

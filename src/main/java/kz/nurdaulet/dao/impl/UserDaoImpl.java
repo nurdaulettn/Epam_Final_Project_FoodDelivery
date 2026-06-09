@@ -18,7 +18,7 @@ public class UserDaoImpl implements UserDao {
     private static final String FIND_BY_ID = "SELECT * FROM users WHERE id = ?";
     private static final String FIND_BY_EMAIL = "SELECT * FROM users WHERE email = ?";
     private static final String FIND_BY_USERNAME = "SELECT * FROM users WHERE username = ?";
-    private static final String SAVE_USER = "INSERT INTO users (first_name, last_name, username, email, password, role, status, created_at) VALUES (?, ?, ?, ?, ?, CAST(? AS user_role), ?, ?)";
+    private static final String SAVE_USER = "INSERT INTO users (first_name, last_name, username, email, password, role, status, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
     private static final String DELETE_USER = "DELETE FROM users WHERE id = ?";
     private static final Logger log = LoggerFactory.getLogger(UserDaoImpl.class);
 

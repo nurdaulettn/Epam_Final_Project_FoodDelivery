@@ -298,6 +298,205 @@ h2 {
     color: var(--green);
 }
 
+.auth-page {
+    min-height: 100vh;
+    background: #e8f5ef;
+}
+
+.auth-shell {
+    display: grid;
+    min-height: 100vh;
+    padding: 32px;
+}
+
+.auth-card {
+    display: grid;
+    grid-template-columns: minmax(340px, 1fr) minmax(380px, 0.98fr);
+    width: min(1180px, 100%);
+    min-height: 580px;
+    margin: auto;
+    overflow: hidden;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    background: var(--surface);
+    box-shadow: 0 22px 70px rgba(16, 35, 31, 0.12);
+}
+
+.auth-card-register {
+    min-height: 680px;
+}
+
+.auth-hero {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 44px;
+    color: #fff;
+    background: linear-gradient(145deg, #00c896 0%, var(--green) 100%);
+}
+
+.auth-back {
+    position: absolute;
+    top: 18px;
+    left: 22px;
+    color: rgba(255, 255, 255, 0.82);
+    font-size: 12px;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+}
+
+.auth-hero-content {
+    display: grid;
+    gap: 16px;
+    max-width: 430px;
+}
+
+.auth-food-mark {
+    display: grid;
+    place-items: center;
+    width: 72px;
+    height: 72px;
+    border-radius: 18px;
+    background: rgba(255, 255, 255, 0.16);
+    font-size: 44px;
+}
+
+.auth-hero h1 {
+    margin: 0;
+    color: #fff;
+    font-size: clamp(34px, 4.8vw, 54px);
+    line-height: 1.02;
+}
+
+.auth-hero p {
+    max-width: 460px;
+    margin: 0;
+    color: rgba(255, 255, 255, 0.88);
+    font-size: 16px;
+    line-height: 1.55;
+}
+
+.auth-form-area {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: min(510px, 100%);
+    margin: 0 auto;
+    padding: 54px 44px;
+}
+
+.auth-logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    width: fit-content;
+    margin-bottom: 34px;
+    font-size: 22px;
+    font-weight: 900;
+}
+
+.auth-heading {
+    margin-bottom: 22px;
+}
+
+.auth-heading h2 {
+    margin-bottom: 8px;
+    font-size: 26px;
+}
+
+.auth-heading p,
+.auth-switch {
+    color: var(--muted);
+    font-size: 14px;
+}
+
+.auth-form {
+    display: grid;
+    gap: 16px;
+}
+
+.form-group {
+    display: grid;
+    gap: 7px;
+}
+
+.form-label {
+    font-size: 13px;
+    font-weight: 800;
+}
+
+.form-input {
+    width: 100%;
+    min-height: 42px;
+    padding: 11px 14px;
+    border: 1.5px solid var(--line);
+    border-radius: 8px;
+    color: var(--ink);
+    background: #fff;
+    font: inherit;
+    outline: none;
+}
+
+.form-input:focus {
+    border-color: var(--green);
+    box-shadow: 0 0 0 3px rgba(0, 168, 120, 0.12);
+}
+
+.form-input::placeholder {
+    color: #9aada8;
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+}
+
+.form-error {
+    color: #b42318;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.auth-submit {
+    width: 100%;
+    min-height: 48px;
+    margin-top: 2px;
+    border: 0;
+    cursor: pointer;
+}
+
+.auth-switch {
+    margin: 18px 0 0;
+    text-align: center;
+}
+
+.auth-switch a {
+    color: var(--green);
+    font-weight: 900;
+}
+
+.auth-alert {
+    margin-bottom: 16px;
+    padding: 11px 13px;
+    border-radius: 8px;
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.auth-alert-error {
+    color: #8a1f16;
+    border: 1px solid #ffc9c2;
+    background: #fff0ee;
+}
+
+.auth-alert-success {
+    color: var(--green-dark);
+    border: 1px solid #b6ead8;
+    background: #e8fbf3;
+}
+
 @media (max-width: 860px) {
     .topbar {
         flex-wrap: wrap;
@@ -313,7 +512,8 @@ h2 {
     .hero,
     .split,
     .cards,
-    .roles {
+    .roles,
+    .auth-card {
         grid-template-columns: 1fr;
     }
 
@@ -324,6 +524,24 @@ h2 {
 
     .actions {
         margin-left: auto;
+    }
+
+    .auth-shell {
+        padding: 18px;
+    }
+
+    .auth-card,
+    .auth-card-register {
+        min-height: 0;
+    }
+
+    .auth-hero {
+        min-height: 300px;
+        padding: 64px 28px 28px;
+    }
+
+    .auth-form-area {
+        padding: 34px 24px;
     }
 }
 
@@ -337,6 +555,28 @@ h2 {
     }
 
     .dish-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .auth-shell {
+        padding: 0;
+    }
+
+    .auth-card {
+        min-height: 100vh;
+        border-radius: 0;
+        border: 0;
+    }
+
+    .auth-hero {
+        min-height: 260px;
+    }
+
+    .auth-hero h1 {
+        font-size: 32px;
+    }
+
+    .form-row {
         grid-template-columns: 1fr;
     }
 }

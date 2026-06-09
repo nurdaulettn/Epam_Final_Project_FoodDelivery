@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AsapJe - вход</title>
+    <link rel="stylesheet" th:href="@{/static/css/index.css}">
+</head>
+<body class="auth-page">
+<main class="auth-shell">
+    <section class="auth-card">
+        <div class="auth-hero">
+            <a class="auth-back" th:href="@{/}">О. ВХОД / РЕГИСТРАЦИЯ</a>
+            <div class="auth-hero-content">
+                <div class="auth-food-mark">🍔</div>
+                <h1>Еда рядом.<br>Быстро. Вкусно.</h1>
+                <p>Сотни ресторанов, доставка за 30 минут. Закажи прямо сейчас.</p>
+            </div>
+        </div>
+
+        <div class="auth-form-area">
+            <a class="auth-logo" th:href="@{/}">
+                <span class="brand-mark">A</span>
+                <span>AsapJe</span>
+            </a>
+
+            <div class="auth-heading">
+                <h2>Добро пожаловать!</h2>
+                <p>Войдите в свой аккаунт</p>
+            </div>
+
+            <div class="auth-alert auth-alert-error" th:if="${param.error}">
+                Неверный логин или пароль.
+            </div>
+            <div class="auth-alert auth-alert-success" th:if="${param.logout}">
+                Вы вышли из аккаунта.
+            </div>
+            <div class="auth-alert auth-alert-success" th:if="${param.registered}">
+                Аккаунт создан. Теперь можно войти.
+            </div>
+
+            <form class="auth-form" th:action="@{/login}" method="post">
+                <label class="form-group">
+                    <span class="form-label">Логин</span>
+                    <input class="form-input"
+                           type="text"
+                           name="username"
+                           placeholder="user"
+                           autocomplete="username"
+                           required>
+                </label>
+
+                <label class="form-group">
+                    <span class="form-label">Пароль</span>
+                    <input class="form-input"
+                           type="password"
+                           name="password"
+                           placeholder="••••••••"
+                           autocomplete="current-password"
+                           required>
+                </label>
+
+                <button class="btn btn-primary auth-submit" type="submit">Войти →</button>
+            </form>
+
+            <p class="auth-switch">
+                Нет аккаунта?
+                <a th:href="@{/register}">Зарегистрироваться</a>
+            </p>
+        </div>
+    </section>
+</main>
+</body>
+</html>
