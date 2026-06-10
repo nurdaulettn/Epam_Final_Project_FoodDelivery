@@ -5,6 +5,7 @@ import kz.nurdaulet.dto.UserCreateDto;
 import kz.nurdaulet.entity.enums.Role;
 import kz.nurdaulet.exception.UserCreatingException;
 import kz.nurdaulet.service.UserService;
+import kz.nurdaulet.validation.UserValidator;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -12,14 +13,14 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 
-import java.util.List;
-
 @Controller
 public class AuthController {
     private final UserService userService;
+    private final UserValidator userValidator;
 
-    public AuthController(UserService userService) {
+    public AuthController(UserService userService, UserValidator userValidator) {
         this.userService = userService;
+        this.userValidator = userValidator;
     }
 
     @GetMapping("/login")
@@ -40,6 +41,8 @@ public class AuthController {
     public String register(@Valid @ModelAttribute("user") UserCreateDto user,
                            BindingResult bindingResult,
                            Model model) {
+        userValidator.validate(user, bindingResult);
+
         if (bindingResult.hasErrors()) {
             return "auth/register";
         }
