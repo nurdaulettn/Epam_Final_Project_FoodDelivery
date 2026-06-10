@@ -6,7 +6,7 @@ INSERT INTO users (
     first_name, last_name, username, email, password, role, status
 ) VALUES
       ('Admin', 'System', 'admin', 'admin@gmail.com', '$2a$10$admin123', 'ADMIN', true),
-      ('John', 'Owner', 'restaurant_owner', 'owner@gmail.com', '$2a$10$owner123', 'OWNER', true),
+      ('John', 'Owner', 'manager', 'manager@gmail.com', '$2a$10$owner123', 'OWNER', true),
       ('Alice', 'Smith', 'alice', 'alice@gmail.com', '$2a$10$user123', 'CUSTOMER', true);
 
 -- ==========================
@@ -32,7 +32,8 @@ INSERT INTO restaurants (
     rating_count,
     opening_time,
     closing_time,
-    owner_id
+    manager_id,
+    confirmed
 ) VALUES
       (
           'Burger House',
@@ -43,7 +44,8 @@ INSERT INTO restaurants (
           120,
           '09:00',
           '23:00',
-          2
+          2,
+          true
       ),
       (
           'Italian Pizza',
@@ -54,7 +56,8 @@ INSERT INTO restaurants (
           90,
           '10:00',
           '22:00',
-          2
+          2,
+          true
       );
 
 -- ==========================

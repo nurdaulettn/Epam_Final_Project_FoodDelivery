@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AsapJe - создание ресторана</title>
+    <link rel="stylesheet" th:href="@{/static/css/index.css}">
+</head>
+<body class="auth-page">
+<main class="auth-shell">
+    <section class="auth-card auth-card-register">
+        <div class="auth-hero">
+            <a class="auth-back" th:href="@{/}">На главную</a>
+            <div class="auth-hero-content">
+                <div class="auth-food-mark">🍽️</div>
+                <h1>Добавь ресторан.<br>Начни принимать заказы.</h1>
+                <p>Заполни основную информацию о ресторане. После проверки он появится на платформе.</p>
+            </div>
+        </div>
+
+        <div class="auth-form-area">
+            <a class="auth-logo" th:href="@{/}">
+                <span class="brand-mark">A</span>
+                <span>AsapJe</span>
+            </a>
+
+            <div class="auth-heading">
+                <h2>Создание ресторана</h2>
+                <p>Укажи название, контакты, адрес и время работы</p>
+            </div>
+
+            <div class="auth-alert auth-alert-error" th:if="${restaurantError}" th:text="${restaurantError}">
+                Ошибка создания ресторана.
+            </div>
+
+            <form class="auth-form"
+                  th:action="@{/restaurants/create}"
+                  th:object="${restaurant}"
+                  method="post">
+                <input type="hidden"
+                       th:if="${_csrf != null}"
+                       th:name="${_csrf.parameterName}"
+                       th:value="${_csrf.token}">
+
+                <label class="form-group">
+                    <span class="form-label">Название</span>
+                    <input class="form-input" type="text" th:field="*{name}" minlength="6" maxlength="100" required>
+                    <span class="form-error" th:if="${#fields.hasErrors('name')}" th:errors="*{name}">Ошибка</span>
+                </label>
+
+                <label class="form-group">
+                    <span class="form-label">Описание</span>
+                    <textarea class="form-input" th:field="*{description}" maxlength="500" rows="3"></textarea>
+                    <span class="form-error" th:if="${#fields.hasErrors('description')}" th:errors="*{description}">Ошибка</span>
+                </label>
+
+                <label class="form-group">
+                    <span class="form-label">Адрес</span>
+                    <input class="form-input" type="text" th:field="*{address}" minlength="6" maxlength="100" required>
+                    <span class="form-error" th:if="${#fields.hasErrors('address')}" th:errors="*{address}">Ошибка</span>
+                </label>
+
+                <label class="form-group">
+                    <span class="form-label">Телефон</span>
+                    <input class="form-input"
+                           type="tel"
+                           th:field="*{phone}"
+                           placeholder="+7 (777) 777 7777"
+                           pattern="\+7 \([0-9]{3}\) [0-9]{3} [0-9]{4}"
+                           inputmode="numeric"
+                           minlength="17"
+                           maxlength="17"
+                           title="+7 (777) 777 7777"
+                           required>
+                    <span class="form-error" th:if="${#fields.hasErrors('phone')}" th:errors="*{phone}">Ошибка</span>
+                </label>
+
+                <div class="form-row">
+                    <label class="form-group">
+                        <span class="form-label">Открытие</span>
+                        <input class="form-input" type="time" th:field="*{openingTime}" required>
+                    </label>
+
+                    <label class="form-group">
+                        <span class="form-label">Закрытие</span>
+                        <input class="form-input" type="time" th:field="*{closingTime}" required>
+                    </label>
+                </div>
+
+                <button class="btn btn-primary auth-submit" type="submit">Создать ресторан →</button>
+            </form>
+        </div>
+    </section>
+</main>
+<script>
+    const phoneInput = document.querySelector('input[name="phone"]');
+
+    if (phoneInput) {
+        phoneInput.addEventListener('input', () => {
+            let digits = phoneInput.value.replace(/\D/g, '');
+
+            if (digits.startsWith('8')) {
+                digits = '7' + digits.substring(1);
+            }
+
+            if (digits.startsWith('7')) {
+                digits = digits.substring(1);
+            }
+
+            digits = digits.substring(0, 10);
+
+            let formatted = '+7';
+
+            if (digits.length > 0) {
+                formatted += ' (' + digits.substring(0, 3);
+            }
+
+            if (digits.length >= 3) {
+                formatted += ')';
+            }
+
+            if (digits.length > 3) {
+                formatted += ' ' + digits.substring(3, 6);
+            }
+
+            if (digits.length > 6) {
+                formatted += ' ' + digits.substring(6, 10);
+            }
+
+            phoneInput.value = formatted;
+        });
+    }
+</script>
+</body>
+</html>

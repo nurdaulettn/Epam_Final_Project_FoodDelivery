@@ -15,22 +15,24 @@ CREATE TABLE users (
 -- RESTAURANTS
 
 CREATE TABLE restaurants (
-                             id BIGSERIAL PRIMARY KEY,
-                             name VARCHAR(255) NOT NULL,
-                             description TEXT,
-                             address VARCHAR(500) NOT NULL,
-                             phone VARCHAR(30),
-                             rating_avg DECIMAL(3,2) DEFAULT 0,
-                             rating_count INTEGER DEFAULT 0,
-                             opening_time TIME,
-                             closing_time TIME,
-                             owner_id BIGINT NOT NULL,
-                             created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+     id BIGSERIAL PRIMARY KEY,
+     name VARCHAR(255) NOT NULL,
+     description TEXT,
+     address VARCHAR(500) NOT NULL,
+     phone VARCHAR(30),
+     rating_avg DECIMAL(3,2) DEFAULT 0,
+     rating_count INTEGER DEFAULT 0,
+     opening_time TIME,
+     closing_time TIME,
+     manager_id BIGINT NOT NULL,
+     confirmed BOOLEAN DEFAULT FALSE,
+     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
-                             CONSTRAINT fk_restaurant_owner
-                                 FOREIGN KEY (owner_id)
-                                     REFERENCES users(id)
-                                     ON DELETE CASCADE
+     CONSTRAINT fk_restaurant_owner
+         FOREIGN KEY (manager_id)
+             REFERENCES users(id)
+             ON DELETE CASCADE
 );
 
 -- CATEGORIES
