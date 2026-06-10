@@ -98,6 +98,15 @@
                     <span class="form-error" th:if="${#fields.hasErrors('password')}" th:errors="*{password}">Ошибка</span>
                 </label>
 
+                <label class="form-group">
+                    <span class="form-label">Роль</span>
+
+                    <select class="form-input" th:field="*{role}">
+                        <option value="CUSTOMER">Клиент</option>
+                        <option value="MANAGER">Менеджер</option>
+                    </select>
+                </label>
+
                 <button class="btn btn-primary auth-submit" type="submit">Создать аккаунт →</button>
             </form>
 
