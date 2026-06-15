@@ -1,13 +1,17 @@
 package kz.nurdaulet.service.impl;
 
 import kz.nurdaulet.dao.UserDao;
+import kz.nurdaulet.entity.CustomUserDetails;
 import kz.nurdaulet.entity.User;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 
 @Service
@@ -30,12 +34,12 @@ public class CustomUserDetailsService implements UserDetailsService {
         if (user != null) {
             log.info(LOG_LOADING_USER, login);
 
-            return org.springframework.security.core.userdetails.User
-                    .withUsername(user.getUsername())
-                    .password(user.getPassword())
-                    .roles(user.getRole().name())
-                    .disabled(!user.getStatus())
-                    .build();
+            return new CustomUserDetails(
+                    user.getId(),
+                    user.getUsername(),
+                    user.getPassword(),
+                    List.of(new SimpleGrantedAuthority(user.getRole().name()))
+            );
         } else {
             log.warn(LOG_USER_NOT_FOUND, login);
 

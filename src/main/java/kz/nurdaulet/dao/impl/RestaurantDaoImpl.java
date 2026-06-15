@@ -16,7 +16,8 @@ import java.util.List;
 public class RestaurantDaoImpl implements RestaurantDao {
     private static final String FIND_ALL =  "SELECT * FROM restaurants";
     private static final String FIND_BY_ID =  "SELECT * FROM restaurants WHERE id = ?";
-    private static final String FIND_BY_NAME = "SELECT * FROM restaurants WHERE name LIKE CONCAT('%', ?, '%')";
+    private static final String FIND_BY_SIMILAR_NAME = "SELECT * FROM restaurants WHERE name LIKE CONCAT('%', ?, '%')";
+    private static final String FIND_BY_NAME = "SELECT * FROM restaurants WHERE name = ?";
     private static final String SAVE = "INSERT INTO restaurants (name, description, address, phone, opening_time, closing_time, manager_id) VALUES (?, ?, ?, ?, ?, ?, ?)";
     private static final String UPDATE = "UPDATE restaurants SET name=?, description=?, address=?, phone=?, rating_avg=?, rating_count=?, opening_time=?, closing_time=?, updated_at=? WHERE id=?";
     private static final String DELETE = "DELETE FROM restaurants WHERE id=?";
@@ -57,8 +58,13 @@ public class RestaurantDaoImpl implements RestaurantDao {
     }
 
     @Override
-    public List<Restaurant> findByName(String name) {
-        return jdbcTemplate.query(FIND_BY_NAME, restaurantRowMapper, name);
+    public List<Restaurant> findBySimilarName(String name) {
+        return jdbcTemplate.query(FIND_BY_SIMILAR_NAME, restaurantRowMapper, name);
+    }
+
+    @Override
+    public Restaurant findByName(String name) {
+        return jdbcTemplate.query(FIND_BY_NAME, restaurantRowMapper, name).stream().findFirst().orElse(null);
     }
 
     @Override

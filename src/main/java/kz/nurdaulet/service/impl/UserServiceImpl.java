@@ -31,25 +31,27 @@ public class UserServiceImpl implements UserService {
     }
 
     public User create(UserCreateDto dto) {
-        boolean emailExists = userDao.existsByEmail(dto.getEmail());
-        boolean usernameExists = userDao.existsByUsername(dto.getUsername());
+//        boolean emailExists = userDao.existsByEmail(dto.getEmail());
+//        boolean usernameExists = userDao.existsByUsername(dto.getUsername());
+//
+//        if (!emailExists && !usernameExists) {
 
-        if (!emailExists && !usernameExists) {
-            User user = createUser(dto);
+        User user = createUser(dto);
 
-            userDao.save(user);
-            log.info(LOG_USER_CREATED, dto.getUsername());
+        userDao.save(user);
+        log.info(LOG_USER_CREATED, dto.getUsername());
 
-            return user;
-        } else if (emailExists) {
-            log.warn(EMAIL_ALREADY_EXISTS);
+        return user;
 
-            throw new UserCreatingException(EMAIL_ALREADY_EXISTS);
-        } else {
-            log.warn(USERNAME_ALREADY_EXISTS);
-
-            throw new UserCreatingException(USERNAME_ALREADY_EXISTS);
-        }
+//        } else if (emailExists) {
+//            log.warn(EMAIL_ALREADY_EXISTS);
+//
+//            throw new UserCreatingException(EMAIL_ALREADY_EXISTS);
+//        } else {
+//            log.warn(USERNAME_ALREADY_EXISTS);
+//
+//            throw new UserCreatingException(USERNAME_ALREADY_EXISTS);
+//        }
     }
 
     public void delete(Long id) {

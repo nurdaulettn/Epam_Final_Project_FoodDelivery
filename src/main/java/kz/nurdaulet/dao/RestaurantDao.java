@@ -7,7 +7,8 @@ import java.util.List;
 public interface RestaurantDao {
     List<Restaurant> getRestaurants();
     Restaurant findById(Long id);
-    List<Restaurant> findByName(String name);
+    List<Restaurant> findBySimilarName(String name);
+    Restaurant findByName(String name);
     boolean existsById(Long id);
     void save(Restaurant restaurant);
     void update(Restaurant restaurant);
