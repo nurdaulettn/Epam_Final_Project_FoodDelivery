@@ -1,10 +1,8 @@
 package kz.nurdaulet.controller;
 
 import jakarta.validation.Valid;
-import kz.nurdaulet.dao.RestaurantDao;
 import kz.nurdaulet.dto.RestaurantCreateDto;
 import kz.nurdaulet.entity.CustomUserDetails;
-import kz.nurdaulet.entity.Restaurant;
 import kz.nurdaulet.service.RestaurantService;
 import kz.nurdaulet.validation.RestaurantValidator;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -17,15 +15,23 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
-@RequestMapping("/restaurants")
-public class RestaurantController {
+@RequestMapping("/restaurants/manager")
+public class ManagerController {
     private final RestaurantService restaurantService;
     private final RestaurantValidator restaurantValidator;
 
-    public RestaurantController(RestaurantService restaurantService, RestaurantValidator restaurantValidator) {
+    public ManagerController(RestaurantService restaurantService, RestaurantValidator restaurantValidator) {
         this.restaurantService = restaurantService;
         this.restaurantValidator = restaurantValidator;
     }
+
+    @GetMapping("/my-restaurants")
+    public String restaurants(Model model, @AuthenticationPrincipal CustomUserDetails userDetails) {
+        model.addAttribute("restaurants", restaurantService.getMyRestaurants(userDetails.getId()));
+
+        return "restaurants/my-restaurants";
+    }
+
 
     @GetMapping("/create")
     public String create(Model model) {
@@ -48,6 +54,6 @@ public class RestaurantController {
 
         restaurantService.create(restaurantCreateDto, userDetails.getId());
 
-        return "redirect:/restaurants";
+        return "redirect:/restaurants/my-restaurants";
     }
 }

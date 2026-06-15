@@ -7,6 +7,7 @@ import kz.nurdaulet.service.RestaurantService;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public class RestaurantServiceImpl implements RestaurantService {
@@ -35,5 +36,10 @@ public class RestaurantServiceImpl implements RestaurantService {
         restaurantDao.save(restaurant);
 
         return restaurant;
+    }
+
+    @Override
+    public List<Restaurant> getMyRestaurants(Long userId) {
+        return restaurantDao.findByManagerId(userId);
     }
 }
