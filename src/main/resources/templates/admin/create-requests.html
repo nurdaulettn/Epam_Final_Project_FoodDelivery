@@ -81,7 +81,7 @@
            style="margin-top:20px">
 
         <form
-                th:action="@{/admin/confirm-request/{id}/confirm(id=${restaurant.id})}"
+                th:action="@{/admin/create-requests/{id}/confirm(id=${restaurant.id})}"
                 method="post">
 
           <button class="btn btn-primary">
@@ -91,7 +91,7 @@
         </form>
 
         <form
-                th:action="@{/admin/restaurants/{id}/reject(id=${restaurant.id})}"
+                th:action="@{/admin/create-requests/{id}/reject(id=${restaurant.id})}"
                 method="post">
 
           <button class="btn btn-secondary">

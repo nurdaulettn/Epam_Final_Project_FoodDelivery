@@ -23,6 +23,7 @@ public class RestaurantDaoImpl implements RestaurantDao {
     private static final String DELETE = "DELETE FROM restaurants WHERE id=?";
     private static final String FIND_BY_MANAGER_ID = "SELECT * FROM restaurants WHERE manager_id = ?";
     private static final String FIND_NOT_CONFIRMED = "SELECT * FROM restaurants WHERE confirmed=false";
+    private static final String CONFIRM_RESTAURANT = "UPDATE restaurants SET confirmed=true WHERE id = ?";
     private static final Logger log = LoggerFactory.getLogger(RestaurantDaoImpl.class);
 
     private final JdbcTemplate jdbcTemplate;
@@ -105,5 +106,10 @@ public class RestaurantDaoImpl implements RestaurantDao {
     @Override
     public List<Restaurant> findNotConfirmedRestaurants() {
         return jdbcTemplate.query(FIND_NOT_CONFIRMED, restaurantRowMapper);
+    }
+
+    @Override
+    public void confirmRestaurantById(Long id) {
+        jdbcTemplate.update(CONFIRM_RESTAURANT);
     }
 }

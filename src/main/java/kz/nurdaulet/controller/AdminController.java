@@ -4,6 +4,8 @@ import kz.nurdaulet.service.RestaurantService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller
@@ -21,5 +23,19 @@ public class AdminController {
                 restaurantService.getAllNotConfirmedRestaurants());
 
         return "admin/create-requests";
+    }
+
+    @PostMapping("/create-requests/{id}/confirm")
+    public String createRequestConfirm(Model model, @PathVariable Long id) {
+        restaurantService.confirmRestaurant(id);
+
+        return "redirect:/admin/create-requests";
+    }
+
+    @PostMapping("/create-requests/{id}/reject")
+    public String createRequestReject(Model model, @PathVariable Long id) {
+        restaurantService.deleteRestaurant(id);
+
+        return "redirect:/admin/create-requests";
     }
 }

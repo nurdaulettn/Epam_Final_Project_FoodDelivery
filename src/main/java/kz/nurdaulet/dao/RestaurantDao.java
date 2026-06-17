@@ -15,4 +15,5 @@ public interface RestaurantDao {
     void deleteById(Long id);
     List<Restaurant> findByManagerId(Long id);
     List<Restaurant> findNotConfirmedRestaurants();
+    void confirmRestaurantById(Long id);
 }
