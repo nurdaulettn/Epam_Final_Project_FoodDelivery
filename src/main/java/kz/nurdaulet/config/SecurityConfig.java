@@ -15,6 +15,11 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableWebSecurity
 @ComponentScan("kz.nurdaulet")
 public class SecurityConfig {
+    private final CustomAuthenticationSuccessHandler authenticationSuccessHandler;
+
+    public SecurityConfig(CustomAuthenticationSuccessHandler authenticationSuccessHandler) {
+        this.authenticationSuccessHandler = authenticationSuccessHandler;
+    }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -28,7 +33,7 @@ public class SecurityConfig {
                 .formLogin(form -> form
                         .loginPage("/login")
                         .loginProcessingUrl("/login")
-                        .defaultSuccessUrl("/")
+                        .successHandler(authenticationSuccessHandler)
                         .failureUrl("/login?error=true")
                         .permitAll()
                 )
