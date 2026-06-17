@@ -26,14 +26,14 @@ public class AdminController {
     }
 
     @PostMapping("/create-requests/{id}/confirm")
-    public String createRequestConfirm(Model model, @PathVariable Long id) {
+    public String createRequestConfirm(Model model, @PathVariable("id") Long id) {
         restaurantService.confirmRestaurant(id);
 
         return "redirect:/admin/create-requests";
     }
 
     @PostMapping("/create-requests/{id}/reject")
-    public String createRequestReject(Model model, @PathVariable Long id) {
+    public String createRequestReject(Model model, @PathVariable("id") Long id) {
         restaurantService.deleteRestaurant(id);
 
         return "redirect:/admin/create-requests";

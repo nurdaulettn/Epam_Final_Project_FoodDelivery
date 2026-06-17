@@ -5,9 +5,9 @@
 INSERT INTO users (
     first_name, last_name, username, email, password, role, status
 ) VALUES
-      ('Admin', 'System', 'admin', 'admin@gmail.com', '$2a$10$admin123', 'ADMIN', true),
-      ('John', 'Owner', 'manager', 'manager@gmail.com', '$2a$10$owner123', 'OWNER', true),
-      ('Alice', 'Smith', 'alice', 'alice@gmail.com', '$2a$10$user123', 'CUSTOMER', true);
+      ('Admin', 'System', 'admin', 'admin@gmail.com', '$2a$10$tEpnTT4U28AJ98pk4gDrA.zd8DOgMmwb25oIBEA19fKyqBGfo8WRG', 'ADMIN', true),
+      ('John', 'Owner', 'manager', 'manager@gmail.com', '$2a$10$tEpnTT4U28AJ98pk4gDrA.zd8DOgMmwb25oIBEA19fKyqBGfo8WRG', 'MANAGER', true),
+      ('Alice', 'Smith', 'alice', 'alice@gmail.com', '$2a$10$tEpnTT4U28AJ98pk4gDrA.zd8DOgMmwb25oIBEA19fKyqBGfo8WRG', 'CUSTOMER', true);
 
 -- ==========================
 -- CATEGORIES

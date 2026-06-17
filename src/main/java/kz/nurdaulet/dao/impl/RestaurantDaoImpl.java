@@ -110,6 +110,6 @@ public class RestaurantDaoImpl implements RestaurantDao {
 
     @Override
     public void confirmRestaurantById(Long id) {
-        jdbcTemplate.update(CONFIRM_RESTAURANT);
+        jdbcTemplate.update(CONFIRM_RESTAURANT, id);
     }
 }
