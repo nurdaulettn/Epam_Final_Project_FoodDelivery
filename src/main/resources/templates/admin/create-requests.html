@@ -1,15 +1,125 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru"
+      xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <title>Not confirmed restaurants</title>
+
+  <meta charset="UTF-8">
+  <title>Запросы на создание ресторанов</title>
+
+  <link rel="stylesheet"
+        th:href="@{/static/css/index.css}">
 </head>
+
 <body>
-  <div th:each="restaurant : ${restaurants}">
-    <div th:text="${restaurant.name}"></div>
-  </div>
-  <div th:if="${restaurants.size() == 0}" th:text="'No Restaurants found'">
+
+<header class="topbar">
+
+  <a class="brand"
+     th:href="@{/}">
+    <span class="brand-mark">AJ</span>
+    <span>AsapJe</span>
+  </a>
+
+</header>
+
+<main class="section">
+
+  <div class="section-head">
+
+    <p class="eyebrow">
+      Панель администратора
+    </p>
+
+    <h2>
+      Запросы на создание ресторанов
+    </h2>
 
   </div>
+
+  <div class="cards">
+
+    <article class="restaurant"
+             th:each="restaurant : ${restaurants}">
+
+      <div class="restaurant-image green"
+           th:text="${#strings.substring(restaurant.name,0,1)}">
+      </div>
+
+      <h3 th:text="${restaurant.name}"></h3>
+
+      <p th:text="${restaurant.description}"></p>
+
+      <p>
+
+        📍
+
+        <span th:text="${restaurant.address}"></span>
+
+      </p>
+
+      <p>
+
+        ☎
+
+        <span th:text="${restaurant.phone}"></span>
+
+      </p>
+
+      <p>
+
+        🕓
+
+        <span th:text="${restaurant.openingTime}"></span>
+
+        -
+
+        <span th:text="${restaurant.closingTime}"></span>
+
+      </p>
+
+      <div class="actions"
+           style="margin-top:20px">
+
+        <form
+                th:action="@{/admin/confirm-request/{id}/confirm(id=${restaurant.id})}"
+                method="post">
+
+          <button class="btn btn-primary">
+            Подтвердить
+          </button>
+
+        </form>
+
+        <form
+                th:action="@{/admin/restaurants/{id}/reject(id=${restaurant.id})}"
+                method="post">
+
+          <button class="btn btn-secondary">
+            Отклонить
+          </button>
+
+        </form>
+
+      </div>
+
+    </article>
+
+  </div>
+
+  <div
+          th:if="${#lists.isEmpty(restaurants)}"
+          style="text-align:center;margin-top:50px">
+
+    <h3>
+
+      Нет заявок на подтверждение
+
+    </h3>
+
+  </div>
+
+</main>
+
 </body>
+
 </html>
