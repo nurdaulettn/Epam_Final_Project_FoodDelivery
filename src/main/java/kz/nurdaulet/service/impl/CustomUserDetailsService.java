@@ -16,6 +16,7 @@ import java.util.List;
 
 @Service
 public class CustomUserDetailsService implements UserDetailsService {
+    private static final String ROLE_FORMAT = "ROLE_%s";
     private static final String LOG_LOADING_USER = "Loading user with login={}";
     private static final String LOG_USER_NOT_FOUND = "User not found with login={}";
     private static final String USER_NOT_FOUND_TEMPLATE = "User with login %s not found";
@@ -38,7 +39,7 @@ public class CustomUserDetailsService implements UserDetailsService {
                     user.getId(),
                     user.getUsername(),
                     user.getPassword(),
-                    List.of(new SimpleGrantedAuthority(user.getRole().name()))
+                    List.of(new SimpleGrantedAuthority(ROLE_FORMAT.formatted(user.getRole().name())))
             );
         } else {
             log.warn(LOG_USER_NOT_FOUND, login);
