@@ -23,7 +23,7 @@ public class RestaurantValidator implements Validator {
     public void validate(Object target, Errors errors) {
         RestaurantCreateDto dto = (RestaurantCreateDto) target;
 
-        if (restaurantDao.findByName(dto.getName()) != null) {
+        if (restaurantDao.findByName(dto.getName().trim()) != null) {
             errors.rejectValue("name", "duplicated", "restaurant already exists");
         }
     }

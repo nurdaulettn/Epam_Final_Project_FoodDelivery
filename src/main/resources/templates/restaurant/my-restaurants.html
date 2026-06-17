@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Мои рестораны</title>
+
+  <link rel="stylesheet" th:href="@{/static/css/index.css}">
+</head>
+<body>
+
+<header class="topbar">
+  <a class="brand" th:href="@{/}">
+    <span class="brand-mark">AJ</span>
+    <span>AsapJe</span>
+  </a>
+
+  <div class="actions">
+    <a class="btn btn-primary"
+       th:href="@{/restaurants/manager/create}">
+      + Добавить ресторан
+    </a>
+  </div>
+</header>
+
+<main class="section">
+
+  <div class="section-head">
+    <p class="eyebrow">Панель менеджера</p>
+    <h2>Мои рестораны</h2>
+  </div>
+
+  <div class="cards">
+
+    <article class="restaurant"
+             th:each="restaurant : ${restaurants}">
+
+      <div class="restaurant-image green"
+           th:text="${#strings.substring(restaurant.name,0,1)}">
+        R
+      </div>
+
+      <h3 th:text="${restaurant.name}">
+        Restaurant Name
+      </h3>
+
+      <p th:text="${restaurant.description}">
+        Description
+      </p>
+
+      <span>
+                ⭐
+                <span th:text="${restaurant.ratingAvg}">
+                    0.0
+                </span>
+
+                (
+                <span th:text="${restaurant.ratingCount}">
+                    0
+                </span>
+                отзывов)
+            </span>
+
+      <br><br>
+
+      <small>
+        📍
+        <span th:text="${restaurant.address}">
+                    Address
+                </span>
+      </small>
+
+      <br>
+
+      <small>
+        📞
+        <span th:text="${restaurant.phone}">
+                    Phone
+                </span>
+      </small>
+
+      <br>
+
+      <small>
+        🕒
+        <span th:text="${restaurant.openingTime}">
+                    09:00
+                </span>
+        -
+        <span th:text="${restaurant.closingTime}">
+                    22:00
+                </span>
+      </small>
+
+      <br><br>
+
+      <span th:if="${restaurant.confirmed}">
+                ✅ Подтвержден
+            </span>
+
+      <span th:unless="${restaurant.confirmed}">
+                ⏳ На модерации
+            </span>
+
+    </article>
+
+  </div>
+
+  <div th:if="${#lists.isEmpty(restaurants)}"
+       style="margin-top: 40px; text-align:center;">
+    <h3>У вас пока нет ресторанов</h3>
+
+    <a class="btn btn-primary"
+       th:href="@{/restaurants/manager/create}">
+      Создать первый ресторан
+    </a>
+  </div>
+
+</main>
+
+</body>
+</html>

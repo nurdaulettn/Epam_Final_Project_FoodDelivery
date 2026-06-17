@@ -20,7 +20,7 @@ public class RestaurantServiceImpl implements RestaurantService {
     @Override
     public Restaurant create(RestaurantCreateDto dto, Long userId) {
         Restaurant restaurant = new Restaurant();
-        restaurant.setName(dto.getName());
+        restaurant.setName(dto.getName().trim());
         restaurant.setDescription(dto.getDescription());
         restaurant.setAddress(dto.getAddress());
         restaurant.setPhone(dto.getPhone());
@@ -41,5 +41,10 @@ public class RestaurantServiceImpl implements RestaurantService {
     @Override
     public List<Restaurant> getMyRestaurants(Long userId) {
         return restaurantDao.findByManagerId(userId);
+    }
+
+    @Override
+    public List<Restaurant> getAllNotConfirmedRestaurants() {
+        return restaurantDao.findNotConfirmedRestaurants();
     }
 }

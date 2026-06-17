@@ -8,4 +8,5 @@ import java.util.List;
 public interface RestaurantService {
     Restaurant create(RestaurantCreateDto dto, Long userId);
     List<Restaurant> getMyRestaurants(Long userId);
+    List<Restaurant> getAllNotConfirmedRestaurants();
 }

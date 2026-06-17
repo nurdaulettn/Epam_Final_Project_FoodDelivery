@@ -29,7 +29,7 @@ public class ManagerController {
     public String restaurants(Model model, @AuthenticationPrincipal CustomUserDetails userDetails) {
         model.addAttribute("restaurants", restaurantService.getMyRestaurants(userDetails.getId()));
 
-        return "restaurants/my-restaurants";
+        return "restaurant/my-restaurants";
     }
 
 
@@ -54,6 +54,6 @@ public class ManagerController {
 
         restaurantService.create(restaurantCreateDto, userDetails.getId());
 
-        return "redirect:/restaurants/my-restaurants";
+        return "redirect:/restaurants/manager/my-restaurants";
     }
 }
