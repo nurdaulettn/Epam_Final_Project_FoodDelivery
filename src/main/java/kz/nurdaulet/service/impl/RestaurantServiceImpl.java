@@ -20,6 +20,14 @@ public class RestaurantServiceImpl implements RestaurantService {
         this.restaurantDao = restaurantDao;
     }
 
+    public List<Restaurant> getAllRestaurants() {
+        return restaurantDao.getRestaurants();
+    }
+
+    public List<Restaurant> searchRestaurantsByName(String name){
+        return restaurantDao.findBySimilarName(name);
+    }
+
     @Override
     public Restaurant create(RestaurantCreateDto dto, Long userId) {
         Restaurant restaurant = new Restaurant();

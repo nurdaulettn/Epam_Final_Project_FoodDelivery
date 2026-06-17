@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AsapJe - Рестораны</title>
+    <link rel="stylesheet" th:href="@{/static/css/index.css}">
+</head>
+<body>
+
+<header class="topbar">
+    <a class="brand" th:href="@{/}">
+        <span class="brand-mark">AJ</span>
+        <span>AsapJe</span>
+    </a>
+
+    <nav class="nav">
+        <a th:href="@{/restaurants}">Рестораны</a>
+        <a th:href="@{/login}">Войти</a>
+        <a th:href="@{/register}">Регистрация</a>
+    </nav>
+</header>
+
+<main class="section">
+
+    <div class="section-head">
+        <p class="eyebrow">Каталог</p>
+        <h2>Рестораны</h2>
+    </div>
+
+    <form th:action="@{/restaurants}" method="get" style="display:flex; gap:12px; margin-bottom:28px; max-width:620px;">
+        <input class="form-input"
+               type="text"
+               name="search"
+               th:value="${search}"
+               placeholder="Поиск по названию ресторана"
+               style="min-height:44px; flex:1;">
+
+        <button class="btn btn-primary" type="submit">
+            Найти
+        </button>
+
+        <a class="btn btn-ghost" th:href="@{/restaurants}">
+            Сбросить
+        </a>
+    </form>
+
+    <div class="cards">
+        <article class="restaurant"
+                 th:each="restaurant : ${restaurants}">
+
+            <div class="restaurant-image green"
+                 th:text="${#strings.substring(restaurant.name,0,1)}">
+                R
+            </div>
+
+            <h3 th:text="${restaurant.name}">
+                Restaurant Name
+            </h3>
+
+            <p th:text="${restaurant.description}">
+                Description
+            </p>
+
+            <span>
+                ⭐
+                <span th:text="${restaurant.ratingAvg}">0.0</span>
+                (<span th:text="${restaurant.ratingCount}">0</span> отзывов)
+            </span>
+
+            <br><br>
+
+            <small>
+                📍
+                <span th:text="${restaurant.address}">Address</span>
+            </small>
+
+            <br>
+
+            <small>
+                ☎
+                <span th:text="${restaurant.phone}">Phone</span>
+            </small>
+
+            <br>
+
+            <small>
+                🕒
+                <span th:text="${restaurant.openingTime}">09:00</span>
+                -
+                <span th:text="${restaurant.closingTime}">22:00</span>
+            </small>
+
+        </article>
+    </div>
+
+    <div th:if="${#lists.isEmpty(restaurants)}"
+         style="margin-top:40px; text-align:center;">
+        <h3>Рестораны не найдены</h3>
+        <a class="btn btn-primary" th:href="@{/restaurants}">
+            Показать все рестораны
+        </a>
+    </div>
+
+</main>
+
+</body>
+</html>

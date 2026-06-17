@@ -86,21 +86,29 @@
         <span th:text="${restaurant.openingTime}">
                     09:00
                 </span>
-        -
-        <span th:text="${restaurant.closingTime}">
+          -
+          <span th:text="${restaurant.closingTime}">
                     22:00
                 </span>
       </small>
 
-      <br><br>
+        <br><br>
 
-      <span th:if="${restaurant.confirmed}">
-                ✅ Подтвержден
-            </span>
+            <span th:if="${restaurant.status.name() == 'ACTIVE'}">
+        ✅ Подтвержден
+    </span>
 
-      <span th:unless="${restaurant.confirmed}">
-                ⏳ На модерации
-            </span>
+            <span th:if="${restaurant.status.name() == 'PENDING'}">
+        ⏳ На модерации
+    </span>
+
+            <span th:if="${restaurant.status.name() == 'INACTIVE'}">
+        ⏰ Не активный
+    </span>
+
+            <span th:if="${restaurant.status.name() == 'REJECTED'}">
+        ❌ Отклонен
+    </span>
 
     </article>
 
