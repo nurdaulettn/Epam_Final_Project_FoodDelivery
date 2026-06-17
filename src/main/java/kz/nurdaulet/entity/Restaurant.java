@@ -1,5 +1,7 @@
 package kz.nurdaulet.entity;
 
+import kz.nurdaulet.entity.enums.RestaurantStatus;
+
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 
@@ -14,7 +16,7 @@ public class Restaurant {
     private LocalTime openingTime;
     private LocalTime closingTime;
     private Long managerId;
-    private boolean confirmed;
+    private RestaurantStatus status;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 
@@ -24,7 +26,7 @@ public class Restaurant {
                       String address, String phone,
                       Double ratingAvg, Integer ratingCount,
                       LocalTime openingTime, LocalTime closingTime,
-                      Long managerId, boolean confirmed,
+                      Long managerId, RestaurantStatus status,
                       LocalDateTime createdAt, LocalDateTime updatedAt) {
         this.id = id;
         this.name = name;
@@ -36,7 +38,7 @@ public class Restaurant {
         this.openingTime = openingTime;
         this.closingTime = closingTime;
         this.managerId = managerId;
-        this.confirmed = confirmed;
+        this.status = status;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
     }
@@ -121,12 +123,12 @@ public class Restaurant {
         this.managerId = managerId;
     }
 
-    public boolean isConfirmed() {
-        return confirmed;
+    public RestaurantStatus getStatus() {
+        return status;
     }
 
-    public void setConfirmed(boolean confirmed) {
-        this.confirmed = confirmed;
+    public void setStatus(RestaurantStatus status) {
+        this.status = status;
     }
 
     public LocalDateTime getCreatedAt() {

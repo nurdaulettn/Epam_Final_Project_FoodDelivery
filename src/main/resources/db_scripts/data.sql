@@ -33,7 +33,7 @@ INSERT INTO restaurants (
     opening_time,
     closing_time,
     manager_id,
-    confirmed
+    status
 ) VALUES
       (
           'Burger House',
@@ -45,7 +45,7 @@ INSERT INTO restaurants (
           '09:00',
           '23:00',
           2,
-          true
+          'ACTIVE'
       ),
       (
           'Italian Pizza',
@@ -57,7 +57,7 @@ INSERT INTO restaurants (
           '10:00',
           '22:00',
           2,
-          true
+          'ACTIVE'
       );
 
 -- ==========================

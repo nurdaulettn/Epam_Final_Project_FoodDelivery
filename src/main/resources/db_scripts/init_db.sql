@@ -25,14 +25,17 @@ CREATE TABLE restaurants (
      opening_time TIME,
      closing_time TIME,
      manager_id BIGINT NOT NULL,
-     confirmed BOOLEAN DEFAULT FALSE,
+     status VARCHAR(30) NOT NULL DEFAULT 'PENDING',
      created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
      updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 
      CONSTRAINT fk_restaurant_owner
          FOREIGN KEY (manager_id)
              REFERENCES users(id)
-             ON DELETE CASCADE
+             ON DELETE CASCADE,
+
+     CONSTRAINT restaurants_status_check
+         CHECK (status IN ('PENDING', 'ACTIVE', 'INACTIVE', 'REJECTED'))
 );
 
 -- CATEGORIES

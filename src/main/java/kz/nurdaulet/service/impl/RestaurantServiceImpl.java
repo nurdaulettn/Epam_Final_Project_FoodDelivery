@@ -3,6 +3,7 @@ package kz.nurdaulet.service.impl;
 import kz.nurdaulet.dao.RestaurantDao;
 import kz.nurdaulet.dto.RestaurantCreateDto;
 import kz.nurdaulet.entity.Restaurant;
+import kz.nurdaulet.entity.enums.RestaurantStatus;
 import kz.nurdaulet.exception.RestaurantNotFoundException;
 import kz.nurdaulet.service.RestaurantService;
 import org.springframework.stereotype.Service;
@@ -31,7 +32,7 @@ public class RestaurantServiceImpl implements RestaurantService {
         restaurant.setOpeningTime(dto.getOpeningTime());
         restaurant.setClosingTime(dto.getClosingTime());
         restaurant.setManagerId(userId);
-        restaurant.setConfirmed(false);
+        restaurant.setStatus(RestaurantStatus.PENDING);
         restaurant.setCreatedAt(LocalDateTime.now());
         restaurant.setUpdatedAt(LocalDateTime.now());
 
@@ -46,23 +47,23 @@ public class RestaurantServiceImpl implements RestaurantService {
     }
 
     @Override
-    public List<Restaurant> getAllNotConfirmedRestaurants() {
-        return restaurantDao.findNotConfirmedRestaurants();
+    public List<Restaurant> getPendingRestaurants() {
+        return restaurantDao.findPendingRestaurants();
     }
 
     @Override
     public void confirmRestaurant(Long id) {
         if (restaurantDao.existsById(id)) {
-            restaurantDao.confirmRestaurantById(id);
+            restaurantDao.activateRestaurant(id);
         } else {
             throw new RestaurantNotFoundException(RESTAURANT_NOT_FOUND.formatted(id));
         }
     }
 
     @Override
-    public void deleteRestaurant(Long id) {
+    public void rejectRestaurant(Long id) {
         if (restaurantDao.existsById(id)) {
-            restaurantDao.deleteById(id);
+            restaurantDao.rejectRestaurant(id);
         } else {
             throw new RestaurantNotFoundException(RESTAURANT_NOT_FOUND.formatted(id));
         }

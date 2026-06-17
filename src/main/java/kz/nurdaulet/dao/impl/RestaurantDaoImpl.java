@@ -2,6 +2,7 @@ package kz.nurdaulet.dao.impl;
 
 import kz.nurdaulet.dao.RestaurantDao;
 import kz.nurdaulet.entity.Restaurant;
+import kz.nurdaulet.entity.enums.RestaurantStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -14,16 +15,17 @@ import java.util.List;
 
 @Repository
 public class RestaurantDaoImpl implements RestaurantDao {
-    private static final String FIND_ALL =  "SELECT * FROM restaurants";
+    private static final String FIND_ALL_ACTIVE =  "SELECT * FROM restaurants WHERE status='ACTIVE'";
     private static final String FIND_BY_ID =  "SELECT * FROM restaurants WHERE id = ?";
-    private static final String FIND_BY_SIMILAR_NAME = "SELECT * FROM restaurants WHERE name LIKE CONCAT('%', ?, '%')";
-    private static final String FIND_BY_NAME = "SELECT * FROM restaurants WHERE name = ?";
-    private static final String SAVE = "INSERT INTO restaurants (name, description, address, phone, opening_time, closing_time, manager_id) VALUES (?, ?, ?, ?, ?, ?, ?)";
+    private static final String FIND_BY_SIMILAR_NAME = "SELECT * FROM restaurants WHERE name LIKE CONCAT('%', ?, '%') AND status='ACTIVE'";
+    private static final String FIND_BY_NAME = "SELECT * FROM restaurants WHERE name = ? AND (status='ACTIVE' OR status='INACTIVE')";
+    private static final String SAVE = "INSERT INTO restaurants (name, description, address, phone, opening_time, closing_time, manager_id, status) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
     private static final String UPDATE = "UPDATE restaurants SET name=?, description=?, address=?, phone=?, rating_avg=?, rating_count=?, opening_time=?, closing_time=?, updated_at=? WHERE id=?";
     private static final String DELETE = "DELETE FROM restaurants WHERE id=?";
     private static final String FIND_BY_MANAGER_ID = "SELECT * FROM restaurants WHERE manager_id = ?";
-    private static final String FIND_NOT_CONFIRMED = "SELECT * FROM restaurants WHERE confirmed=false";
-    private static final String CONFIRM_RESTAURANT = "UPDATE restaurants SET confirmed=true WHERE id = ?";
+    private static final String FIND_PENDING = "SELECT * FROM restaurants WHERE status='PENDING'";
+    private static final String CONFIRM_RESTAURANT = "UPDATE restaurants SET status='ACTIVE' WHERE id = ?";
+    private static final String REJECT_RESTAURANT = "UPDATE restaurants SET status='REJECTED' WHERE id = ?";
     private static final Logger log = LoggerFactory.getLogger(RestaurantDaoImpl.class);
 
     private final JdbcTemplate jdbcTemplate;
@@ -39,7 +41,7 @@ public class RestaurantDaoImpl implements RestaurantDao {
                 rs.getObject("opening_time", LocalTime.class),
                 rs.getObject("closing_time", LocalTime.class),
                 rs.getLong("manager_id"),
-                rs.getBoolean("confirmed"),
+                RestaurantStatus.valueOf(rs.getString("status")),
                 rs.getObject("created_at", LocalDateTime.class),
                 rs.getObject("updated_at", LocalDateTime.class)
         );
@@ -51,7 +53,7 @@ public class RestaurantDaoImpl implements RestaurantDao {
 
     @Override
     public List<Restaurant> getRestaurants() {
-        return jdbcTemplate.query(FIND_ALL, restaurantRowMapper);
+        return jdbcTemplate.query(FIND_ALL_ACTIVE, restaurantRowMapper);
     }
 
     @Override
@@ -79,7 +81,8 @@ public class RestaurantDaoImpl implements RestaurantDao {
     public void save(Restaurant restaurant) {
         jdbcTemplate.update(SAVE, restaurant.getName(), restaurant.getDescription(),
                 restaurant.getAddress(), restaurant.getPhone(), restaurant.getOpeningTime(),
-                restaurant.getClosingTime(), restaurant.getManagerId()
+                restaurant.getClosingTime(), restaurant.getManagerId(),
+                restaurant.getStatus().name()
         );
     }
 
@@ -104,12 +107,18 @@ public class RestaurantDaoImpl implements RestaurantDao {
     }
 
     @Override
-    public List<Restaurant> findNotConfirmedRestaurants() {
-        return jdbcTemplate.query(FIND_NOT_CONFIRMED, restaurantRowMapper);
+    public List<Restaurant> findPendingRestaurants() {
+        return jdbcTemplate.query(FIND_PENDING, restaurantRowMapper);
     }
 
     @Override
-    public void confirmRestaurantById(Long id) {
+    public void activateRestaurant(Long id) {
         jdbcTemplate.update(CONFIRM_RESTAURANT, id);
     }
+
+    @Override
+    public void rejectRestaurant(Long id) {
+        jdbcTemplate.update(REJECT_RESTAURANT, id);
+    }
+
 }

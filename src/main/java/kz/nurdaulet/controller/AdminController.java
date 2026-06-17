@@ -20,7 +20,7 @@ public class AdminController {
     @GetMapping("/create-requests")
     public String createRequests(Model model) {
         model.addAttribute("restaurants",
-                restaurantService.getAllNotConfirmedRestaurants());
+                restaurantService.getPendingRestaurants());
 
         return "admin/create-requests";
     }
@@ -34,7 +34,7 @@ public class AdminController {
 
     @PostMapping("/create-requests/{id}/reject")
     public String createRequestReject(Model model, @PathVariable("id") Long id) {
-        restaurantService.deleteRestaurant(id);
+        restaurantService.rejectRestaurant(id);
 
         return "redirect:/admin/create-requests";
     }
