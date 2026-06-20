@@ -1,6 +1,7 @@
 package kz.nurdaulet.service.impl;
 
 import kz.nurdaulet.dao.FoodDao;
+import kz.nurdaulet.dto.FoodCreateDto;
 import kz.nurdaulet.entity.Food;
 import kz.nurdaulet.service.FoodService;
 import org.springframework.stereotype.Service;
@@ -53,6 +54,20 @@ public class FoodServiceImpl implements FoodService {
     @Override
     public Food getFoodById(Long id) {
         return foodDao.getFoodById(id);
+    }
+
+    @Override
+    public void save(FoodCreateDto foodCreateDto, Long restaurantId) {
+        Food food = new Food();
+
+        food.setName(foodCreateDto.getName().trim());
+        food.setDescription(foodCreateDto.getDescription());
+        food.setPrice(foodCreateDto.getPrice());
+        food.setCategoryId(foodCreateDto.getCategoryId());
+        food.setAvailable(true);
+        food.setRestaurantId(restaurantId);
+
+        foodDao.save(food);
     }
 
 
