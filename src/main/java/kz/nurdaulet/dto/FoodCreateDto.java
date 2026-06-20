@@ -1,8 +1,17 @@
 package kz.nurdaulet.dto;
 
+import jakarta.validation.constraints.*;
+
 public class FoodCreateDto {
+    @NotBlank
+    @Size(min = 3, max = 100)
     private String name;
+
+    @Size(max = 500)
     private String description;
+
+    @Positive
+    @NotNull
     private Double price;
     private Long categoryId;
 

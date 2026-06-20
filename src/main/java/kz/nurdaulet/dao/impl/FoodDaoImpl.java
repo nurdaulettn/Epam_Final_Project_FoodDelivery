@@ -4,13 +4,15 @@ import kz.nurdaulet.dao.FoodDao;
 import kz.nurdaulet.entity.Food;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
+import org.springframework.stereotype.Repository;
 
 import java.util.List;
 
+@Repository
 public class FoodDaoImpl implements FoodDao {
-    private static final String FIND_ALL = "SELECT * FROM foods";
-    private static final String FIND_BY_CATEGORY = "SELECT * FROM foods WHERE category_id = ?";
-    private static final String FIND_BY_RESTAURANT = "SELECT * FROM foods WHERE restaurant_id = ?";
+    private static final String FIND_ALL = "SELECT * FROM foods WHERE is_available = true";
+    private static final String FIND_BY_CATEGORY = "SELECT * FROM foods WHERE category_id = ? AND is_available = true";
+    private static final String FIND_BY_RESTAURANT = "SELECT * FROM foods WHERE restaurant_id = ? AND is_available = true";
     private static final String FIND_SIMILAR_NAME = "SELECT * FROM foods WHERE name ILIKE CONCAT('%', ?, '%') AND is_available = true";
     private static final String FIND_BY_ID = "SELECT * FROM foods WHERE id = ?";
     private static final String FIND_BY_NAME = "SELECT * FROM foods WHERE name = ?";

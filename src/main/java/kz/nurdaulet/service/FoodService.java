@@ -5,6 +5,7 @@ import kz.nurdaulet.entity.Food;
 import java.util.List;
 
 public interface FoodService {
+    List<Food> getFoods(String search, Long categoryId, Long restaurantId);
     List<Food> getAllFood();
     List<Food> getFoodByCategoryId(Long categoryId);
     List<Food> getFoodBySimilarName(String name);

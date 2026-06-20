@@ -3,14 +3,36 @@ package kz.nurdaulet.service.impl;
 import kz.nurdaulet.dao.FoodDao;
 import kz.nurdaulet.entity.Food;
 import kz.nurdaulet.service.FoodService;
+import org.springframework.stereotype.Service;
 
+import java.util.Iterator;
 import java.util.List;
 
+@Service
 public class FoodServiceImpl implements FoodService {
     private final FoodDao foodDao;
 
     public FoodServiceImpl(FoodDao foodDao) {
         this.foodDao = foodDao;
+    }
+
+    @Override
+    public List<Food> getFoods(String search, Long categoryId, Long restaurantId) {
+        List<Food> foods = foodDao.getAllFoods();
+
+        if (search != null && !search.isBlank()) {
+            foods = foodDao.getFoodsBySimilarName(search);
+        }
+
+        if (categoryId != null) {
+            selectByCategory(categoryId, foods);
+        }
+
+        if (restaurantId != null) {
+            selectByRestaurant(restaurantId, foods);
+        }
+
+        return foods;
     }
 
     @Override
@@ -31,5 +53,28 @@ public class FoodServiceImpl implements FoodService {
     @Override
     public Food getFoodById(Long id) {
         return foodDao.getFoodById(id);
+    }
+
+
+    private static void selectByRestaurant(Long restaurantId, List<Food> foods) {
+        Iterator<Food> iterator = foods.iterator();
+        while (iterator.hasNext()) {
+            Food food = iterator.next();
+
+            if (!food.getRestaurantId().equals(restaurantId)) {
+                iterator.remove();
+            }
+        }
+    }
+
+    private static void selectByCategory(Long categoryId, List<Food> foods) {
+        Iterator<Food> iterator = foods.iterator();
+        while (iterator.hasNext()) {
+            Food food = iterator.next();
+
+            if (!food.getCategoryId().equals(categoryId)) {
+                iterator.remove();
+            }
+        }
     }
 }
