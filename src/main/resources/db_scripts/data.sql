@@ -13,11 +13,11 @@ INSERT INTO users (
 -- CATEGORIES
 -- ==========================
 
-INSERT INTO categories (name, image) VALUES
-                                         ('Burgers', 'burgers.jpg'),
-                                         ('Pizza', 'pizza.jpg'),
-                                         ('Drinks', 'drinks.jpg'),
-                                         ('Desserts', 'desserts.jpg');
+INSERT INTO categories (name) VALUES
+             ('Burgers'),
+             ('Pizza'),
+             ('Drinks'),
+             ('Desserts');
 
 -- ==========================
 -- RESTAURANTS

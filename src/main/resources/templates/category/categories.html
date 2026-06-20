@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AsapJe - Категории</title>
+    <link rel="stylesheet" th:href="@{/static/css/index.css}">
+</head>
+<body>
+<header class="topbar">
+    <a class="brand" th:href="@{/}">
+        <span class="brand-mark">AJ</span>
+        <span>AsapJe</span>
+    </a>
+
+    <nav class="nav">
+        <a th:href="@{/restaurants}">Рестораны</a>
+        <a th:href="@{/categories}">Категории</a>
+    </nav>
+
+    <div class="actions" th:if="${currentUsername != null}">
+        <a class="btn btn-primary"
+           th:if="${currentUserAdmin}"
+           th:href="@{/admin/categories/create}">+ Добавить категорию</a>
+        <span class="account-pill">
+            <span class="account-avatar" th:text="${#strings.substring(currentUsername,0,1)}">U</span>
+            <span class="account-name" th:text="${currentUsername}">user</span>
+        </span>
+        <form class="logout-form" th:action="@{/logout}" method="post">
+            <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+            <button class="btn btn-ghost" type="submit">Выйти</button>
+        </form>
+    </div>
+</header>
+
+<main class="section">
+    <div class="section-head">
+        <p class="eyebrow">Каталог</p>
+        <h2>Категории еды</h2>
+    </div>
+
+    <form th:action="@{/categories}" method="get" style="display:flex; gap:12px; margin-bottom:28px; max-width:620px;">
+        <input class="form-input" type="text" name="search" th:value="${search}" placeholder="Поиск по названию категории">
+        <button class="btn btn-primary" type="submit">Найти</button>
+        <a class="btn btn-ghost" th:href="@{/categories}">Сбросить</a>
+    </form>
+
+    <div class="cards">
+        <article class="restaurant" th:each="category : ${categories}">
+            <div class="restaurant-image green" th:text="${#strings.substring(category.name,0,1)}">C</div>
+            <h3 th:text="${category.name}">Category</h3>
+            <p>Блюда этой категории доступны в ресторанах платформы.</p>
+        </article>
+    </div>
+
+    <div th:if="${#lists.isEmpty(categories)}" style="margin-top:40px; text-align:center;">
+        <h3>Категории не найдены</h3>
+        <a class="btn btn-primary" th:href="@{/categories}">Показать все категории</a>
+    </div>
+</main>
+</body>
+</html>

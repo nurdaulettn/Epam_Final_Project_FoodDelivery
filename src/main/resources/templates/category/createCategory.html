@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AsapJe - Создание категории</title>
+    <link rel="stylesheet" th:href="@{/static/css/index.css}">
+</head>
+<body class="auth-page">
+<main class="auth-shell">
+    <section class="auth-card">
+        <div class="auth-hero">
+            <a class="auth-back" th:href="@{/categories}">К категориям</a>
+            <div class="auth-hero-content">
+                <div class="auth-food-mark">🍽</div>
+                <h1>Добавь категорию.<br>Упорядочь меню.</h1>
+                <p>Категории помогут клиентам быстрее находить нужные блюда.</p>
+            </div>
+        </div>
+
+        <div class="auth-form-area">
+            <a class="auth-logo" th:href="@{/}">
+                <span class="brand-mark">AJ</span>
+                <span>AsapJe</span>
+            </a>
+
+            <div class="auth-heading">
+                <h2>Создание категории</h2>
+                <p>Укажи короткое и понятное название</p>
+            </div>
+
+            <form class="auth-form" th:action="@{/admin/categories/create}" th:object="${category}" method="post">
+                <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+
+                <label class="form-group">
+                    <span class="form-label">Название</span>
+                    <input class="form-input" type="text" th:field="*{name}" minlength="2" maxlength="100" required>
+                    <span class="form-error" th:if="${#fields.hasErrors('name')}" th:errors="*{name}">Ошибка</span>
+                </label>
+
+                <button class="btn btn-primary auth-submit" type="submit">Создать категорию →</button>
+            </form>
+
+            <p class="auth-switch">
+                <a th:href="@{/categories}">Вернуться к списку</a>
+            </p>
+        </div>
+    </section>
+</main>
+</body>
+</html>

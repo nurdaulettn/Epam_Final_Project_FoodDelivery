@@ -41,9 +41,8 @@ CREATE TABLE restaurants (
 -- CATEGORIES
 
 CREATE TABLE categories (
-                            id BIGSERIAL PRIMARY KEY,
-                            name VARCHAR(100) NOT NULL UNIQUE,
-                            image VARCHAR(500)
+        id BIGSERIAL PRIMARY KEY,
+        name VARCHAR(100) NOT NULL UNIQUE
 );
 
 -- FOODS
