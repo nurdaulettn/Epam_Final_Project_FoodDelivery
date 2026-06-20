@@ -70,7 +70,7 @@ INSERT INTO foods (
     price,
     is_available,
     restaurant_id,
-    category_id,
+    category_id
 ) VALUES
       ('Classic Burger', 'Beef burger with cheese', 3500, true, 1, 1),
       ('Double Burger', 'Double beef burger', 4500, true, 1, 1),

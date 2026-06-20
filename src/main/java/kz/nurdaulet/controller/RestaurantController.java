@@ -30,6 +30,7 @@ public class RestaurantController {
         }
 
         model.addAttribute("restaurants", restaurants);
+        model.addAttribute("search", search);
 
         return "restaurant/allRestaurants";
     }

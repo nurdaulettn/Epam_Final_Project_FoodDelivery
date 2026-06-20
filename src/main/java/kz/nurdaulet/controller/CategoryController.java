@@ -53,7 +53,7 @@ public class CategoryController {
 
     @PostMapping("/admin/categories/create")
     public String createCategory(@Valid @ModelAttribute("category") CategoryCreateDto categoryDto,
-                                 BindingResult bindingResult, Model model) {
+                                 BindingResult bindingResult) {
         categoryValidator.validate(categoryDto, bindingResult);
 
         if (bindingResult.hasErrors()) {

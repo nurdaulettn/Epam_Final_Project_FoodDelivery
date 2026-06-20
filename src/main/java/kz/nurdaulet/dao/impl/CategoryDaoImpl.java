@@ -1,7 +1,6 @@
 package kz.nurdaulet.dao.impl;
 
 import kz.nurdaulet.dao.CategoryDao;
-import kz.nurdaulet.dto.CategoryCreateDto;
 import kz.nurdaulet.entity.Category;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -18,12 +17,10 @@ public class CategoryDaoImpl implements CategoryDao {
     private static final String SAVE =  "INSERT INTO categories (name) VALUES (?)";
 
     private final JdbcTemplate jdbcTemplate;
-    private final RowMapper<Category> mapper = (rs, rowNum) -> {
-        return new Category(
-                rs.getLong("id"),
-                rs.getString("name")
-        );
-    };
+    private final RowMapper<Category> mapper = (rs, rowNum) -> new Category(
+            rs.getLong("id"),
+            rs.getString("name")
+    );
 
     public CategoryDaoImpl(JdbcTemplate jdbcTemplate) {
         this.jdbcTemplate = jdbcTemplate;

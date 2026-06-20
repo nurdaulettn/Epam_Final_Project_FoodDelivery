@@ -44,7 +44,7 @@ public class ManagerController {
 
     @PostMapping("/create")
     public String create(@Valid @ModelAttribute("restaurant") RestaurantCreateDto restaurantCreateDto,
-                         BindingResult bindingResult, Model model,
+                         BindingResult bindingResult,
                          @AuthenticationPrincipal CustomUserDetails userDetails) {
         restaurantValidator.validate(restaurantCreateDto, bindingResult);
 

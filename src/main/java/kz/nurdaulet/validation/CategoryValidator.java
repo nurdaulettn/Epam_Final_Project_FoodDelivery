@@ -23,8 +23,7 @@ public class CategoryValidator implements Validator {
     public void validate(Object target, Errors errors) {
         CategoryCreateDto dto = (CategoryCreateDto) target;
 
-        if (dto != null
-                && categoryDao.findByName(dto.getName().trim()) != null) {
+        if (categoryDao.findByName(dto.getName().trim()) != null) {
             errors.rejectValue("name", "duplicated", "category already exists");
         }
     }
