@@ -48,23 +48,22 @@ CREATE TABLE categories (
 -- FOODS
 
 CREATE TABLE foods (
-                       id BIGSERIAL PRIMARY KEY,
-                       name VARCHAR(255) NOT NULL,
-                       description TEXT,
-                       price DECIMAL(10,2) NOT NULL CHECK (price >= 0),
-                       is_available BOOLEAN DEFAULT TRUE,
-                       restaurant_id BIGINT NOT NULL,
-                       category_id BIGINT NOT NULL,
-                       image VARCHAR(500),
+       id BIGSERIAL PRIMARY KEY,
+       name VARCHAR(255) NOT NULL,
+       description TEXT,
+       price DECIMAL(10,2) NOT NULL CHECK (price >= 0),
+       is_available BOOLEAN DEFAULT TRUE,
+       restaurant_id BIGINT NOT NULL,
+       category_id BIGINT NOT NULL,
 
-                       CONSTRAINT fk_food_restaurant
-                           FOREIGN KEY (restaurant_id)
-                               REFERENCES restaurants(id)
-                               ON DELETE CASCADE,
+       CONSTRAINT fk_food_restaurant
+           FOREIGN KEY (restaurant_id)
+               REFERENCES restaurants(id)
+               ON DELETE CASCADE,
 
-                       CONSTRAINT fk_food_category
-                           FOREIGN KEY (category_id)
-                               REFERENCES categories(id)
+       CONSTRAINT fk_food_category
+           FOREIGN KEY (category_id)
+               REFERENCES categories(id)
 );
 
 -- ORDERS

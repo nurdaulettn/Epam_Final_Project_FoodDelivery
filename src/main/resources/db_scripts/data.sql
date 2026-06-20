@@ -71,21 +71,20 @@ INSERT INTO foods (
     is_available,
     restaurant_id,
     category_id,
-    image
 ) VALUES
-      ('Classic Burger', 'Beef burger with cheese', 3500, true, 1, 1, 'burger1.jpg'),
-      ('Double Burger', 'Double beef burger', 4500, true, 1, 1, 'burger2.jpg'),
-      ('Chicken Burger', 'Chicken burger', 3200, true, 1, 1, 'burger3.jpg'),
+      ('Classic Burger', 'Beef burger with cheese', 3500, true, 1, 1),
+      ('Double Burger', 'Double beef burger', 4500, true, 1, 1),
+      ('Chicken Burger', 'Chicken burger', 3200, true, 1, 1),
 
-      ('Pepperoni Pizza', 'Pepperoni pizza', 5000, true, 2, 2, 'pizza1.jpg'),
-      ('Margherita Pizza', 'Classic Margherita', 4500, true, 2, 2, 'pizza2.jpg'),
-      ('BBQ Pizza', 'BBQ chicken pizza', 5500, true, 2, 2, 'pizza3.jpg'),
+      ('Pepperoni Pizza', 'Pepperoni pizza', 5000, true, 2, 2),
+      ('Margherita Pizza', 'Classic Margherita', 4500, true, 2, 2),
+      ('BBQ Pizza', 'BBQ chicken pizza', 5500, true, 2, 2),
 
-      ('Coca Cola', '0.5L', 700, true, 1, 3, 'cola.jpg'),
-      ('Orange Juice', 'Fresh juice', 1200, true, 2, 3, 'juice.jpg'),
+      ('Coca Cola', '0.5L', 700, true, 1, 3),
+      ('Orange Juice', 'Fresh juice', 1200, true, 2, 3),
 
-      ('Chocolate Cake', 'Chocolate dessert', 1800, true, 2, 4, 'cake.jpg'),
-      ('Ice Cream', 'Vanilla ice cream', 1000, true, 1, 4, 'icecream.jpg');
+      ('Chocolate Cake', 'Chocolate dessert', 1800, true, 2, 4),
+      ('Ice Cream', 'Vanilla ice cream', 1000, true, 1, 4);
 
 -- ==========================
 -- ORDERS
