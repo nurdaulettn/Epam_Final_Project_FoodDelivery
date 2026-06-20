@@ -15,9 +15,11 @@ import java.util.List;
 public class RestaurantServiceImpl implements RestaurantService {
     private static final String RESTAURANT_NOT_FOUND = "Restaurant with id %d not found";
     private final RestaurantDao restaurantDao;
+    private final RestaurantService restaurantService;
 
-    public RestaurantServiceImpl(RestaurantDao restaurantDao) {
+    public RestaurantServiceImpl(RestaurantDao restaurantDao, RestaurantService restaurantService) {
         this.restaurantDao = restaurantDao;
+        this.restaurantService = restaurantService;
     }
 
     public List<Restaurant> getAllRestaurants() {
@@ -75,5 +77,16 @@ public class RestaurantServiceImpl implements RestaurantService {
         } else {
             throw new RestaurantNotFoundException(RESTAURANT_NOT_FOUND.formatted(id));
         }
+    }
+
+    @Override
+    public Restaurant getRestaurantById(Long id) {
+        Restaurant restaurant = restaurantService.getRestaurantById(id);
+
+        if (restaurant == null) {
+            throw new RestaurantNotFoundException(RESTAURANT_NOT_FOUND.formatted(id));
+        }
+
+        return restaurant;
     }
 }

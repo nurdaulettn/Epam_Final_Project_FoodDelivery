@@ -121,6 +121,15 @@
         ❌ Отклонен
     </span>
 
+        <div class="actions"
+             th:if="${restaurant.status.name() == 'ACTIVE'}"
+             style="margin-top:18px; margin-left:0;">
+            <a class="btn btn-primary"
+               th:href="@{/restaurants/manager/{id}/foods/create(id=${restaurant.id})}">
+                + Добавить блюдо
+            </a>
+        </div>
+
     </article>
 
   </div>

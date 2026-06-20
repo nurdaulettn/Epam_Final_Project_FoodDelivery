@@ -13,4 +13,5 @@ public interface RestaurantService {
     List<Restaurant> getPendingRestaurants();
     void confirmRestaurant(Long id);
     void rejectRestaurant(Long id);
+    Restaurant getRestaurantById(Long id);
 }
