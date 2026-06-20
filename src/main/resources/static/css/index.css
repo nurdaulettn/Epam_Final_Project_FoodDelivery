@@ -67,8 +67,49 @@ a {
 
 .actions {
     display: flex;
+    align-items: center;
     gap: 10px;
     margin-left: auto;
+}
+
+.account-name {
+    color: var(--green-dark);
+    font-size: 14px;
+    font-weight: 800;
+}
+
+.account-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    min-height: 40px;
+    padding: 0 12px 0 6px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: #f8fffc;
+}
+
+.account-avatar {
+    display: grid;
+    place-items: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 8px;
+    color: #fff;
+    background: var(--green-dark);
+    font-size: 12px;
+    font-weight: 900;
+    text-transform: uppercase;
+}
+
+.logout-form {
+    margin: 0;
+}
+
+.logout-form .btn {
+    border: 1px solid var(--line);
+    cursor: pointer;
+    font-family: inherit;
 }
 
 .btn {

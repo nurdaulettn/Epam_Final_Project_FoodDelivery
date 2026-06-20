@@ -16,9 +16,25 @@
 
     <nav class="nav">
         <a th:href="@{/restaurants}">Рестораны</a>
-        <a th:href="@{/login}">Войти</a>
-        <a th:href="@{/register}">Регистрация</a>
     </nav>
+
+    <div class="actions" th:if="${currentUsername == null}">
+        <a class="btn btn-ghost" th:href="@{/login}">Войти</a>
+        <a class="btn btn-primary" th:href="@{/register}">Регистрация</a>
+    </div>
+    <div class="actions" th:if="${currentUsername != null}">
+        <span class="account-pill">
+            <span class="account-avatar" th:text="${#strings.substring(currentUsername,0,1)}">U</span>
+            <span class="account-name" th:text="${currentUsername}">user</span>
+        </span>
+        <form class="logout-form" th:action="@{/logout}" method="post">
+            <input type="hidden"
+                   th:if="${_csrf != null}"
+                   th:name="${_csrf.parameterName}"
+                   th:value="${_csrf.token}">
+            <button class="btn btn-ghost" type="submit">Выйти</button>
+        </form>
+    </div>
 </header>
 
 <main class="section">
