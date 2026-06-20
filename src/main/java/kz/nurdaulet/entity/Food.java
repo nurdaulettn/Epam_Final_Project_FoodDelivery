@@ -6,8 +6,8 @@ public class Food {
     private String description;
     private Double price;
     private Boolean isAvailable;
-    private Long restaurant_id;
-    private Long category_id;
+    private Long restaurantId;
+    private Long categoryId;
 
     public Food() {
     }
@@ -20,8 +20,8 @@ public class Food {
         this.description = description;
         this.price = price;
         this.isAvailable = isAvailable;
-        this.restaurant_id = restaurant_id;
-        this.category_id = category_id;
+        this.restaurantId = restaurant_id;
+        this.categoryId = category_id;
     }
 
     public Long getId() {
@@ -64,19 +64,19 @@ public class Food {
         isAvailable = available;
     }
 
-    public Long getRestaurant_id() {
-        return restaurant_id;
+    public Long getRestaurantId() {
+        return restaurantId;
     }
 
-    public void setRestaurant_id(Long restaurant_id) {
-        this.restaurant_id = restaurant_id;
+    public void setRestaurantId(Long restaurantId) {
+        this.restaurantId = restaurantId;
     }
 
-    public Long getCategory_id() {
-        return category_id;
+    public Long getCategoryId() {
+        return categoryId;
     }
 
-    public void setCategory_id(Long category_id) {
-        this.category_id = category_id;
+    public void setCategoryId(Long categoryId) {
+        this.categoryId = categoryId;
     }
 }
