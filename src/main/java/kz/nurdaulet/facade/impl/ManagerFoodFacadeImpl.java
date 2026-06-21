@@ -27,6 +27,32 @@ public class ManagerFoodFacadeImpl implements ManagerFoodFacade {
 
     @Override
     public void createFood(Long managerId, Long restaurantId, FoodCreateDto foodDto) {
+        checkManagerAndRestaurant(managerId, restaurantId);
+
+        categoryService.getCategoryById(foodDto.getCategoryId());
+
+        foodService.save(foodDto, restaurantId);
+    }
+
+    @Override
+    public void updateFood(Long managerId, Long restaurantId, Long foodId, FoodCreateDto foodDto) {
+        checkManagerAndRestaurant(managerId, restaurantId);
+
+        categoryService.getCategoryById(foodDto.getCategoryId());
+
+        foodService.update(foodDto, restaurantId, foodId);
+    }
+
+    @Override
+    public void deleteFood(Long managerId, Long restaurantId, Long foodId) {
+        Restaurant restaurant = restaurantService.getRestaurantById(restaurantId);
+
+        checkManagerAndRestaurant(managerId, restaurantId);
+
+        foodService.delete(foodId);
+    }
+
+    private void checkManagerAndRestaurant(Long managerId, Long restaurantId) {
         Restaurant restaurant = restaurantService.getRestaurantById(restaurantId);
 
         if (!restaurant.getManagerId().equals(managerId)) {
@@ -36,9 +62,5 @@ public class ManagerFoodFacadeImpl implements ManagerFoodFacade {
         if (!restaurant.getStatus().equals(RestaurantStatus.ACTIVE)) {
             throw new IncorrectAddingFoodException(DO_NOT_HAVE_PERMISSION);
         }
-
-        categoryService.getCategoryById(foodDto.getCategoryId());
-
-        foodService.save(foodDto, restaurantId);
     }
 }

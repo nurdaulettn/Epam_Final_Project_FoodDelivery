@@ -3,6 +3,7 @@ package kz.nurdaulet.service.impl;
 import kz.nurdaulet.dao.FoodDao;
 import kz.nurdaulet.dto.FoodCreateDto;
 import kz.nurdaulet.entity.Food;
+import kz.nurdaulet.exception.DeletingActiveFoodException;
 import kz.nurdaulet.service.FoodService;
 import org.springframework.stereotype.Service;
 
@@ -11,6 +12,7 @@ import java.util.List;
 
 @Service
 public class FoodServiceImpl implements FoodService {
+    public static final String CAN_NOT_DELETE_FOOD = "Can't delete active food";
     private final FoodDao foodDao;
 
     public FoodServiceImpl(FoodDao foodDao) {
@@ -47,6 +49,11 @@ public class FoodServiceImpl implements FoodService {
     }
 
     @Override
+    public List<Food> getFoodByRestaurantId(Long restaurantId) {
+        return foodDao.getFoodsByRestaurant(restaurantId);
+    }
+
+    @Override
     public List<Food> getFoodBySimilarName(String name) {
         return foodDao.getFoodsBySimilarName(name);
     }
@@ -68,6 +75,45 @@ public class FoodServiceImpl implements FoodService {
         food.setRestaurantId(restaurantId);
 
         foodDao.save(food);
+    }
+
+    @Override
+    public void update(FoodCreateDto foodCreateDto, Long restaurantId, Long foodId) {
+        Food food = new Food();
+
+        food.setId(foodId);
+        food.setName(foodCreateDto.getName().trim());
+        food.setDescription(foodCreateDto.getDescription());
+        food.setPrice(foodCreateDto.getPrice());
+        food.setCategoryId(foodCreateDto.getCategoryId());
+        food.setAvailable(true);
+        food.setRestaurantId(restaurantId);
+
+        foodDao.update(food);
+    }
+
+    @Override
+    public void delete(Long id) {
+        Food food = foodDao.getFoodById(id);
+
+        if (!food.getAvailable()) {
+            foodDao.deleteById(id);
+        } else {
+            throw new DeletingActiveFoodException(CAN_NOT_DELETE_FOOD);
+        }
+    }
+
+    @Override
+    public FoodCreateDto getFoodCreateDtoById(Long id) {
+        Food food = foodDao.getFoodById(id);
+        FoodCreateDto foodCreateDto = new FoodCreateDto();
+
+        foodCreateDto.setName(food.getName());
+        foodCreateDto.setDescription(food.getDescription());
+        foodCreateDto.setPrice(food.getPrice());
+        foodCreateDto.setCategoryId(food.getCategoryId());
+
+        return foodCreateDto;
     }
 
 
