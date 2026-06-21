@@ -8,14 +8,18 @@ import kz.nurdaulet.facade.ManagerFoodFacade;
 import kz.nurdaulet.service.CategoryService;
 import kz.nurdaulet.service.FoodService;
 import kz.nurdaulet.service.RestaurantService;
+import org.springframework.stereotype.Service;
 
+@Service
 public class ManagerFoodFacadeImpl implements ManagerFoodFacade {
     public static final String DO_NOT_HAVE_PERMISSION = "You can not manage this restaurant";
     private final RestaurantService restaurantService;
     private final FoodService foodService;
     private final CategoryService categoryService;
 
-    public ManagerFoodFacadeImpl(RestaurantService restaurantService, FoodService foodService, CategoryService categoryService) {
+    public ManagerFoodFacadeImpl(RestaurantService restaurantService,
+                                 FoodService foodService,
+                                 CategoryService categoryService) {
         this.restaurantService = restaurantService;
         this.foodService = foodService;
         this.categoryService = categoryService;
