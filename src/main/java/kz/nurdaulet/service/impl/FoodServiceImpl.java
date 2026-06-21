@@ -73,6 +73,7 @@ public class FoodServiceImpl implements FoodService {
 
     private static void selectByRestaurant(Long restaurantId, List<Food> foods) {
         Iterator<Food> iterator = foods.iterator();
+
         while (iterator.hasNext()) {
             Food food = iterator.next();
 
@@ -84,6 +85,7 @@ public class FoodServiceImpl implements FoodService {
 
     private static void selectByCategory(Long categoryId, List<Food> foods) {
         Iterator<Food> iterator = foods.iterator();
+
         while (iterator.hasNext()) {
             Food food = iterator.next();
 

@@ -14,6 +14,7 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
     private static final String ADMIN_ROLE = "ROLE_ADMIN";
     private static final String MANAGER_ROLE = "ROLE_MANAGER";
     private static final String CUSTOMER_ROLE = "ROLE_CUSTOMER";
+
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request,
                                         HttpServletResponse response,
@@ -21,21 +22,14 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
         if (authentication.getAuthorities().stream()
                 .anyMatch(a -> a.getAuthority().equals(ADMIN_ROLE))) {
             response.sendRedirect(request.getContextPath() + "/admin/create-requests");
-            return;
-        }
-
-        if (authentication.getAuthorities().stream()
+        } else if (authentication.getAuthorities().stream()
                 .anyMatch(a -> a.getAuthority().equals(MANAGER_ROLE))) {
             response.sendRedirect(request.getContextPath() + "/restaurants/manager/my-restaurants");
-            return;
-        }
-
-        if (authentication.getAuthorities().stream()
+        } else if (authentication.getAuthorities().stream()
                 .anyMatch(a -> a.getAuthority().equals(CUSTOMER_ROLE))) {
             response.sendRedirect(request.getContextPath() + "/restaurants");
-            return;
+        } else {
+            response.sendRedirect(request.getContextPath() + "/restaurants");
         }
-
-        response.sendRedirect(request.getContextPath() + "/restaurants");
     }
 }

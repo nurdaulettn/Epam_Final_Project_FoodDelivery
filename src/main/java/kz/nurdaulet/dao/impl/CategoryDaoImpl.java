@@ -38,14 +38,16 @@ public class CategoryDaoImpl implements CategoryDao {
 
     @Override
     public Category findById(Long id) {
-        return jdbcTemplate.query(FIND_BY_ID, mapper, id)
-                .stream().findFirst().orElse(null);
+        return jdbcTemplate.query(FIND_BY_ID, mapper, id).stream()
+                .findFirst()
+                .orElse(null);
     }
 
     @Override
     public Category findByName(String name) {
-        return jdbcTemplate.query(FIND_BY_NAME, mapper, name)
-                .stream().findFirst().orElse(null);
+        return jdbcTemplate.query(FIND_BY_NAME, mapper, name).stream()
+                .findFirst()
+                .orElse(null);
     }
 
     @Override
