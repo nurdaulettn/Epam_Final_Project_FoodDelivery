@@ -13,6 +13,8 @@ public class FoodCreateDto {
     @Positive
     @NotNull
     private Double price;
+
+    @NotNull
     private Long categoryId;
 
     public FoodCreateDto() {

@@ -18,5 +18,13 @@ public interface FoodDao {
 
     Food getFoodByName(String name);
 
+    void update(Food food);
+
+    void disableById(Long id);
+
+    void enableById(Long id);
+
     void save(Food food);
+
+    void deleteById(Long id);
 }
