@@ -22,6 +22,10 @@ public interface FoodService {
 
     void update(FoodCreateDto foodCreateDto, Long restaurantId, Long foodId);
 
+    void disableFood(Long foodId);
+
+    void enableFood(Long foodId);
+
     void delete(Long id);
 
     FoodCreateDto getFoodCreateDtoById(Long id);

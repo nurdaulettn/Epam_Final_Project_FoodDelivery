@@ -138,6 +138,25 @@ public class ManagerController {
         return "redirect:/restaurants/manager/my-restaurants/" + restaurantId;
     }
 
+    @PostMapping("/{restaurantId}/foods/{foodId}/disable")
+    public String disableFood(@PathVariable("restaurantId") Long restaurantId,
+                              @PathVariable("foodId") Long foodId,
+                              @AuthenticationPrincipal CustomUserDetails userDetails) {
+        managerFoodFacade.disableFood(userDetails.getId(), restaurantId, foodId);
+
+        return "redirect:/restaurants/manager/my-restaurants/" + restaurantId;
+    }
+
+    @PostMapping("/{restaurantId}/foods/{foodId}/enable")
+    public String enableFood(@PathVariable("restaurantId") Long restaurantId,
+                              @PathVariable("foodId") Long foodId,
+                              @AuthenticationPrincipal CustomUserDetails userDetails) {
+        managerFoodFacade.enableFood(userDetails.getId(), restaurantId, foodId);
+
+        return "redirect:/restaurants/manager/my-restaurants/" + restaurantId;
+    }
+
+
     @GetMapping("/my-restaurants/{restaurantId}")
     public String restaurants(@PathVariable("restaurantId") Long restaurantId, Model model) {
         model.addAttribute("restaurants", restaurantService.getMyRestaurants(restaurantId));

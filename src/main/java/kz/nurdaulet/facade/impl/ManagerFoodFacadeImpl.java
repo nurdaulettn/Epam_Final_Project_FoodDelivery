@@ -1,6 +1,7 @@
 package kz.nurdaulet.facade.impl;
 
 import kz.nurdaulet.dto.FoodCreateDto;
+import kz.nurdaulet.entity.Food;
 import kz.nurdaulet.entity.Restaurant;
 import kz.nurdaulet.entity.enums.RestaurantStatus;
 import kz.nurdaulet.exception.IncorrectAddingFoodException;
@@ -36,7 +37,7 @@ public class ManagerFoodFacadeImpl implements ManagerFoodFacade {
 
     @Override
     public void updateFood(Long managerId, Long restaurantId, Long foodId, FoodCreateDto foodDto) {
-        checkManagerAndRestaurant(managerId, restaurantId);
+        checkManagerAndRestaurantAndFood(managerId, restaurantId, foodId);
 
         categoryService.getCategoryById(foodDto.getCategoryId());
 
@@ -45,11 +46,23 @@ public class ManagerFoodFacadeImpl implements ManagerFoodFacade {
 
     @Override
     public void deleteFood(Long managerId, Long restaurantId, Long foodId) {
-        Restaurant restaurant = restaurantService.getRestaurantById(restaurantId);
-
-        checkManagerAndRestaurant(managerId, restaurantId);
+        checkManagerAndRestaurantAndFood(managerId, restaurantId, foodId);
 
         foodService.delete(foodId);
+    }
+
+    @Override
+    public void disableFood(Long managerId, Long restaurantId, Long foodId) {
+        checkManagerAndRestaurantAndFood(managerId, restaurantId, foodId);
+
+        foodService.disableFood(foodId);
+    }
+
+    @Override
+    public void enableFood(Long managerId, Long restaurantId, Long foodId) {
+        checkManagerAndRestaurantAndFood(managerId, restaurantId, foodId);
+
+        foodService.enableFood(foodId);
     }
 
     private void checkManagerAndRestaurant(Long managerId, Long restaurantId) {
@@ -60,6 +73,16 @@ public class ManagerFoodFacadeImpl implements ManagerFoodFacade {
         }
 
         if (!restaurant.getStatus().equals(RestaurantStatus.ACTIVE)) {
+            throw new IncorrectAddingFoodException(DO_NOT_HAVE_PERMISSION);
+        }
+    }
+
+    private void checkManagerAndRestaurantAndFood(Long managerId, Long restaurantId, Long foodId) {
+        checkManagerAndRestaurant(managerId, restaurantId);
+
+        Food food = foodService.getFoodById(foodId);
+
+        if (!food.getRestaurantId().equals(restaurantId)) {
             throw new IncorrectAddingFoodException(DO_NOT_HAVE_PERMISSION);
         }
     }

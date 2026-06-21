@@ -4,6 +4,7 @@ import kz.nurdaulet.dao.FoodDao;
 import kz.nurdaulet.dto.FoodCreateDto;
 import kz.nurdaulet.entity.Food;
 import kz.nurdaulet.exception.DeletingActiveFoodException;
+import kz.nurdaulet.exception.FoodNotFoundException;
 import kz.nurdaulet.service.FoodService;
 import org.springframework.stereotype.Service;
 
@@ -13,6 +14,7 @@ import java.util.List;
 @Service
 public class FoodServiceImpl implements FoodService {
     public static final String CAN_NOT_DELETE_FOOD = "Can't delete active food";
+    public static final String FOOD_NOT_FOUND = "Food with id %d found";
     private final FoodDao foodDao;
 
     public FoodServiceImpl(FoodDao foodDao) {
@@ -60,6 +62,8 @@ public class FoodServiceImpl implements FoodService {
 
     @Override
     public Food getFoodById(Long id) {
+        checkFoodById(id);
+
         return foodDao.getFoodById(id);
     }
 
@@ -79,6 +83,8 @@ public class FoodServiceImpl implements FoodService {
 
     @Override
     public void update(FoodCreateDto foodCreateDto, Long restaurantId, Long foodId) {
+        checkFoodById(foodId);
+
         Food food = new Food();
 
         food.setId(foodId);
@@ -93,7 +99,21 @@ public class FoodServiceImpl implements FoodService {
     }
 
     @Override
+    public void disableFood(Long foodId) {
+        checkFoodById(foodId);
+        foodDao.disableById(foodId);
+    }
+
+    @Override
+    public void enableFood(Long foodId) {
+        checkFoodById(foodId);
+        foodDao.enableById(foodId);
+    }
+
+    @Override
     public void delete(Long id) {
+        checkFoodById(id);
+
         Food food = foodDao.getFoodById(id);
 
         if (!food.getAvailable()) {
@@ -105,6 +125,8 @@ public class FoodServiceImpl implements FoodService {
 
     @Override
     public FoodCreateDto getFoodCreateDtoById(Long id) {
+        checkFoodById(id);
+
         Food food = foodDao.getFoodById(id);
         FoodCreateDto foodCreateDto = new FoodCreateDto();
 
@@ -138,6 +160,12 @@ public class FoodServiceImpl implements FoodService {
             if (!food.getCategoryId().equals(categoryId)) {
                 iterator.remove();
             }
+        }
+    }
+
+    private void checkFoodById(Long foodId) {
+        if (foodDao.getFoodById(foodId) == null) {
+            throw new FoodNotFoundException(FOOD_NOT_FOUND.formatted(foodId));
         }
     }
 }
