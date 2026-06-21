@@ -133,7 +133,9 @@ public class ManagerController {
     public String deleteFood(@PathVariable("restaurantId") Long restaurantId,
                              @PathVariable("foodId") Long foodId,
                              @AuthenticationPrincipal CustomUserDetails userDetails) {
-        managerFoodFacade.
+        managerFoodFacade.deleteFood(userDetails.getId(), restaurantId, foodId);
+
+        return "redirect:/restaurants/manager/my-restaurants/" + restaurantId;
     }
 
     @GetMapping("/my-restaurants/{restaurantId}")
