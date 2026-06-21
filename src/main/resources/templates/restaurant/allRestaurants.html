@@ -23,6 +23,11 @@
         <a class="btn btn-primary" th:href="@{/register}">Регистрация</a>
     </div>
     <div class="actions" th:if="${currentUsername != null}">
+        <a class="btn btn-primary"
+           th:if="${currentUserManager}"
+           th:href="@{/restaurants/manager/my-restaurants}">
+            Мои рестораны
+        </a>
         <span class="account-pill">
             <span class="account-avatar" th:text="${#strings.substring(currentUsername,0,1)}">U</span>
             <span class="account-name" th:text="${currentUsername}">user</span>

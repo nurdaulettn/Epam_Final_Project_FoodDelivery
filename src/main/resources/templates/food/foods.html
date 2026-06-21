@@ -96,15 +96,19 @@
             <br><br>
 
             <small>
-                Ресторан ID:
-                <span th:text="${food.restaurantId}">1</span>
+                Ресторан:
+                <span th:each="restaurant : ${restaurants}"
+                      th:if="${restaurant.id == food.restaurantId}"
+                      th:text="${restaurant.name}">Restaurant</span>
             </small>
 
             <br>
 
             <small>
-                Категория ID:
-                <span th:text="${food.categoryId}">1</span>
+                Категория:
+                <span th:each="category : ${categories}"
+                      th:if="${category.id == food.categoryId}"
+                      th:text="${category.name}">Category</span>
             </small>
 
             <br><br>

@@ -32,4 +32,17 @@ public class GlobalModelAttributes {
                 .map(GrantedAuthority::getAuthority)
                 .anyMatch("ROLE_ADMIN"::equals);
     }
+
+    @ModelAttribute("currentUserManager")
+    public boolean currentUserManager(Authentication authentication) {
+        if (authentication == null
+                || !authentication.isAuthenticated()
+                || authentication instanceof AnonymousAuthenticationToken) {
+            return false;
+        }
+
+        return authentication.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .anyMatch("ROLE_MANAGER"::equals);
+    }
 }
