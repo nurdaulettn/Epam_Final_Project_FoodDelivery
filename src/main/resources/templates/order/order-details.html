@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AsapJe - Заказ</title>
+    <link rel="stylesheet" th:href="@{/static/css/index.css}">
+</head>
+<body>
+<header class="topbar">
+    <a class="brand" th:href="@{/}">
+        <span class="brand-mark">AJ</span>
+        <span>AsapJe</span>
+    </a>
+
+    <nav class="nav">
+        <a th:href="@{/restaurants}">Рестораны</a>
+        <a th:href="@{/categories}">Категории</a>
+        <a th:href="@{/foods}">Блюда</a>
+        <a th:href="@{/cart}">Корзина</a>
+    </nav>
+
+    <div class="actions" th:if="${currentUsername != null}">
+        <span class="account-pill">
+            <span class="account-avatar" th:text="${#strings.substring(currentUsername,0,1)}">U</span>
+            <span class="account-name" th:text="${currentUsername}">user</span>
+        </span>
+        <form class="logout-form" th:action="@{/logout}" method="post">
+            <input type="hidden"
+                   th:if="${_csrf != null}"
+                   th:name="${_csrf.parameterName}"
+                   th:value="${_csrf.token}">
+            <button class="btn btn-ghost" type="submit">Выйти</button>
+        </form>
+    </div>
+</header>
+
+<main class="section">
+    <div class="section-head">
+        <p class="eyebrow">Заказ</p>
+        <h2>
+            Заказ #
+            <span th:text="${order.id}">1</span>
+        </h2>
+    </div>
+
+    <div class="auth-alert auth-alert-success"
+         th:if="${orderSuccess != null}"
+         th:text="${orderSuccess}">
+        Заказ обновлён
+    </div>
+
+    <div class="auth-alert auth-alert-error"
+         th:if="${orderError != null}"
+         th:text="${orderError}">
+        Ошибка заказа
+    </div>
+
+    <div class="checkout-layout">
+        <section class="cart-items">
+            <article class="cart-item" th:each="item : ${orderItems}">
+                <div>
+                    <h3 th:text="${item.foodName}">Food name</h3>
+                    <p>
+                        <span th:text="${item.price}">0</span>
+                        ₸ за порцию
+                    </p>
+                </div>
+
+                <strong>
+                    <span th:text="${item.quantity}">1</span>
+                    шт.
+                </strong>
+
+                <strong>
+                    <span th:text="${item.subtotal}">0</span>
+                    ₸
+                </strong>
+            </article>
+        </section>
+
+        <aside class="cart-summary">
+            <p class="eyebrow">Статус</p>
+            <h2 class="status-title" th:text="${order.status.displayName}">
+                Ожидает оплаты
+            </h2>
+
+            <form th:if="${order.status == T(kz.nurdaulet.entity.enums.OrderStatus).PENDING_PAYMENT}"
+                  th:action="@{/orders/{orderId}/pay(orderId=${order.id})}"
+                  method="post">
+                <input type="hidden"
+                       th:if="${_csrf != null}"
+                       th:name="${_csrf.parameterName}"
+                       th:value="${_csrf.token}">
+                <button class="btn btn-primary" type="submit">
+                    Оплатить
+                </button>
+            </form>
+
+            <div class="checkout-summary-item">
+                <span>Тип получения</span>
+                <strong th:text="${order.deliveryType.displayName}">Доставка</strong>
+            </div>
+
+            <div class="checkout-summary-item" th:if="${order.deliveryAddress != null}">
+                <span>Адрес</span>
+                <strong th:text="${order.deliveryAddress}">Address</strong>
+            </div>
+
+            <div class="checkout-summary-item">
+                <span>Сумма</span>
+                <strong>
+                    <span th:text="${order.totalPrice}">0</span>
+                    ₸
+                </strong>
+            </div>
+
+            <a class="btn btn-ghost" th:href="@{/foods}">
+                Вернуться к блюдам
+            </a>
+        </aside>
+    </div>
+</main>
+</body>
+</html>

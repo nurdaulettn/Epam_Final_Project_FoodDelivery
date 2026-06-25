@@ -3,9 +3,13 @@ package kz.nurdaulet.controller;
 import jakarta.servlet.http.HttpSession;
 import jakarta.validation.Valid;
 import kz.nurdaulet.dto.CheckoutDto;
+import kz.nurdaulet.entity.CustomUserDetails;
+import kz.nurdaulet.entity.Order;
 import kz.nurdaulet.entity.enums.DeliveryType;
 import kz.nurdaulet.exception.CartOperationException;
 import kz.nurdaulet.service.CartService;
+import kz.nurdaulet.service.OrderService;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -24,12 +28,13 @@ import java.util.Map;
 @RequestMapping("/cart")
 public class CartController {
     private static final String CART_SESSION_ATTRIBUTE = "cart";
-    private static final String CHECKOUT_SESSION_ATTRIBUTE = "checkout";
 
     private final CartService cartService;
+    private final OrderService orderService;
 
-    public CartController(CartService cartService) {
+    public CartController(CartService cartService, OrderService orderService) {
         this.cartService = cartService;
+        this.orderService = orderService;
     }
 
     @GetMapping
@@ -66,6 +71,7 @@ public class CartController {
     @PostMapping("/checkout")
     public String checkout(@Valid @ModelAttribute("checkout") CheckoutDto checkoutDto,
                            BindingResult bindingResult,
+                           @AuthenticationPrincipal CustomUserDetails userDetails,
                            HttpSession session,
                            Model model) {
         Map<Long, Integer> cart = getCart(session);
@@ -86,11 +92,16 @@ public class CartController {
             checkoutDto.setDeliveryAddress(null);
         }
 
-        session.setAttribute(CHECKOUT_SESSION_ATTRIBUTE, checkoutDto);
-        model.addAttribute("checkoutSuccess", "Данные оформления проверены. Создание заказа будет в следующем шаге.");
-        addCheckoutAttributes(model, cart);
+        try {
+            Order order = orderService.createOrder(userDetails.getId(), cart, checkoutDto);
 
-        return "cart/checkout";
+            return "redirect:/orders/" + order.getId();
+        } catch (CartOperationException exception) {
+            bindingResult.reject("order.create.failed", exception.getMessage());
+            addCheckoutAttributes(model, cart);
+
+            return "cart/checkout";
+        }
     }
 
     @PostMapping("/add/{foodId}")
