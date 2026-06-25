@@ -17,6 +17,7 @@
         <a th:href="@{/restaurants}">Рестораны</a>
         <a th:href="@{/categories}">Категории</a>
         <a th:href="@{/foods}">Блюда</a>
+        <a th:href="@{/cart}">Корзина</a>
     </nav>
 
     <div class="actions" th:if="${currentUsername != null}">
@@ -38,6 +39,18 @@
     <div class="section-head">
         <p class="eyebrow">Меню</p>
         <h2>Блюда</h2>
+    </div>
+
+    <div class="auth-alert auth-alert-success"
+         th:if="${cartSuccess != null}"
+         th:text="${cartSuccess}">
+        Блюдо добавлено в корзину
+    </div>
+
+    <div class="auth-alert auth-alert-error"
+         th:if="${cartError != null}"
+         th:text="${cartError}">
+        Ошибка корзины
     </div>
 
     <form th:action="@{/foods}"
@@ -120,6 +133,19 @@
             <span th:unless="${food.available}">
                 Недоступно
             </span>
+
+            <form th:if="${food.available}"
+                  th:action="@{/cart/add/{foodId}(foodId=${food.id})}"
+                  method="post"
+                  style="margin-top:18px;">
+                <input type="hidden"
+                       th:if="${_csrf != null}"
+                       th:name="${_csrf.parameterName}"
+                       th:value="${_csrf.token}">
+                <button class="btn btn-primary" type="submit">
+                    Добавить в корзину
+                </button>
+            </form>
         </article>
     </div>
 
