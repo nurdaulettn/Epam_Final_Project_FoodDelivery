@@ -93,6 +93,11 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    public List<Order> getCustomerOrders(Long userId) {
+        return orderDao.findByUserId(userId);
+    }
+
+    @Override
     public List<OrderItem> getCustomerOrderItems(Long userId, Long orderId) {
         getCustomerOrder(userId, orderId);
 

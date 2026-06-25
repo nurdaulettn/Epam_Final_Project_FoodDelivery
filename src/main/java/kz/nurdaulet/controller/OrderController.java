@@ -1,13 +1,16 @@
 package kz.nurdaulet.controller;
 
 import kz.nurdaulet.dto.OrderItemDetailsDto;
+import kz.nurdaulet.dto.OrderSummaryDto;
 import kz.nurdaulet.entity.CustomUserDetails;
 import kz.nurdaulet.entity.Food;
 import kz.nurdaulet.entity.Order;
 import kz.nurdaulet.entity.OrderItem;
+import kz.nurdaulet.entity.Restaurant;
 import kz.nurdaulet.exception.CartOperationException;
 import kz.nurdaulet.service.FoodService;
 import kz.nurdaulet.service.OrderService;
+import kz.nurdaulet.service.RestaurantService;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -25,10 +28,24 @@ import java.util.List;
 public class OrderController {
     private final OrderService orderService;
     private final FoodService foodService;
+    private final RestaurantService restaurantService;
 
-    public OrderController(OrderService orderService, FoodService foodService) {
+    public OrderController(OrderService orderService,
+                           FoodService foodService,
+                           RestaurantService restaurantService) {
         this.orderService = orderService;
         this.foodService = foodService;
+        this.restaurantService = restaurantService;
+    }
+
+    @GetMapping
+    public String orders(@AuthenticationPrincipal CustomUserDetails userDetails,
+                         Model model) {
+        List<Order> orders = orderService.getCustomerOrders(userDetails.getId());
+
+        model.addAttribute("orders", buildOrderSummaries(orders));
+
+        return "order/orders";
     }
 
     @GetMapping("/{orderId}")
@@ -56,6 +73,24 @@ public class OrderController {
         }
 
         return "redirect:/orders/" + orderId;
+    }
+
+    private List<OrderSummaryDto> buildOrderSummaries(List<Order> orders) {
+        List<OrderSummaryDto> summaries = new ArrayList<>();
+
+        for (Order order : orders) {
+            Restaurant restaurant = restaurantService.getRestaurantById(order.getRestaurantId());
+            summaries.add(new OrderSummaryDto(
+                    order.getId(),
+                    restaurant.getName(),
+                    order.getStatus(),
+                    order.getDeliveryType(),
+                    order.getTotalPrice(),
+                    order.getCreatedAt()
+            ));
+        }
+
+        return summaries;
     }
 
     private List<OrderItemDetailsDto> buildOrderItemDetails(List<OrderItem> orderItems) {

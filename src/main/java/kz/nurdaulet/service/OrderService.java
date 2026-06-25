@@ -12,6 +12,8 @@ public interface OrderService {
 
     Order getCustomerOrder(Long userId, Long orderId);
 
+    List<Order> getCustomerOrders(Long userId);
+
     List<OrderItem> getCustomerOrderItems(Long userId, Long orderId);
 
     Order payOrder(Long userId, Long orderId);

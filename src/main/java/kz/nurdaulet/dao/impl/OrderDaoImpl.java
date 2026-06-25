@@ -12,6 +12,7 @@ import org.springframework.stereotype.Repository;
 
 import java.sql.PreparedStatement;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Repository
 public class OrderDaoImpl implements OrderDao {
@@ -21,6 +22,7 @@ public class OrderDaoImpl implements OrderDao {
             VALUES (?, ?, ?, ?, ?, ?, ?, ?)
             """;
     private static final String FIND_BY_ID = "SELECT * FROM orders WHERE id = ?";
+    private static final String FIND_BY_USER_ID = "SELECT * FROM orders WHERE user_id = ? ORDER BY created_at DESC, id DESC";
     private static final String UPDATE_STATUS = "UPDATE orders SET status = ?, updated_at = ? WHERE id = ?";
 
     private final JdbcTemplate jdbcTemplate;
@@ -68,6 +70,11 @@ public class OrderDaoImpl implements OrderDao {
                 .stream()
                 .findFirst()
                 .orElse(null);
+    }
+
+    @Override
+    public List<Order> findByUserId(Long userId) {
+        return jdbcTemplate.query(FIND_BY_USER_ID, mapper, userId);
     }
 
     @Override
