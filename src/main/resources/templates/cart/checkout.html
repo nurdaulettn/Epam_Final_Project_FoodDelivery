@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AsapJe - Оформление заказа</title>
+    <link rel="stylesheet" th:href="@{/static/css/index.css}">
+</head>
+<body>
+<header class="topbar">
+    <a class="brand" th:href="@{/}">
+        <span class="brand-mark">AJ</span>
+        <span>AsapJe</span>
+    </a>
+
+    <nav class="nav">
+        <a th:href="@{/restaurants}">Рестораны</a>
+        <a th:href="@{/categories}">Категории</a>
+        <a th:href="@{/foods}">Блюда</a>
+        <a th:href="@{/cart}">Корзина</a>
+    </nav>
+
+    <div class="actions" th:if="${currentUsername != null}">
+        <span class="account-pill">
+            <span class="account-avatar" th:text="${#strings.substring(currentUsername,0,1)}">U</span>
+            <span class="account-name" th:text="${currentUsername}">user</span>
+        </span>
+        <form class="logout-form" th:action="@{/logout}" method="post">
+            <input type="hidden"
+                   th:if="${_csrf != null}"
+                   th:name="${_csrf.parameterName}"
+                   th:value="${_csrf.token}">
+            <button class="btn btn-ghost" type="submit">Выйти</button>
+        </form>
+    </div>
+</header>
+
+<main class="section">
+    <div class="section-head">
+        <p class="eyebrow">Оформление</p>
+        <h2>Проверьте заказ</h2>
+    </div>
+
+    <div class="auth-alert auth-alert-success"
+         th:if="${checkoutSuccess != null}"
+         th:text="${checkoutSuccess}">
+        Данные оформления проверены
+    </div>
+
+    <div class="checkout-layout">
+        <section>
+            <form class="checkout-form"
+                  th:action="@{/cart/checkout}"
+                  th:object="${checkout}"
+                  method="post">
+                <input type="hidden"
+                       th:if="${_csrf != null}"
+                       th:name="${_csrf.parameterName}"
+                       th:value="${_csrf.token}">
+
+                <div class="auth-alert auth-alert-error"
+                     th:if="${#fields.hasGlobalErrors()}"
+                     th:each="error : ${#fields.globalErrors()}"
+                     th:text="${error}">
+                    Ошибка оформления
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label">Тип получения</label>
+                    <div class="checkout-options">
+                        <label class="checkout-option">
+                            <input type="radio"
+                                   th:field="*{deliveryType}"
+                                   th:value="${T(kz.nurdaulet.entity.enums.DeliveryType).DELIVERY}">
+                            <span>Доставка</span>
+                        </label>
+
+                        <label class="checkout-option">
+                            <input type="radio"
+                                   th:field="*{deliveryType}"
+                                   th:value="${T(kz.nurdaulet.entity.enums.DeliveryType).PICKUP}">
+                            <span>Самовывоз</span>
+                        </label>
+                    </div>
+                    <span class="form-error"
+                          th:if="${#fields.hasErrors('deliveryType')}"
+                          th:errors="*{deliveryType}">
+                        Выберите тип получения
+                    </span>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="deliveryAddress">Адрес доставки</label>
+                    <textarea class="form-input checkout-address"
+                              id="deliveryAddress"
+                              th:field="*{deliveryAddress}"
+                              placeholder="Например: Алматы, Абая 15, квартира 12"></textarea>
+                    <span class="form-error"
+                          th:if="${#fields.hasErrors('deliveryAddress')}"
+                          th:errors="*{deliveryAddress}">
+                        Адрес доставки обязателен
+                    </span>
+                </div>
+
+                <button class="btn btn-primary" type="submit">
+                    Проверить оформление
+                </button>
+            </form>
+        </section>
+
+        <aside class="cart-summary">
+            <p class="eyebrow">Ваш заказ</p>
+            <div class="checkout-summary-item"
+                 th:each="item : ${cartItems}">
+                <span th:text="${item.foodName}">Food</span>
+                <strong>
+                    <span th:text="${item.quantity}">1</span>
+                    x
+                    <span th:text="${item.price}">0</span>
+                    ₸
+                </strong>
+            </div>
+
+            <h2>
+                <span th:text="${total}">0</span>
+                ₸
+            </h2>
+
+            <a class="btn btn-ghost" th:href="@{/cart}">
+                Назад в корзину
+            </a>
+        </aside>
+    </div>
+</main>
+</body>
+</html>

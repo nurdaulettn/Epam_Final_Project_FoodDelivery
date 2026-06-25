@@ -110,11 +110,9 @@
                 ₸
             </h2>
 
-            <button class="btn btn-primary cart-disabled-action"
-                    type="button"
-                    disabled>
-                Оформление будет в следующем шаге
-            </button>
+            <a class="btn btn-primary" th:href="@{/cart/checkout}">
+                Перейти к оформлению
+            </a>
 
             <form th:action="@{/cart/clear}" method="post">
                 <input type="hidden"
