@@ -16,6 +16,9 @@
 
     <nav class="nav">
         <a th:href="@{/restaurants}">Рестораны</a>
+        <a th:href="@{/foods}">Блюда</a>
+        <a th:href="@{/cart}">Корзина</a>
+        <a th:href="@{/orders}">Мои заказы</a>
     </nav>
 
     <div class="actions" th:if="${currentUsername == null}">
@@ -49,7 +52,9 @@
         <h2>Рестораны</h2>
     </div>
 
-    <form th:action="@{/restaurants}" method="get" style="display:flex; gap:12px; margin-bottom:28px; max-width:620px;">
+    <form th:action="@{/restaurants}"
+          method="get"
+          style="display:flex; gap:12px; margin-bottom:28px; max-width:620px;">
         <input class="form-input"
                type="text"
                name="search"
@@ -84,7 +89,7 @@
             </p>
 
             <span>
-                ⭐
+                Рейтинг:
                 <span th:text="${restaurant.ratingAvg}">0.0</span>
                 (<span th:text="${restaurant.ratingCount}">0</span> отзывов)
             </span>
@@ -92,25 +97,32 @@
             <br><br>
 
             <small>
-                📍
+                Адрес:
                 <span th:text="${restaurant.address}">Address</span>
             </small>
 
             <br>
 
             <small>
-                ☎
+                Телефон:
                 <span th:text="${restaurant.phone}">Phone</span>
             </small>
 
             <br>
 
             <small>
-                🕒
+                Время работы:
                 <span th:text="${restaurant.openingTime}">09:00</span>
                 -
                 <span th:text="${restaurant.closingTime}">22:00</span>
             </small>
+
+            <div style="margin-top:18px;">
+                <a class="btn btn-primary"
+                   th:href="@{/foods(restaurant=${restaurant.id})}">
+                    Посмотреть блюда
+                </a>
+            </div>
 
         </article>
     </div>
