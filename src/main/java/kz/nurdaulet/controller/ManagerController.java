@@ -163,7 +163,7 @@ public class ManagerController {
                               Model model) {
         managerFoodFacade.checkManagerAndRestaurant(userDetails.getId(), restaurantId);
 
-        model.addAttribute("restaurants", restaurantService.getMyRestaurants(restaurantId));
+        model.addAttribute("restaurants", restaurantService.getMyRestaurants(userDetails.getId()));
         model.addAttribute("foods", foodService.getFoodByRestaurantIdForManager(restaurantId));
 
         return "restaurant/restaurantManage";
