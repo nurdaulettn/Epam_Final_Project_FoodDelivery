@@ -124,6 +124,10 @@
         <div class="actions"
              th:if="${restaurant.status.name() == 'ACTIVE'}"
              style="margin-top:18px; margin-left:0;">
+            <a class="btn btn-ghost"
+               th:href="@{/restaurants/manager/my-restaurants/{id}(id=${restaurant.id})}">
+                Управлять меню
+            </a>
             <a class="btn btn-primary"
                th:href="@{/restaurants/manager/{id}/foods/create(id=${restaurant.id})}">
                 + Добавить блюдо

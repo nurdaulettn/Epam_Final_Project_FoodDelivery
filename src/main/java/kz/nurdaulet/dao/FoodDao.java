@@ -12,6 +12,8 @@ public interface FoodDao {
 
     List<Food> getFoodsByRestaurant(Long restaurantId);
 
+    List<Food> getFoodsByRestaurantForManager(Long restaurantId);
+
     List<Food> getFoodsBySimilarName(String name);
 
     Food getFoodById(Long id);

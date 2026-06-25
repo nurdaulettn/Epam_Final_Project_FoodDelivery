@@ -65,14 +65,15 @@ public class ManagerFoodFacadeImpl implements ManagerFoodFacade {
         foodService.enableFood(foodId);
     }
 
-    private void checkManagerAndRestaurant(Long managerId, Long restaurantId) {
+    public void checkManagerAndRestaurant(Long managerId, Long restaurantId) {
         Restaurant restaurant = restaurantService.getRestaurantById(restaurantId);
 
         if (!restaurant.getManagerId().equals(managerId)) {
             throw new IncorrectAddingFoodException(DO_NOT_HAVE_PERMISSION);
         }
 
-        if (!restaurant.getStatus().equals(RestaurantStatus.ACTIVE)) {
+        if (!(restaurant.getStatus().equals(RestaurantStatus.ACTIVE)
+        || restaurant.getStatus().equals(RestaurantStatus.INACTIVE))) {
             throw new IncorrectAddingFoodException(DO_NOT_HAVE_PERMISSION);
         }
     }

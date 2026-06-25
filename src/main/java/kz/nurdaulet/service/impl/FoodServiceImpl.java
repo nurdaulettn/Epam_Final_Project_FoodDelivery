@@ -56,6 +56,11 @@ public class FoodServiceImpl implements FoodService {
     }
 
     @Override
+    public List<Food> getFoodByRestaurantIdForManager(Long restaurantId) {
+        return foodDao.getFoodsByRestaurantForManager(restaurantId);
+    }
+
+    @Override
     public List<Food> getFoodBySimilarName(String name) {
         return foodDao.getFoodsBySimilarName(name);
     }
@@ -85,14 +90,13 @@ public class FoodServiceImpl implements FoodService {
     public void update(FoodCreateDto foodCreateDto, Long restaurantId, Long foodId) {
         checkFoodById(foodId);
 
-        Food food = new Food();
+        Food food = foodDao.getFoodById(foodId);
 
         food.setId(foodId);
         food.setName(foodCreateDto.getName().trim());
         food.setDescription(foodCreateDto.getDescription());
         food.setPrice(foodCreateDto.getPrice());
         food.setCategoryId(foodCreateDto.getCategoryId());
-        food.setAvailable(true);
         food.setRestaurantId(restaurantId);
 
         foodDao.update(food);

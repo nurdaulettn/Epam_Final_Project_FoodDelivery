@@ -129,7 +129,7 @@ public class ManagerController {
         return "redirect:/restaurants/manager/my-restaurants/" + restaurantId;
     }
 
-    @DeleteMapping("/{restaurantId}/foods/{foodId}")
+    @PostMapping("/{restaurantId}/foods/{foodId}/delete")
     public String deleteFood(@PathVariable("restaurantId") Long restaurantId,
                              @PathVariable("foodId") Long foodId,
                              @AuthenticationPrincipal CustomUserDetails userDetails) {
@@ -158,9 +158,13 @@ public class ManagerController {
 
 
     @GetMapping("/my-restaurants/{restaurantId}")
-    public String restaurants(@PathVariable("restaurantId") Long restaurantId, Model model) {
+    public String restaurants(@PathVariable("restaurantId") Long restaurantId,
+                              @AuthenticationPrincipal CustomUserDetails userDetails,
+                              Model model) {
+        managerFoodFacade.checkManagerAndRestaurant(userDetails.getId(), restaurantId);
+
         model.addAttribute("restaurants", restaurantService.getMyRestaurants(restaurantId));
-        model.addAttribute("foods", foodService.getFoodByRestaurantId(restaurantId));
+        model.addAttribute("foods", foodService.getFoodByRestaurantIdForManager(restaurantId));
 
         return "restaurant/restaurantManage";
     }

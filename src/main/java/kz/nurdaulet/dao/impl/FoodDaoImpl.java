@@ -13,6 +13,7 @@ public class FoodDaoImpl implements FoodDao {
     public static final String FIND_ALL = "SELECT * FROM foods WHERE is_available = true";
     public static final String FIND_BY_CATEGORY = "SELECT * FROM foods WHERE category_id = ? AND is_available = true";
     public static final String FIND_BY_RESTAURANT = "SELECT * FROM foods WHERE restaurant_id = ? AND is_available = true";
+    public static final String FIND_BY_RESTAURANT_FOR_MANAGER = "SELECT * FROM foods WHERE restaurant_id = ?";
     public static final String FIND_SIMILAR_NAME = "SELECT * FROM foods WHERE name ILIKE CONCAT('%', ?, '%') AND is_available = true";
     public static final String FIND_BY_ID = "SELECT * FROM foods WHERE id = ?";
     public static final String FIND_BY_NAME = "SELECT * FROM foods WHERE name = ?";
@@ -50,6 +51,11 @@ public class FoodDaoImpl implements FoodDao {
     @Override
     public List<Food> getFoodsByRestaurant(Long restaurantId) {
         return jdbcTemplate.query(FIND_BY_RESTAURANT, mapper, restaurantId);
+    }
+
+    @Override
+    public List<Food> getFoodsByRestaurantForManager(Long restaurantId) {
+        return jdbcTemplate.query(FIND_BY_RESTAURANT_FOR_MANAGER, mapper, restaurantId);
     }
 
     @Override

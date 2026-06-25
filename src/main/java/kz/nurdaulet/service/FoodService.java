@@ -14,6 +14,8 @@ public interface FoodService {
 
     List<Food> getFoodByRestaurantId(Long restaurantId);
 
+    List<Food> getFoodByRestaurantIdForManager(Long restaurantId);
+
     List<Food> getFoodBySimilarName(String name);
 
     Food getFoodById(Long id);

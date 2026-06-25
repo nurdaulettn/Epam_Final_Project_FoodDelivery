@@ -8,4 +8,5 @@ public interface ManagerFoodFacade {
     void deleteFood(Long managerId, Long restaurantId, Long foodId);
     void disableFood(Long managerId, Long restaurantId, Long foodId);
     void enableFood(Long managerId, Long restaurantId, Long foodId);
+    void checkManagerAndRestaurant(Long managerId, Long restaurantId);
 }
