@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AsapJe - Управление меню</title>
+    <link rel="stylesheet" th:href="@{/static/css/index.css}">
+</head>
+<body>
+<header class="topbar">
+    <a class="brand" th:href="@{/}">
+        <span class="brand-mark">AJ</span>
+        <span>AsapJe</span>
+    </a>
+
+    <nav class="nav">
+        <a th:href="@{/restaurants/manager/my-restaurants}">Мои рестораны</a>
+        <a th:href="@{/foods}">Все блюда</a>
+    </nav>
+
+    <div class="actions" th:if="${currentUsername != null}">
+        <span class="account-pill">
+            <span class="account-avatar" th:text="${#strings.substring(currentUsername,0,1)}">U</span>
+            <span class="account-name" th:text="${currentUsername}">user</span>
+        </span>
+        <form class="logout-form" th:action="@{/logout}" method="post">
+            <input type="hidden"
+                   th:if="${_csrf != null}"
+                   th:name="${_csrf.parameterName}"
+                   th:value="${_csrf.token}">
+            <button class="btn btn-ghost" type="submit">Выйти</button>
+        </form>
+    </div>
+</header>
+
+<main class="section">
+    <div class="section-head">
+        <p class="eyebrow">Панель менеджера</p>
+        <h2>Управление меню</h2>
+    </div>
+
+    <div style="display:flex; gap:12px; flex-wrap:wrap; margin-bottom:24px;">
+        <a class="btn btn-primary"
+           th:href="@{/restaurants/manager/{id}/foods/create(id=${restaurantId})}">
+            + Добавить блюдо
+        </a>
+        <a class="btn btn-ghost" th:href="@{/restaurants/manager/my-restaurants}">
+            Назад к ресторанам
+        </a>
+    </div>
+
+    <div class="cards">
+        <article class="restaurant" th:each="food : ${foods}">
+            <div class="restaurant-image green"
+                 th:text="${#strings.substring(food.name,0,1)}">
+                F
+            </div>
+
+            <h3 th:text="${food.name}">Food name</h3>
+
+            <p th:text="${food.description}">Description</p>
+
+            <span>
+                <span th:text="${food.price}">0</span>
+                ₸
+            </span>
+
+            <br><br>
+
+            <small>
+                Статус:
+                <span th:if="${food.available}">доступно</span>
+                <span th:unless="${food.available}">недоступно</span>
+            </small>
+
+            <div style="display:flex; flex-wrap:wrap; gap:10px; margin-top:18px;">
+                <a class="btn btn-primary"
+                   th:href="@{/restaurants/manager/{restaurantId}/foods/{foodId}/update(restaurantId=${restaurantId}, foodId=${food.id})}">
+                    Редактировать
+                </a>
+
+                <form th:if="${food.available}"
+                      th:action="@{/restaurants/manager/{restaurantId}/foods/{foodId}/disable(restaurantId=${restaurantId}, foodId=${food.id})}"
+                      method="post"
+                      style="margin:0;">
+                    <input type="hidden"
+                           th:if="${_csrf != null}"
+                           th:name="${_csrf.parameterName}"
+                           th:value="${_csrf.token}">
+                    <button class="btn btn-ghost" type="submit">
+                        Отключить
+                    </button>
+                </form>
+
+                <form th:unless="${food.available}"
+                      th:action="@{/restaurants/manager/{restaurantId}/foods/{foodId}/enable(restaurantId=${restaurantId}, foodId=${food.id})}"
+                      method="post"
+                      style="margin:0;">
+                    <input type="hidden"
+                           th:if="${_csrf != null}"
+                           th:name="${_csrf.parameterName}"
+                           th:value="${_csrf.token}">
+                    <button class="btn btn-ghost" type="submit">
+                        Включить
+                    </button>
+                </form>
+
+                <form th:unless="${food.available}"
+                      th:action="@{/restaurants/manager/{restaurantId}/foods/{foodId}/delete(restaurantId=${restaurantId}, foodId=${food.id})}"
+                      method="post"
+                      style="margin:0;">
+                    <input type="hidden"
+                           th:if="${_csrf != null}"
+                           th:name="${_csrf.parameterName}"
+                           th:value="${_csrf.token}">
+                    <button class="btn btn-ghost" type="submit">
+                        Удалить
+                    </button>
+                </form>
+            </div>
+        </article>
+    </div>
+
+    <div th:if="${#lists.isEmpty(foods)}"
+         style="margin-top:40px; text-align:center;">
+        <h3>В этом ресторане пока нет блюд</h3>
+        <a class="btn btn-primary"
+           th:href="@{/restaurants/manager/{id}/foods/create(id=${restaurantId})}">
+            Создать первое блюдо
+        </a>
+    </div>
+</main>
+
+</body>
+</html>
