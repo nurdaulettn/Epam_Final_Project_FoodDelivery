@@ -3,6 +3,8 @@ package kz.nurdaulet.service.impl;
 import kz.nurdaulet.dao.OrderDao;
 import kz.nurdaulet.dao.OrderItemDao;
 import kz.nurdaulet.dto.CheckoutDto;
+import kz.nurdaulet.dto.OrderItemDetailsDto;
+import kz.nurdaulet.dto.OrderSummaryDto;
 import kz.nurdaulet.entity.Food;
 import kz.nurdaulet.entity.Order;
 import kz.nurdaulet.entity.OrderItem;
@@ -20,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -102,15 +105,15 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
-    public List<Order> getCustomerOrders(Long userId) {
-        return orderDao.findByUserId(userId);
+    public List<OrderSummaryDto> getCustomerOrders(Long userId) {
+        return buildOrderSummaries(orderDao.findByUserId(userId));
     }
 
     @Override
-    public List<OrderItem> getCustomerOrderItems(Long userId, Long orderId) {
+    public List<OrderItemDetailsDto> getCustomerOrderItems(Long userId, Long orderId) {
         getCustomerOrder(userId, orderId);
 
-        return orderItemDao.findByOrderId(orderId);
+        return buildOrderItemDetails(orderItemDao.findByOrderId(orderId));
     }
 
     @Override
@@ -148,6 +151,41 @@ public class OrderServiceImpl implements OrderService {
         orderDao.updateStatus(orderId, status);
 
         return orderDao.findById(orderId);
+    }
+
+    private List<OrderSummaryDto> buildOrderSummaries(List<Order> orders) {
+        List<OrderSummaryDto> summaries = new ArrayList<>();
+
+        for (Order order : orders) {
+            Restaurant restaurant = restaurantService.getRestaurantById(order.getRestaurantId());
+            summaries.add(new OrderSummaryDto(
+                    order.getId(),
+                    restaurant.getName(),
+                    order.getStatus(),
+                    order.getDeliveryType(),
+                    order.getTotalPrice(),
+                    order.getCreatedAt()
+            ));
+        }
+
+        return summaries;
+    }
+
+    private List<OrderItemDetailsDto> buildOrderItemDetails(List<OrderItem> orderItems) {
+        List<OrderItemDetailsDto> details = new ArrayList<>();
+
+        for (OrderItem item : orderItems) {
+            Food food = foodService.getFoodById(item.getFoodId());
+            details.add(new OrderItemDetailsDto(
+                    item.getFoodId(),
+                    food.getName(),
+                    item.getQuantity(),
+                    item.getPrice(),
+                    item.getPrice() * item.getQuantity()
+            ));
+        }
+
+        return details;
     }
 
     private void validateCart(Map<Long, Integer> cart) {

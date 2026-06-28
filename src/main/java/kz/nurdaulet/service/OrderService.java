@@ -1,8 +1,9 @@
 package kz.nurdaulet.service;
 
 import kz.nurdaulet.dto.CheckoutDto;
+import kz.nurdaulet.dto.OrderItemDetailsDto;
+import kz.nurdaulet.dto.OrderSummaryDto;
 import kz.nurdaulet.entity.Order;
-import kz.nurdaulet.entity.OrderItem;
 import kz.nurdaulet.entity.enums.OrderStatus;
 
 import java.util.List;
@@ -13,9 +14,9 @@ public interface OrderService {
 
     Order getCustomerOrder(Long userId, Long orderId);
 
-    List<Order> getCustomerOrders(Long userId);
+    List<OrderSummaryDto> getCustomerOrders(Long userId);
 
-    List<OrderItem> getCustomerOrderItems(Long userId, Long orderId);
+    List<OrderItemDetailsDto> getCustomerOrderItems(Long userId, Long orderId);
 
     Order payOrder(Long userId, Long orderId);
 
