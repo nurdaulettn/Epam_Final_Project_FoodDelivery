@@ -35,7 +35,7 @@ public class RestaurantServiceImpl implements RestaurantService {
         restaurant.setDescription(dto.getDescription());
         restaurant.setAddress(dto.getAddress());
         restaurant.setPhone(dto.getPhone());
-        restaurant.setRatingAvg(0D);
+        restaurant.setRatingAvg(0.0D);
         restaurant.setRatingCount(0);
         restaurant.setOpeningTime(dto.getOpeningTime());
         restaurant.setClosingTime(dto.getClosingTime());

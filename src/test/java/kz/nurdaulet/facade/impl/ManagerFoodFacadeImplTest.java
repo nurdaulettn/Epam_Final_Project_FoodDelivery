@@ -27,6 +27,9 @@ class ManagerFoodFacadeImplTest {
     private static final Long ANOTHER_RESTAURANT_ID = 11L;
     private static final Long FOOD_ID = 100L;
     private static final Long CATEGORY_ID = 200L;
+    private static final String FOOD_NAME = "Burger";
+    private static final String FOOD_DESCRIPTION = "Beef";
+    private static final Double FOOD_PRICE = 2500D;
 
     @Mock
     private RestaurantService restaurantService;
@@ -42,93 +45,123 @@ class ManagerFoodFacadeImplTest {
 
     @Test
     void shouldCreateFoodWhenManagerOwnsActiveRestaurant() {
+        // given
         FoodCreateDto dto = createFoodDto();
         when(restaurantService.getRestaurantById(RESTAURANT_ID))
                 .thenReturn(createRestaurant(MANAGER_ID, RestaurantStatus.ACTIVE));
 
+        // when
         testingInstance.createFood(MANAGER_ID, RESTAURANT_ID, dto);
 
+        // then
+        verify(restaurantService).getRestaurantById(RESTAURANT_ID);
         verify(categoryService).getCategoryById(CATEGORY_ID);
         verify(foodService).save(dto, RESTAURANT_ID);
     }
 
     @Test
     void shouldUpdateFoodWhenManagerOwnsRestaurantAndFoodBelongsToRestaurant() {
+        // given
         FoodCreateDto dto = createFoodDto();
         when(restaurantService.getRestaurantById(RESTAURANT_ID))
                 .thenReturn(createRestaurant(MANAGER_ID, RestaurantStatus.ACTIVE));
         when(foodService.getFoodById(FOOD_ID))
                 .thenReturn(createFood(RESTAURANT_ID));
 
+        // when
         testingInstance.updateFood(MANAGER_ID, RESTAURANT_ID, FOOD_ID, dto);
 
+        // then
+        verify(restaurantService).getRestaurantById(RESTAURANT_ID);
+        verify(foodService).getFoodById(FOOD_ID);
         verify(categoryService).getCategoryById(CATEGORY_ID);
         verify(foodService).update(dto, RESTAURANT_ID, FOOD_ID);
     }
 
     @Test
     void shouldDeleteFood() {
+        // given
         when(restaurantService.getRestaurantById(RESTAURANT_ID))
                 .thenReturn(createRestaurant(MANAGER_ID, RestaurantStatus.ACTIVE));
         when(foodService.getFoodById(FOOD_ID))
                 .thenReturn(createFood(RESTAURANT_ID));
 
+        // when
         testingInstance.deleteFood(MANAGER_ID, RESTAURANT_ID, FOOD_ID);
 
+        // then
+        verify(restaurantService).getRestaurantById(RESTAURANT_ID);
+        verify(foodService).getFoodById(FOOD_ID);
         verify(foodService).delete(FOOD_ID);
     }
 
     @Test
     void shouldDisableAndEnableFood() {
+        // given
         when(restaurantService.getRestaurantById(RESTAURANT_ID))
                 .thenReturn(createRestaurant(MANAGER_ID, RestaurantStatus.ACTIVE));
         when(foodService.getFoodById(FOOD_ID))
                 .thenReturn(createFood(RESTAURANT_ID));
 
+        // when
         testingInstance.disableFood(MANAGER_ID, RESTAURANT_ID, FOOD_ID);
         testingInstance.enableFood(MANAGER_ID, RESTAURANT_ID, FOOD_ID);
 
+        // then
+        verify(restaurantService, org.mockito.Mockito.times(2)).getRestaurantById(RESTAURANT_ID);
+        verify(foodService, org.mockito.Mockito.times(2)).getFoodById(FOOD_ID);
         verify(foodService).disableFood(FOOD_ID);
         verify(foodService).enableFood(FOOD_ID);
     }
 
     @Test
     void shouldRejectWhenManagerDoesNotOwnRestaurant() {
+        // given
         when(restaurantService.getRestaurantById(RESTAURANT_ID))
                 .thenReturn(createRestaurant(ANOTHER_MANAGER_ID, RestaurantStatus.ACTIVE));
 
+        // when / then
         assertThrows(IncorrectAddingFoodException.class,
                 () -> testingInstance.createFood(MANAGER_ID, RESTAURANT_ID, createFoodDto()));
 
+        verify(restaurantService).getRestaurantById(RESTAURANT_ID);
         verifyNoInteractions(categoryService);
         verifyNoInteractions(foodService);
     }
 
     @Test
     void shouldRejectWhenRestaurantIsPending() {
+        // given
         when(restaurantService.getRestaurantById(RESTAURANT_ID))
                 .thenReturn(createRestaurant(MANAGER_ID, RestaurantStatus.PENDING));
 
+        // when / then
         assertThrows(IncorrectAddingFoodException.class,
                 () -> testingInstance.createFood(MANAGER_ID, RESTAURANT_ID, createFoodDto()));
 
+        verify(restaurantService).getRestaurantById(RESTAURANT_ID);
         verifyNoInteractions(categoryService);
         verifyNoInteractions(foodService);
     }
 
     @Test
     void shouldRejectWhenFoodBelongsToAnotherRestaurant() {
+        // given
         when(restaurantService.getRestaurantById(RESTAURANT_ID))
                 .thenReturn(createRestaurant(MANAGER_ID, RestaurantStatus.ACTIVE));
         when(foodService.getFoodById(FOOD_ID))
                 .thenReturn(createFood(ANOTHER_RESTAURANT_ID));
 
+        // when / then
         assertThrows(IncorrectAddingFoodException.class,
                 () -> testingInstance.updateFood(MANAGER_ID, RESTAURANT_ID, FOOD_ID, createFoodDto()));
+        verify(restaurantService).getRestaurantById(RESTAURANT_ID);
+        verify(foodService).getFoodById(FOOD_ID);
+        verifyNoInteractions(categoryService);
     }
 
     private FoodCreateDto createFoodDto() {
-        return new FoodCreateDto("Burger", "Beef", 2500D, CATEGORY_ID);
+        return new FoodCreateDto(FOOD_NAME, FOOD_DESCRIPTION, FOOD_PRICE, CATEGORY_ID);
     }
 
     private Restaurant createRestaurant(Long managerId, RestaurantStatus status) {
@@ -141,6 +174,6 @@ class ManagerFoodFacadeImplTest {
     }
 
     private Food createFood(Long restaurantId) {
-        return new Food(FOOD_ID, "Burger", "Beef", 2500D, true, restaurantId, CATEGORY_ID);
+        return new Food(FOOD_ID, FOOD_NAME, FOOD_DESCRIPTION, FOOD_PRICE, true, restaurantId, CATEGORY_ID);
     }
 }

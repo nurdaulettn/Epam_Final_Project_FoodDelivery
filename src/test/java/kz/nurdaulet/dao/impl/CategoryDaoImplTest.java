@@ -4,6 +4,8 @@ import kz.nurdaulet.entity.Category;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -21,73 +23,102 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class CategoryDaoImplTest {
+    private static final Long CATEGORY_ID = 1L;
+    private static final Long MAPPED_CATEGORY_ID = 2L;
+    private static final String GET_ALL_CATEGORIES_QUERY = "SELECT * FROM categories";
+    private static final String BURGERS = "Burgers";
+    private static final String PIZZA = "Pizza";
+    private static final String MISSING_CATEGORY = "Missing";
+    private static final String SEARCH_TEXT = "bur";
+    private static final String ID_COLUMN = "id";
+    private static final String NAME_COLUMN = "name";
+    private static final String GET_CATEGORY_BY_ID = "SELECT * FROM categories WHERE id = ?";
+    private static final String GET_CATEGORY_BY_NAME = "SELECT * FROM categories WHERE name = ?";
+    private static final String FIND_BY_SIMILAR_NAME_QUERY = "SELECT * FROM categories WHERE name ILIKE CONCAT('%', ?, '%')";
+    private static final String SAVE_CATEGORY_QUERY = "INSERT INTO categories (name) VALUES (?)";
+
     @Mock
     private JdbcTemplate jdbcTemplate;
 
     @Mock
     private ResultSet resultSet;
 
+    @Captor
+    ArgumentCaptor<RowMapper<Category>> categoryCaptor;
+
+    @InjectMocks
+    CategoryDaoImpl testingInstance;
+
+
     @Test
     void shouldFindAllCategoriesAndMapRows() throws Exception {
-        CategoryDaoImpl dao = new CategoryDaoImpl(jdbcTemplate);
-        ArgumentCaptor<RowMapper<Category>> mapperCaptor = ArgumentCaptor.forClass(RowMapper.class);
+        // given
+        when(jdbcTemplate.query(eq(GET_ALL_CATEGORIES_QUERY), any(RowMapper.class)))
+                .thenReturn(List.of(new Category(CATEGORY_ID, BURGERS)));
+        when(resultSet.getLong(ID_COLUMN)).thenReturn(MAPPED_CATEGORY_ID);
+        when(resultSet.getString(NAME_COLUMN)).thenReturn(PIZZA);
 
-        when(jdbcTemplate.query(eq("SELECT * FROM categories"), mapperCaptor.capture()))
-                .thenReturn(List.of(new Category(1L, "Burgers")));
+        // when
+        List<Category> result = testingInstance.findAll();
 
-        List<Category> result = dao.findAll();
-
+        // then
+        verify(jdbcTemplate).query(eq(GET_ALL_CATEGORIES_QUERY), categoryCaptor.capture());
         assertEquals(1, result.size());
-        assertEquals("Burgers", result.get(0).getName());
+        assertEquals(BURGERS, result.get(0).getName());
 
-        when(resultSet.getLong("id")).thenReturn(2L);
-        when(resultSet.getString("name")).thenReturn("Pizza");
-
-        Category mapped = mapperCaptor.getValue().mapRow(resultSet, 0);
-
-        assertEquals(2L, mapped.getId());
-        assertEquals("Pizza", mapped.getName());
+        Category mappedCategory = categoryCaptor.getValue().mapRow(resultSet, 0);
+        assertEquals(MAPPED_CATEGORY_ID, mappedCategory.getId());
+        assertEquals(PIZZA, mappedCategory.getName());
     }
 
     @Test
     void shouldFindCategoryById() {
-        CategoryDaoImpl dao = new CategoryDaoImpl(jdbcTemplate);
-        Category category = new Category(1L, "Burgers");
+        // given
+        Category category = new Category(CATEGORY_ID, BURGERS);
 
-        when(jdbcTemplate.query(eq("SELECT * FROM categories WHERE id = ?"), any(RowMapper.class), eq(1L)))
+        when(jdbcTemplate.query(eq(GET_CATEGORY_BY_ID), any(RowMapper.class), eq(CATEGORY_ID)))
                 .thenReturn(List.of(category));
 
-        assertEquals(category, dao.findById(1L));
+        // when
+        Category result = testingInstance.findById(CATEGORY_ID);
+
+        // then
+        assertEquals(category, result);
+        verify(jdbcTemplate).query(eq(GET_CATEGORY_BY_ID), any(RowMapper.class), eq(CATEGORY_ID));
     }
 
     @Test
     void shouldReturnNullWhenCategoryByNameNotFound() {
-        CategoryDaoImpl dao = new CategoryDaoImpl(jdbcTemplate);
-
-        when(jdbcTemplate.query(eq("SELECT * FROM categories WHERE name = ?"), any(RowMapper.class), eq("Missing")))
+        // given
+        when(jdbcTemplate.query(eq(GET_CATEGORY_BY_NAME), any(RowMapper.class), eq(MISSING_CATEGORY)))
                 .thenReturn(List.of());
 
-        assertNull(dao.findByName("Missing"));
+        // when
+        Category result = testingInstance.findByName(MISSING_CATEGORY);
+
+        // then
+        assertNull(result);
+        verify(jdbcTemplate).query(eq(GET_CATEGORY_BY_NAME), any(RowMapper.class), eq(MISSING_CATEGORY));
     }
 
     @Test
     void shouldFindCategoriesBySimilarName() {
-        CategoryDaoImpl dao = new CategoryDaoImpl(jdbcTemplate);
+        // when
+        testingInstance.findBySimilarName(SEARCH_TEXT);
 
-        dao.findBySimilarName("bur");
-
+        // then
         verify(jdbcTemplate).query(
-                eq("SELECT * FROM categories WHERE name ILIKE CONCAT('%', ?, '%')"),
+                eq(FIND_BY_SIMILAR_NAME_QUERY),
                 any(RowMapper.class),
-                eq("bur"));
+                eq(SEARCH_TEXT));
     }
 
     @Test
     void shouldSaveCategory() {
-        CategoryDaoImpl dao = new CategoryDaoImpl(jdbcTemplate);
+        // when
+        testingInstance.save(new Category(CATEGORY_ID, BURGERS));
 
-        dao.save(new Category(1L, "Burgers"));
-
-        verify(jdbcTemplate).update("INSERT INTO categories (name) VALUES (?)", "Burgers");
+        // then
+        verify(jdbcTemplate).update(SAVE_CATEGORY_QUERY, BURGERS);
     }
 }

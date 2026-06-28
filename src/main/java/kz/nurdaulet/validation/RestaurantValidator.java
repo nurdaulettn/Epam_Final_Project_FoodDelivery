@@ -8,6 +8,10 @@ import org.springframework.validation.Validator;
 
 @Component
 public class RestaurantValidator implements Validator {
+    private static final String FIELD = "name";
+    private static final String ERROR_CODE = "duplicated";
+    private static final String DEFAULT_MESSAGE = "restaurant already exists";
+
     private final RestaurantDao restaurantDao;
 
     public RestaurantValidator(RestaurantDao restaurantDao) {
@@ -24,7 +28,7 @@ public class RestaurantValidator implements Validator {
         RestaurantCreateDto dto = (RestaurantCreateDto) target;
 
         if (restaurantDao.findByName(dto.getName().trim()) != null) {
-            errors.rejectValue("name", "duplicated", "restaurant already exists");
+            errors.rejectValue(FIELD, ERROR_CODE, DEFAULT_MESSAGE);
         }
     }
 }

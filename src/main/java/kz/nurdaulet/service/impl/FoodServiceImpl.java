@@ -67,9 +67,12 @@ public class FoodServiceImpl implements FoodService {
 
     @Override
     public Food getFoodById(Long id) {
-        checkFoodById(id);
+        Food food = foodDao.getFoodById(id);
+        if (food != null) {
+            return food;
+        }
 
-        return foodDao.getFoodById(id);
+        throw new FoodNotFoundException(FOOD_NOT_FOUND.formatted(id));
     }
 
     @Override
@@ -105,12 +108,14 @@ public class FoodServiceImpl implements FoodService {
     @Override
     public void disableFood(Long foodId) {
         checkFoodById(foodId);
+
         foodDao.disableById(foodId);
     }
 
     @Override
     public void enableFood(Long foodId) {
         checkFoodById(foodId);
+
         foodDao.enableById(foodId);
     }
 
@@ -144,27 +149,11 @@ public class FoodServiceImpl implements FoodService {
 
 
     private static void selectByRestaurant(Long restaurantId, List<Food> foods) {
-        Iterator<Food> iterator = foods.iterator();
-
-        while (iterator.hasNext()) {
-            Food food = iterator.next();
-
-            if (!food.getRestaurantId().equals(restaurantId)) {
-                iterator.remove();
-            }
-        }
+        foods.removeIf(food -> !food.getRestaurantId().equals(restaurantId));
     }
 
     private static void selectByCategory(Long categoryId, List<Food> foods) {
-        Iterator<Food> iterator = foods.iterator();
-
-        while (iterator.hasNext()) {
-            Food food = iterator.next();
-
-            if (!food.getCategoryId().equals(categoryId)) {
-                iterator.remove();
-            }
-        }
+        foods.removeIf(food -> !food.getCategoryId().equals(categoryId));
     }
 
     private void checkFoodById(Long foodId) {

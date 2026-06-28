@@ -53,24 +53,27 @@ public class UserDaoImpl implements UserDao {
     public User findById(Long id) {
         log.info("Fetching user by id: {}", id);
 
-        return jdbcTemplate.query(FIND_BY_ID, userRowMapper, id)
-                .stream().findFirst().orElse(null);
+        return jdbcTemplate.query(FIND_BY_ID, userRowMapper, id).stream()
+                .findFirst()
+                .orElse(null);
     }
 
     @Override
     public User findByEmail(String email) {
         log.info("Fetching user by email {}", email);
 
-        return jdbcTemplate.query(FIND_BY_EMAIL, userRowMapper, email)
-                .stream().findFirst().orElse(null);
+        return jdbcTemplate.query(FIND_BY_EMAIL, userRowMapper, email).stream()
+                .findFirst()
+                .orElse(null);
     }
 
     @Override
     public User findByUsername(String username) {
         log.info("Fetching user by username {}", username);
 
-        return jdbcTemplate.query(FIND_BY_USERNAME, userRowMapper, username)
-                .stream().findFirst().orElse(null);
+        return jdbcTemplate.query(FIND_BY_USERNAME, userRowMapper, username).stream()
+                .findFirst()
+                .orElse(null);
     }
 
     @Override

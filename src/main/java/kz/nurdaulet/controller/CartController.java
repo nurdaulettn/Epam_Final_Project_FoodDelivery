@@ -28,6 +28,27 @@ import java.util.Map;
 @RequestMapping("/cart")
 public class CartController {
     private static final String CART_SESSION_ATTRIBUTE = "cart";
+    private static final String CART_ITEMS_ATTRIBUTE = "cartItems";
+    private static final String TOTAL_ATTRIBUTE = "total";
+    private static final String CHECKOUT_ATTRIBUTE = "checkout";
+    private static final String DELIVERY_TYPES_ATTRIBUTE = "deliveryTypes";
+    private static final String CART_ERROR_ATTRIBUTE = "cartError";
+    private static final String CART_SUCCESS_ATTRIBUTE = "cartSuccess";
+    private static final String CART_VIEW = "cart/cart";
+    private static final String CHECKOUT_VIEW = "cart/checkout";
+    private static final String REDIRECT_CART = "redirect:/cart";
+    private static final String REDIRECT_FOODS = "redirect:/foods";
+    private static final String REDIRECT_ORDERS = "redirect:/orders/";
+    private static final String CART_EMPTY_ERROR_CODE = "cart.empty";
+    private static final String ORDER_CREATE_FAILED_ERROR_CODE = "order.create.failed";
+    private static final String DELIVERY_ADDRESS_ERROR_FIELD = "deliveryAddress";
+    private static final String DELIVERY_ADDRESS_REQUIRED_ERROR_CODE = "deliveryAddress.required";
+    private static final String CART_EMPTY_MESSAGE = "Cart is empty";
+    private static final String FOOD_ADDED_MESSAGE = "Food added to cart";
+    private static final String QUANTITY_UPDATED_MESSAGE = "Quantity updated";
+    private static final String FOOD_REMOVED_MESSAGE = "Food removed from cart";
+    private static final String CART_CLEARED_MESSAGE = "Cart cleared";
+    private static final String DELIVERY_ADDRESS_REQUIRED_MESSAGE = "Delivery address is required";
 
     private final CartService cartService;
     private final OrderService orderService;
@@ -40,11 +61,10 @@ public class CartController {
     @GetMapping
     public String cart(HttpSession session, Model model) {
         Map<Long, Integer> cart = getCart(session);
+        model.addAttribute(CART_ITEMS_ATTRIBUTE, cartService.getCartItems(cart));
+        model.addAttribute(TOTAL_ATTRIBUTE, cartService.calculateTotal(cart));
 
-        model.addAttribute("cartItems", cartService.getCartItems(cart));
-        model.addAttribute("total", cartService.calculateTotal(cart));
-
-        return "cart/cart";
+        return CART_VIEW;
     }
 
     @GetMapping("/checkout")
@@ -54,22 +74,22 @@ public class CartController {
         Map<Long, Integer> cart = getCart(session);
 
         if (cart.isEmpty()) {
-            redirectAttributes.addFlashAttribute("cartError", "Корзина пуста");
+            redirectAttributes.addFlashAttribute(CART_ERROR_ATTRIBUTE, CART_EMPTY_MESSAGE);
 
-            return "redirect:/cart";
+            return REDIRECT_CART;
         }
 
-        if (!model.containsAttribute("checkout")) {
-            model.addAttribute("checkout", new CheckoutDto());
+        if (!model.containsAttribute(CHECKOUT_ATTRIBUTE)) {
+            model.addAttribute(CHECKOUT_ATTRIBUTE, new CheckoutDto());
         }
 
         addCheckoutAttributes(model, cart);
 
-        return "cart/checkout";
+        return CHECKOUT_VIEW;
     }
 
     @PostMapping("/checkout")
-    public String checkout(@Valid @ModelAttribute("checkout") CheckoutDto checkoutDto,
+    public String checkout(@Valid @ModelAttribute(CHECKOUT_ATTRIBUTE) CheckoutDto checkoutDto,
                            BindingResult bindingResult,
                            @AuthenticationPrincipal CustomUserDetails userDetails,
                            HttpSession session,
@@ -77,7 +97,7 @@ public class CartController {
         Map<Long, Integer> cart = getCart(session);
 
         if (cart.isEmpty()) {
-            bindingResult.reject("cart.empty", "Корзина пуста");
+            bindingResult.reject(CART_EMPTY_ERROR_CODE, CART_EMPTY_MESSAGE);
         }
 
         validateDeliveryAddress(checkoutDto, bindingResult);
@@ -85,7 +105,7 @@ public class CartController {
         if (bindingResult.hasErrors()) {
             addCheckoutAttributes(model, cart);
 
-            return "cart/checkout";
+            return CHECKOUT_VIEW;
         }
 
         if (DeliveryType.PICKUP.equals(checkoutDto.getDeliveryType())) {
@@ -95,12 +115,12 @@ public class CartController {
         try {
             Order order = orderService.createOrder(userDetails.getId(), cart, checkoutDto);
 
-            return "redirect:/orders/" + order.getId();
+            return REDIRECT_ORDERS + order.getId();
         } catch (CartOperationException exception) {
-            bindingResult.reject("order.create.failed", exception.getMessage());
+            bindingResult.reject(ORDER_CREATE_FAILED_ERROR_CODE, exception.getMessage());
             addCheckoutAttributes(model, cart);
 
-            return "cart/checkout";
+            return CHECKOUT_VIEW;
         }
     }
 
@@ -110,12 +130,13 @@ public class CartController {
                           RedirectAttributes redirectAttributes) {
         try {
             cartService.addFood(getCart(session), foodId);
-            redirectAttributes.addFlashAttribute("cartSuccess", "Блюдо добавлено в корзину");
+
+            redirectAttributes.addFlashAttribute(CART_SUCCESS_ATTRIBUTE, FOOD_ADDED_MESSAGE);
         } catch (CartOperationException exception) {
-            redirectAttributes.addFlashAttribute("cartError", exception.getMessage());
+            redirectAttributes.addFlashAttribute(CART_ERROR_ATTRIBUTE, exception.getMessage());
         }
 
-        return "redirect:/foods";
+        return REDIRECT_FOODS;
     }
 
     @PostMapping("/update/{foodId}")
@@ -125,12 +146,13 @@ public class CartController {
                                  RedirectAttributes redirectAttributes) {
         try {
             cartService.updateQuantity(getCart(session), foodId, quantity);
-            redirectAttributes.addFlashAttribute("cartSuccess", "Количество обновлено");
+
+            redirectAttributes.addFlashAttribute(CART_SUCCESS_ATTRIBUTE, QUANTITY_UPDATED_MESSAGE);
         } catch (CartOperationException exception) {
-            redirectAttributes.addFlashAttribute("cartError", exception.getMessage());
+            redirectAttributes.addFlashAttribute(CART_ERROR_ATTRIBUTE, exception.getMessage());
         }
 
-        return "redirect:/cart";
+        return REDIRECT_CART;
     }
 
     @PostMapping("/remove/{foodId}")
@@ -138,17 +160,17 @@ public class CartController {
                              HttpSession session,
                              RedirectAttributes redirectAttributes) {
         cartService.removeFood(getCart(session), foodId);
-        redirectAttributes.addFlashAttribute("cartSuccess", "Блюдо удалено из корзины");
+        redirectAttributes.addFlashAttribute(CART_SUCCESS_ATTRIBUTE, FOOD_REMOVED_MESSAGE);
 
-        return "redirect:/cart";
+        return REDIRECT_CART;
     }
 
     @PostMapping("/clear")
     public String clearCart(HttpSession session, RedirectAttributes redirectAttributes) {
         cartService.clear(getCart(session));
-        redirectAttributes.addFlashAttribute("cartSuccess", "Корзина очищена");
+        redirectAttributes.addFlashAttribute(CART_SUCCESS_ATTRIBUTE, CART_CLEARED_MESSAGE);
 
-        return "redirect:/cart";
+        return REDIRECT_CART;
     }
 
     @SuppressWarnings("unchecked")
@@ -166,9 +188,9 @@ public class CartController {
     }
 
     private void addCheckoutAttributes(Model model, Map<Long, Integer> cart) {
-        model.addAttribute("cartItems", cartService.getCartItems(cart));
-        model.addAttribute("total", cartService.calculateTotal(cart));
-        model.addAttribute("deliveryTypes", DeliveryType.values());
+        model.addAttribute(CART_ITEMS_ATTRIBUTE, cartService.getCartItems(cart));
+        model.addAttribute(TOTAL_ATTRIBUTE, cartService.calculateTotal(cart));
+        model.addAttribute(DELIVERY_TYPES_ATTRIBUTE, DeliveryType.values());
     }
 
     private void validateDeliveryAddress(CheckoutDto checkoutDto, BindingResult bindingResult) {
@@ -176,9 +198,9 @@ public class CartController {
                 && (checkoutDto.getDeliveryAddress() == null
                 || checkoutDto.getDeliveryAddress().isBlank())) {
             bindingResult.rejectValue(
-                    "deliveryAddress",
-                    "deliveryAddress.required",
-                    "Адрес доставки обязателен"
+                    DELIVERY_ADDRESS_ERROR_FIELD,
+                    DELIVERY_ADDRESS_REQUIRED_ERROR_CODE,
+                    DELIVERY_ADDRESS_REQUIRED_MESSAGE
             );
         }
     }

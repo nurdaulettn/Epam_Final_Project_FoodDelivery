@@ -103,6 +103,4 @@ public class FoodDaoImpl implements FoodDao {
     public void deleteById(Long id) {
         jdbcTemplate.update(DELETE, id);
     }
-
-
 }

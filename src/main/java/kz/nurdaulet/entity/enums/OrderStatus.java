@@ -1,11 +1,11 @@
 package kz.nurdaulet.entity.enums;
 
 public enum OrderStatus {
-    PENDING_PAYMENT("Ожидает оплаты"),
-    PREPARING("Готовится"),
-    READY("Готов к выдаче"),
-    COMPLETED("Завершён"),
-    CANCELLED("Отменён");
+    PENDING_PAYMENT("Pending payment"),
+    PREPARING("Preparing"),
+    READY("Ready for pickup"),
+    COMPLETED("Completed"),
+    CANCELLED("Cancelled");
 
     private final String displayName;
 

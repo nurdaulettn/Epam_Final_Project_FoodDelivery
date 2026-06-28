@@ -8,6 +8,10 @@ import org.springframework.validation.Validator;
 
 @Component
 public class CategoryValidator implements Validator {
+    private static final String NAME = "name";
+    private static final String ERROR_CODE = "duplicated";
+    private static final String ERROR_MESSAGE_CATEGORY_EXISTS = "category already exists";
+
     private final CategoryDao categoryDao;
 
     public CategoryValidator(CategoryDao categoryDao) {
@@ -24,7 +28,7 @@ public class CategoryValidator implements Validator {
         CategoryCreateDto dto = (CategoryCreateDto) target;
 
         if (categoryDao.findByName(dto.getName().trim()) != null) {
-            errors.rejectValue("name", "duplicated", "category already exists");
+            errors.rejectValue(NAME, ERROR_CODE, ERROR_MESSAGE_CATEGORY_EXISTS);
         }
     }
 }

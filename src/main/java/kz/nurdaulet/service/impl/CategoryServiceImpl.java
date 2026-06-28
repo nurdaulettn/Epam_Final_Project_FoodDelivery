@@ -33,11 +33,11 @@ public class CategoryServiceImpl implements CategoryService {
     public Category getCategoryById(Long id) {
         Category category = categoryDao.findById(id);
 
-        if (category == null) {
-            throw new CategoryNotFoundException(String.format(NOT_FOUND_MESSAGE, id));
+        if (category != null) {
+            return category;
         }
 
-        return category;
+        throw new CategoryNotFoundException(String.format(NOT_FOUND_MESSAGE, id));
     }
 
     @Override

@@ -14,8 +14,7 @@ import java.util.Map;
 @Service
 public class CartServiceImpl implements CartService {
     private static final String FOOD_IS_NOT_AVAILABLE = "Food is not available";
-    private static final String FOODS_FROM_DIFFERENT_RESTAURANTS =
-            "Cart can contain foods from only one restaurant";
+    private static final String FOODS_FROM_DIFFERENT_RESTAURANTS = "Cart can contain foods from only one restaurant";
     private static final String INVALID_QUANTITY = "Quantity must be greater than zero";
 
     private final FoodService foodService;
@@ -85,15 +84,13 @@ public class CartServiceImpl implements CartService {
     }
 
     private void validateSameRestaurant(Map<Long, Integer> cart, Food newFood) {
-        if (cart.isEmpty() || cart.containsKey(newFood.getId())) {
-            return;
-        }
+        if (!(cart.isEmpty() || cart.containsKey(newFood.getId()))) {
+            Long existingFoodId = cart.keySet().iterator().next();
+            Food existingFood = foodService.getFoodById(existingFoodId);
 
-        Long existingFoodId = cart.keySet().iterator().next();
-        Food existingFood = foodService.getFoodById(existingFoodId);
-
-        if (!existingFood.getRestaurantId().equals(newFood.getRestaurantId())) {
-            throw new CartOperationException(FOODS_FROM_DIFFERENT_RESTAURANTS);
+            if (!existingFood.getRestaurantId().equals(newFood.getRestaurantId())) {
+                throw new CartOperationException(FOODS_FROM_DIFFERENT_RESTAURANTS);
+            }
         }
     }
 

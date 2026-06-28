@@ -33,8 +33,7 @@ import java.util.Map;
 public class OrderServiceImpl implements OrderService {
     private static final String EMPTY_CART = "Cart is empty";
     private static final String FOOD_IS_NOT_AVAILABLE = "Food is not available";
-    private static final String FOODS_FROM_DIFFERENT_RESTAURANTS =
-            "Cart can contain foods from only one restaurant";
+    private static final String FOODS_FROM_DIFFERENT_RESTAURANTS = "Cart can contain foods from only one restaurant";
     private static final String ORDER_NOT_FOUND = "Order with id %d not found";
     private static final String ORDER_CAN_NOT_BE_PAID = "Order can not be paid";
     private static final String DO_NOT_HAVE_PERMISSION = "You can not manage this order";

@@ -14,13 +14,24 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
-import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.ModelAndView;
+import org.springframework.web.servlet.NoHandlerFoundException;
 import org.springframework.web.servlet.resource.NoResourceFoundException;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
     private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+    private static final String ERROR_VIEW = "error";
+    private static final String HOME_URL = "/";
+    private static final String NOT_FOUND_TITLE = "Nothing found";
+    private static final String NOT_FOUND_MESSAGE = "The requested object was not found or you do not have access to it.";
+    private static final String BUSINESS_RULE_TITLE = "Action is not available";
+    private static final String SERVER_ERROR_TITLE = "Server error";
+    private static final String SERVER_ERROR_MESSAGE = "An unexpected error occurred. Please try again later.";
+    private static final String ERROR_STATUS_ATTRIBUTE = "errorStatus";
+    private static final String ERROR_TITLE_ATTRIBUTE = "errorTitle";
+    private static final String ERROR_MESSAGE_ATTRIBUTE = "errorMessage";
+    private static final String ERROR_BACK_URL_ATTRIBUTE = "errorBackUrl";
 
     @ExceptionHandler({
             NoHandlerFoundException.class,
@@ -36,9 +47,9 @@ public class GlobalExceptionHandler {
 
         return errorView(
                 HttpStatus.NOT_FOUND,
-                "Ничего не найдено",
-                "Запрошенный объект не найден или у вас нет доступа к нему.",
-                "/"
+                NOT_FOUND_TITLE,
+                NOT_FOUND_MESSAGE,
+                HOME_URL
         );
     }
 
@@ -53,9 +64,9 @@ public class GlobalExceptionHandler {
 
         return errorView(
                 HttpStatus.BAD_REQUEST,
-                "Действие недоступно",
+                BUSINESS_RULE_TITLE,
                 exception.getMessage(),
-                "/"
+                HOME_URL
         );
     }
 
@@ -65,19 +76,19 @@ public class GlobalExceptionHandler {
 
         return errorView(
                 HttpStatus.INTERNAL_SERVER_ERROR,
-                "Ошибка сервера",
-                "Произошла непредвиденная ошибка. Попробуйте повторить действие позже.",
-                "/"
+                SERVER_ERROR_TITLE,
+                SERVER_ERROR_MESSAGE,
+                HOME_URL
         );
     }
 
     private ModelAndView errorView(HttpStatus status, String title, String message, String backUrl) {
-        ModelAndView modelAndView = new ModelAndView("error");
+        ModelAndView modelAndView = new ModelAndView(ERROR_VIEW);
         modelAndView.setStatus(status);
-        modelAndView.addObject("errorStatus", status.value());
-        modelAndView.addObject("errorTitle", title);
-        modelAndView.addObject("errorMessage", message);
-        modelAndView.addObject("errorBackUrl", backUrl);
+        modelAndView.addObject(ERROR_STATUS_ATTRIBUTE, status.value());
+        modelAndView.addObject(ERROR_TITLE_ATTRIBUTE, title);
+        modelAndView.addObject(ERROR_MESSAGE_ATTRIBUTE, message);
+        modelAndView.addObject(ERROR_BACK_URL_ATTRIBUTE, backUrl);
 
         return modelAndView;
     }

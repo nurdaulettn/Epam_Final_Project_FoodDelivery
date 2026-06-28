@@ -4,8 +4,8 @@ import jakarta.validation.Valid;
 import kz.nurdaulet.dto.FoodCreateDto;
 import kz.nurdaulet.dto.PageDto;
 import kz.nurdaulet.dto.RestaurantCreateDto;
-import kz.nurdaulet.entity.Order;
 import kz.nurdaulet.entity.CustomUserDetails;
+import kz.nurdaulet.entity.Order;
 import kz.nurdaulet.entity.enums.OrderStatus;
 import kz.nurdaulet.exception.OrderOperationException;
 import kz.nurdaulet.facade.ManagerFoodFacade;
@@ -18,20 +18,49 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequestMapping("/restaurants/manager")
 public class ManagerController {
     private static final int ORDER_PAGE_SIZE = 5;
+    private static final String RESTAURANT_ATTRIBUTE = "restaurant";
+    private static final String RESTAURANTS_ATTRIBUTE = "restaurants";
+    private static final String RESTAURANT_ID_ATTRIBUTE = "restaurantId";
+    private static final String FOOD_ATTRIBUTE = "food";
+    private static final String FOODS_ATTRIBUTE = "foods";
+    private static final String CATEGORY_ATTRIBUTE = "category";
+    private static final String ORDERS_ATTRIBUTE = "orders";
+    private static final String ORDER_ATTRIBUTE = "order";
+    private static final String ORDER_ITEMS_ATTRIBUTE = "orderItems";
+    private static final String PAGE_ATTRIBUTE = "page";
+    private static final String ORDER_SUCCESS_ATTRIBUTE = "orderSuccess";
+    private static final String ORDER_ERROR_ATTRIBUTE = "orderError";
+    private static final String RESTAURANT_CREATE_VIEW = "restaurant/create";
+    private static final String MY_RESTAURANTS_VIEW = "restaurant/my-restaurants";
+    private static final String RESTAURANT_MANAGE_VIEW = "restaurant/restaurantManage";
+    private static final String FOOD_CREATE_VIEW = "food/create";
+    private static final String FOOD_UPDATE_VIEW = "food/update";
+    private static final String MANAGER_ORDERS_VIEW = "order/manager-orders";
+    private static final String MANAGER_ORDER_DETAILS_VIEW = "order/manager-order-details";
+    private static final String REDIRECT_MY_RESTAURANTS = "redirect:/restaurants/manager/my-restaurants";
+    private static final String REDIRECT_RESTAURANT_MANAGE = "redirect:/restaurants/manager/my-restaurants/";
+    private static final String REDIRECT_MANAGER_ORDERS = "redirect:/restaurants/manager/%d/orders";
+    private static final String REDIRECT_MANAGER_ORDER_DETAILS = "redirect:/restaurants/manager/%d/orders/%d";
+    private static final String ORDER_STATUS_UPDATED_MESSAGE = "Order status updated";
 
     private final RestaurantService restaurantService;
     private final RestaurantValidator restaurantValidator;
     private final CategoryService categoryService;
     private final FoodService foodService;
     private final OrderService orderService;
-    private final ManagerFoodFacade  managerFoodFacade;
+    private final ManagerFoodFacade managerFoodFacade;
 
     public ManagerController(RestaurantService restaurantService,
                              RestaurantValidator restaurantValidator,
@@ -48,100 +77,95 @@ public class ManagerController {
     }
 
     @GetMapping("/my-restaurants")
-    public String restaurants(Model model, @AuthenticationPrincipal CustomUserDetails userDetails) {
-        model.addAttribute("restaurants", restaurantService.getMyRestaurants(userDetails.getId()));
+    public String getRestaurants(Model model, @AuthenticationPrincipal CustomUserDetails userDetails) {
+        model.addAttribute(RESTAURANTS_ATTRIBUTE, restaurantService.getMyRestaurants(userDetails.getId()));
 
-        return "restaurant/my-restaurants";
+        return MY_RESTAURANTS_VIEW;
     }
-
 
     @GetMapping("/create")
     public String create(Model model) {
-        if (!model.containsAttribute("restaurant")) {
-            model.addAttribute("restaurant", new RestaurantCreateDto());
+        if (!model.containsAttribute(RESTAURANT_ATTRIBUTE)) {
+            model.addAttribute(RESTAURANT_ATTRIBUTE, new RestaurantCreateDto());
         }
 
-        return "restaurant/create";
+        return RESTAURANT_CREATE_VIEW;
     }
 
     @PostMapping("/create")
-    public String create(@Valid @ModelAttribute("restaurant") RestaurantCreateDto restaurantCreateDto,
+    public String create(@Valid @ModelAttribute(RESTAURANT_ATTRIBUTE) RestaurantCreateDto restaurantCreateDto,
                          BindingResult bindingResult,
                          @AuthenticationPrincipal CustomUserDetails userDetails) {
         restaurantValidator.validate(restaurantCreateDto, bindingResult);
 
         if (bindingResult.hasErrors()) {
-            return "restaurant/create";
+            return RESTAURANT_CREATE_VIEW;
         }
 
         restaurantService.create(restaurantCreateDto, userDetails.getId());
 
-        return "redirect:/restaurants/manager/my-restaurants";
+        return REDIRECT_MY_RESTAURANTS;
     }
 
     @GetMapping("/{restaurantId}/foods/create")
     public String createFoodForm(@PathVariable("restaurantId") Long restaurantId,
-                             Model model) {
-        if (!model.containsAttribute("food")) {
-            model.addAttribute("food", new FoodCreateDto());
+                                 Model model) {
+        if (!model.containsAttribute(FOOD_ATTRIBUTE)) {
+            model.addAttribute(FOOD_ATTRIBUTE, new FoodCreateDto());
         }
 
-        model.addAttribute("restaurantId", restaurantId);
-        model.addAttribute("category", categoryService.getAllCategories());
+        addFoodFormAttributes(model, restaurantId);
 
-        return "food/create";
+        return FOOD_CREATE_VIEW;
     }
 
     @PostMapping("/{restaurantId}/foods/create")
     public String createFood(@PathVariable("restaurantId") Long restaurantId,
-                             @Valid @ModelAttribute("food") FoodCreateDto foodCreateDto,
+                             @Valid @ModelAttribute(FOOD_ATTRIBUTE) FoodCreateDto foodCreateDto,
                              BindingResult bindingResult,
                              @AuthenticationPrincipal CustomUserDetails userDetails,
                              Model model) {
 
         if (bindingResult.hasErrors()) {
-            model.addAttribute("restaurantId", restaurantId);
-            model.addAttribute("category", categoryService.getAllCategories());
+            addFoodFormAttributes(model, restaurantId);
 
-            return "food/create";
+            return FOOD_CREATE_VIEW;
         }
 
         managerFoodFacade.createFood(userDetails.getId(), restaurantId, foodCreateDto);
 
-        return "redirect:/restaurants/manager/my-restaurants";
+        return REDIRECT_MY_RESTAURANTS;
     }
 
     @GetMapping("/{restaurantId}/foods/{foodId}/update")
-    public String updateFoodForm(@PathVariable("restaurantId") Long restaurantId,
-                                 @PathVariable("foodId") Long foodId,
-                                 Model model) {
-        if (!model.containsAttribute("food")) {
-            model.addAttribute("food", foodService.getFoodCreateDtoById(foodId));
+    public String getUpdateFoodForm(@PathVariable("restaurantId") Long restaurantId,
+                                    @PathVariable("foodId") Long foodId,
+                                    Model model) {
+        if (!model.containsAttribute(FOOD_ATTRIBUTE)) {
+            model.addAttribute(FOOD_ATTRIBUTE, foodService.getFoodCreateDtoById(foodId));
         }
 
-        model.addAttribute("restaurantId", restaurantId);
-        model.addAttribute("category", categoryService.getAllCategories());
+        addFoodFormAttributes(model, restaurantId);
 
-        return "food/update";
+        return FOOD_UPDATE_VIEW;
     }
 
     @PostMapping("/{restaurantId}/foods/{foodId}/update")
     public String updateFood(@PathVariable("restaurantId") Long restaurantId,
                              @PathVariable("foodId") Long foodId,
-                             @Valid @ModelAttribute("food") FoodCreateDto foodCreateDto,
+                             @Valid @ModelAttribute(FOOD_ATTRIBUTE) FoodCreateDto foodCreateDto,
                              BindingResult bindingResult,
                              @AuthenticationPrincipal CustomUserDetails userDetails,
                              Model model) {
         if (bindingResult.hasErrors()) {
-            model.addAttribute("restaurantId", restaurantId);
-            model.addAttribute("category", categoryService.getAllCategories());
+            addFoodFormAttributes(model, restaurantId);
 
-            return "food/update";
+            return FOOD_UPDATE_VIEW;
         }
 
         managerFoodFacade.updateFood(userDetails.getId(), restaurantId, foodId, foodCreateDto);
 
-        return "redirect:/restaurants/manager/my-restaurants/" + restaurantId;
+        return REDIRECT_RESTAURANT_MANAGE + restaurantId;
     }
 
     @PostMapping("/{restaurantId}/foods/{foodId}/delete")
@@ -150,7 +174,7 @@ public class ManagerController {
                              @AuthenticationPrincipal CustomUserDetails userDetails) {
         managerFoodFacade.deleteFood(userDetails.getId(), restaurantId, foodId);
 
-        return "redirect:/restaurants/manager/my-restaurants/" + restaurantId;
+        return REDIRECT_RESTAURANT_MANAGE + restaurantId;
     }
 
     @PostMapping("/{restaurantId}/foods/{foodId}/disable")
@@ -159,60 +183,59 @@ public class ManagerController {
                               @AuthenticationPrincipal CustomUserDetails userDetails) {
         managerFoodFacade.disableFood(userDetails.getId(), restaurantId, foodId);
 
-        return "redirect:/restaurants/manager/my-restaurants/" + restaurantId;
+        return REDIRECT_RESTAURANT_MANAGE + restaurantId;
     }
 
     @PostMapping("/{restaurantId}/foods/{foodId}/enable")
     public String enableFood(@PathVariable("restaurantId") Long restaurantId,
-                              @PathVariable("foodId") Long foodId,
-                              @AuthenticationPrincipal CustomUserDetails userDetails) {
+                             @PathVariable("foodId") Long foodId,
+                             @AuthenticationPrincipal CustomUserDetails userDetails) {
         managerFoodFacade.enableFood(userDetails.getId(), restaurantId, foodId);
 
-        return "redirect:/restaurants/manager/my-restaurants/" + restaurantId;
+        return REDIRECT_RESTAURANT_MANAGE + restaurantId;
     }
 
-
     @GetMapping("/my-restaurants/{restaurantId}")
-    public String restaurants(@PathVariable("restaurantId") Long restaurantId,
-                              @AuthenticationPrincipal CustomUserDetails userDetails,
-                              Model model) {
+    public String getRestaurants(@PathVariable("restaurantId") Long restaurantId,
+                                 @AuthenticationPrincipal CustomUserDetails userDetails,
+                                 Model model) {
         managerFoodFacade.checkManagerAndRestaurant(userDetails.getId(), restaurantId);
 
-        model.addAttribute("restaurants", restaurantService.getMyRestaurants(userDetails.getId()));
-        model.addAttribute("restaurantId", restaurantId);
-        model.addAttribute("foods", foodService.getFoodByRestaurantIdForManager(restaurantId));
+        model.addAttribute(RESTAURANTS_ATTRIBUTE, restaurantService.getMyRestaurants(userDetails.getId()));
+        model.addAttribute(RESTAURANT_ID_ATTRIBUTE, restaurantId);
+        model.addAttribute(FOODS_ATTRIBUTE, foodService.getFoodByRestaurantIdForManager(restaurantId));
 
-        return "restaurant/restaurantManage";
+        return RESTAURANT_MANAGE_VIEW;
     }
 
     @GetMapping("/{restaurantId}/orders")
-    public String restaurantOrders(@PathVariable("restaurantId") Long restaurantId,
-                                   @AuthenticationPrincipal CustomUserDetails userDetails,
-                                   @RequestParam(name = "page", defaultValue = "1") int page,
-                                   Model model) {
+    public String getRestaurantOrders(@PathVariable("restaurantId") Long restaurantId,
+                                      @AuthenticationPrincipal CustomUserDetails userDetails,
+                                      @RequestParam(name = "page", defaultValue = "1") int page,
+                                      Model model) {
         PageDto<Order> orderPage = PageDto.of(
                 orderService.getManagerOrders(userDetails.getId(), restaurantId),
                 page,
                 ORDER_PAGE_SIZE
         );
 
-        model.addAttribute("restaurant", restaurantService.getRestaurantById(restaurantId));
-        model.addAttribute("orders", orderPage.getContent());
-        model.addAttribute("page", orderPage);
+        model.addAttribute(RESTAURANT_ATTRIBUTE, restaurantService.getRestaurantById(restaurantId));
+        model.addAttribute(ORDERS_ATTRIBUTE, orderPage.getContent());
+        model.addAttribute(PAGE_ATTRIBUTE, orderPage);
 
-        return "order/manager-orders";
+        return MANAGER_ORDERS_VIEW;
     }
 
     @GetMapping("/{restaurantId}/orders/{orderId}")
-    public String restaurantOrderDetails(@PathVariable("restaurantId") Long restaurantId,
-                                         @PathVariable("orderId") Long orderId,
-                                         @AuthenticationPrincipal CustomUserDetails userDetails,
-                                         Model model) {
-        model.addAttribute("restaurant", restaurantService.getRestaurantById(restaurantId));
-        model.addAttribute("order", orderService.getManagerOrder(userDetails.getId(), restaurantId, orderId));
-        model.addAttribute("orderItems", orderService.getManagerOrderItems(userDetails.getId(), restaurantId, orderId));
+    public String getRestaurantOrderDetails(@PathVariable("restaurantId") Long restaurantId,
+                                            @PathVariable("orderId") Long orderId,
+                                            @AuthenticationPrincipal CustomUserDetails userDetails,
+                                            Model model) {
+        model.addAttribute(RESTAURANT_ATTRIBUTE, restaurantService.getRestaurantById(restaurantId));
+        model.addAttribute(ORDER_ATTRIBUTE, orderService.getManagerOrder(userDetails.getId(), restaurantId, orderId));
+        model.addAttribute(ORDER_ITEMS_ATTRIBUTE, orderService.getManagerOrderItems(userDetails.getId(), restaurantId, orderId));
 
-        return "order/manager-order-details";
+        return MANAGER_ORDER_DETAILS_VIEW;
     }
 
     @PostMapping("/{restaurantId}/orders/{orderId}/status")
@@ -224,15 +247,20 @@ public class ManagerController {
                                     RedirectAttributes redirectAttributes) {
         try {
             orderService.updateManagerOrderStatus(userDetails.getId(), restaurantId, orderId, status);
-            redirectAttributes.addFlashAttribute("orderSuccess", "Статус заказа обновлён");
+            redirectAttributes.addFlashAttribute(ORDER_SUCCESS_ATTRIBUTE, ORDER_STATUS_UPDATED_MESSAGE);
         } catch (OrderOperationException exception) {
-            redirectAttributes.addFlashAttribute("orderError", exception.getMessage());
+            redirectAttributes.addFlashAttribute(ORDER_ERROR_ATTRIBUTE, exception.getMessage());
         }
 
         if (redirectToDetails) {
-            return "redirect:/restaurants/manager/" + restaurantId + "/orders/" + orderId;
+            return REDIRECT_MANAGER_ORDER_DETAILS.formatted(restaurantId, orderId);
         }
 
-        return "redirect:/restaurants/manager/" + restaurantId + "/orders";
+        return REDIRECT_MANAGER_ORDERS.formatted(restaurantId);
+    }
+
+    private void addFoodFormAttributes(Model model, Long restaurantId) {
+        model.addAttribute(RESTAURANT_ID_ATTRIBUTE, restaurantId);
+        model.addAttribute(CATEGORY_ATTRIBUTE, categoryService.getAllCategories());
     }
 }

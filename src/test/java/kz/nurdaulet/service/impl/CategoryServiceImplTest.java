@@ -20,6 +20,11 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class CategoryServiceImplTest {
+    private static final Long CATEGORY_ID = 1L;
+    private static final String CATEGORY_NAME = "Burgers";
+    private static final String SEARCH_TEXT = "bur";
+    private static final String CATEGORY_NAME_WITH_SPACES = " Burgers ";
+
     @Mock
     private CategoryDao categoryDao;
 
@@ -28,42 +33,66 @@ class CategoryServiceImplTest {
 
     @Test
     void shouldGetAllCategories() {
-        List<Category> categories = List.of(new Category(1L, "Burgers"));
+        // given
+        List<Category> categories = List.of(new Category(CATEGORY_ID, CATEGORY_NAME));
         when(categoryDao.findAll()).thenReturn(categories);
 
-        assertEquals(categories, testingInstance.getAllCategories());
+        // when
+        List<Category> result = testingInstance.getAllCategories();
+
+        // then
+        assertEquals(categories, result);
+        verify(categoryDao).findAll();
     }
 
     @Test
     void shouldSearchCategoryByName() {
-        List<Category> categories = List.of(new Category(1L, "Burgers"));
-        when(categoryDao.findBySimilarName("bur")).thenReturn(categories);
+        // given
+        List<Category> categories = List.of(new Category(CATEGORY_ID, CATEGORY_NAME));
+        when(categoryDao.findBySimilarName(SEARCH_TEXT)).thenReturn(categories);
 
-        assertEquals(categories, testingInstance.searchCategoryByName("bur"));
+        // when
+        List<Category> result = testingInstance.searchCategoryByName(SEARCH_TEXT);
+
+        // then
+        assertEquals(categories, result);
+        verify(categoryDao).findBySimilarName(SEARCH_TEXT);
     }
 
     @Test
     void shouldGetCategoryById() {
-        Category category = new Category(1L, "Burgers");
-        when(categoryDao.findById(1L)).thenReturn(category);
+        // given
+        Category category = new Category(CATEGORY_ID, CATEGORY_NAME);
+        when(categoryDao.findById(CATEGORY_ID)).thenReturn(category);
 
-        assertEquals(category, testingInstance.getCategoryById(1L));
+        // when
+        Category result = testingInstance.getCategoryById(CATEGORY_ID);
+
+        // then
+        assertEquals(category, result);
+        verify(categoryDao).findById(CATEGORY_ID);
     }
 
     @Test
     void shouldThrowWhenCategoryNotFound() {
-        when(categoryDao.findById(1L)).thenReturn(null);
+        // given
+        when(categoryDao.findById(CATEGORY_ID)).thenReturn(null);
 
-        assertThrows(CategoryNotFoundException.class, () -> testingInstance.getCategoryById(1L));
+        // when / then
+        assertThrows(CategoryNotFoundException.class, () -> testingInstance.getCategoryById(CATEGORY_ID));
+        verify(categoryDao).findById(CATEGORY_ID);
     }
 
     @Test
     void shouldCreateCategoryWithTrimmedName() {
+        // given
         ArgumentCaptor<Category> captor = ArgumentCaptor.forClass(Category.class);
 
-        testingInstance.createCategory(new CategoryCreateDto(" Burgers "));
+        // when
+        testingInstance.createCategory(new CategoryCreateDto(CATEGORY_NAME_WITH_SPACES));
 
+        // then
         verify(categoryDao).save(captor.capture());
-        assertEquals("Burgers", captor.getValue().getName());
+        assertEquals(CATEGORY_NAME, captor.getValue().getName());
     }
 }

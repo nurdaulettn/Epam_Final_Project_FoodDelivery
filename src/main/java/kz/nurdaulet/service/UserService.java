@@ -5,7 +5,8 @@ import kz.nurdaulet.entity.User;
 
 public interface UserService {
     User create(UserCreateDto user);
-    User getById(Long id);
-    void delete(Long id);
 
+    User getById(Long id);
+
+    void delete(Long id);
 }

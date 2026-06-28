@@ -7,7 +7,10 @@ import java.util.List;
 
 public interface CategoryService {
     List<Category> getAllCategories();
+
     List<Category> searchCategoryByName(String name);
+
     Category getCategoryById(Long id);
+
     void createCategory(CategoryCreateDto categoryDto);
 }

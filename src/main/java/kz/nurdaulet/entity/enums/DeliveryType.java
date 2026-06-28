@@ -1,8 +1,8 @@
 package kz.nurdaulet.entity.enums;
 
 public enum DeliveryType {
-    DELIVERY("Доставка"),
-    PICKUP("Самовывоз");
+    DELIVERY("Delivery"),
+    PICKUP("Pickup");
 
     private final String displayName;
 

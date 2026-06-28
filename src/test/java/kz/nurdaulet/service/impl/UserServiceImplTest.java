@@ -23,6 +23,16 @@ import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class UserServiceImplTest {
+    private static final Long USER_ID = 1L;
+    private static final String FIRST_NAME = "John";
+    private static final String LAST_NAME = "Doe";
+    private static final String USERNAME = "john";
+    private static final String EMAIL = "john@example.com";
+    private static final String RAW_PASSWORD = "password";
+    private static final String ENCODED_PASSWORD = "encoded";
+    private static final String MANAGER_ROLE = "MANAGER";
+    private static final String INVALID_ROLE = "invalid";
+
     @Mock
     private UserDao userDao;
 
@@ -34,26 +44,30 @@ class UserServiceImplTest {
 
     @Test
     void shouldCreateUser() {
+        // given
         UserCreateDto dto = new UserCreateDto(
-                "John",
-                "Doe",
-                "john",
-                "john@example.com",
-                "password",
-                "MANAGER"
+                FIRST_NAME,
+                LAST_NAME,
+                USERNAME,
+                EMAIL,
+                RAW_PASSWORD,
+                MANAGER_ROLE
         );
         ArgumentCaptor<User> captor = ArgumentCaptor.forClass(User.class);
-        when(passwordEncoder.encode("password")).thenReturn("encoded");
+        when(passwordEncoder.encode(RAW_PASSWORD)).thenReturn(ENCODED_PASSWORD);
 
+        // when
         User result = testingInstance.create(dto);
 
+        // then
+        verify(passwordEncoder).encode(RAW_PASSWORD);
         verify(userDao).save(captor.capture());
         User saved = captor.getValue();
-        assertEquals("John", saved.getFirstName());
-        assertEquals("Doe", saved.getLastName());
-        assertEquals("john", saved.getUsername());
-        assertEquals("john@example.com", saved.getEmail());
-        assertEquals("encoded", saved.getPassword());
+        assertEquals(FIRST_NAME, saved.getFirstName());
+        assertEquals(LAST_NAME, saved.getLastName());
+        assertEquals(USERNAME, saved.getUsername());
+        assertEquals(EMAIL, saved.getEmail());
+        assertEquals(ENCODED_PASSWORD, saved.getPassword());
         assertEquals(Role.MANAGER, saved.getRole());
         assertEquals(true, saved.getStatus());
         assertNotNull(saved.getCreatedAt());
@@ -62,62 +76,82 @@ class UserServiceImplTest {
 
     @Test
     void shouldUseCustomerRoleWhenRoleIsInvalid() {
+        // given
         UserCreateDto dto = new UserCreateDto(
-                "John",
-                "Doe",
-                "john",
-                "john@example.com",
-                "password",
-                "invalid"
+                FIRST_NAME,
+                LAST_NAME,
+                USERNAME,
+                EMAIL,
+                RAW_PASSWORD,
+                INVALID_ROLE
         );
         ArgumentCaptor<User> captor = ArgumentCaptor.forClass(User.class);
-        when(passwordEncoder.encode("password")).thenReturn("encoded");
+        when(passwordEncoder.encode(RAW_PASSWORD)).thenReturn(ENCODED_PASSWORD);
 
+        // when
         testingInstance.create(dto);
 
+        // then
+        verify(passwordEncoder).encode(RAW_PASSWORD);
         verify(userDao).save(captor.capture());
         assertEquals(Role.CUSTOMER, captor.getValue().getRole());
     }
 
     @Test
     void shouldGetUserById() {
+        // given
         User user = createUser();
-        when(userDao.findById(1L)).thenReturn(user);
+        when(userDao.findById(USER_ID)).thenReturn(user);
 
-        assertEquals(user, testingInstance.getById(1L));
+        // when
+        User result = testingInstance.getById(USER_ID);
+
+        // then
+        assertEquals(user, result);
+        verify(userDao).findById(USER_ID);
     }
 
     @Test
     void shouldThrowWhenUserByIdNotFound() {
-        when(userDao.findById(1L)).thenReturn(null);
+        // given
+        when(userDao.findById(USER_ID)).thenReturn(null);
 
-        assertThrows(UserNotFoundException.class, () -> testingInstance.getById(1L));
+        // when / then
+        assertThrows(UserNotFoundException.class, () -> testingInstance.getById(USER_ID));
+        verify(userDao).findById(USER_ID);
     }
 
     @Test
     void shouldDeleteExistingUser() {
-        when(userDao.existsById(1L)).thenReturn(true);
+        // given
+        when(userDao.existsById(USER_ID)).thenReturn(true);
 
-        testingInstance.delete(1L);
+        // when
+        testingInstance.delete(USER_ID);
 
-        verify(userDao).deleteById(1L);
+        // then
+        verify(userDao).existsById(USER_ID);
+        verify(userDao).deleteById(USER_ID);
     }
 
     @Test
     void shouldThrowWhenDeletingMissingUser() {
-        when(userDao.existsById(1L)).thenReturn(false);
+        // given
+        when(userDao.existsById(USER_ID)).thenReturn(false);
 
-        assertThrows(UserNotFoundException.class, () -> testingInstance.delete(1L));
+        // when / then
+        assertThrows(UserNotFoundException.class, () -> testingInstance.delete(USER_ID));
+        verify(userDao).existsById(USER_ID);
     }
 
     private User createUser() {
         return new User(
-                1L,
-                "John",
-                "Doe",
-                "john",
-                "john@example.com",
-                "encoded",
+                USER_ID,
+                FIRST_NAME,
+                LAST_NAME,
+                USERNAME,
+                EMAIL,
+                ENCODED_PASSWORD,
                 Role.CUSTOMER,
                 true,
                 LocalDateTime.now()

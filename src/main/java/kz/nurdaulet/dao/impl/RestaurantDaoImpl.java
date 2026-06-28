@@ -58,8 +58,9 @@ public class RestaurantDaoImpl implements RestaurantDao {
 
     @Override
     public Restaurant findById(Long id) {
-        return jdbcTemplate.query(FIND_BY_ID, restaurantRowMapper, id)
-                .stream().findFirst().orElse(null);
+        return jdbcTemplate.query(FIND_BY_ID, restaurantRowMapper, id).stream()
+                .findFirst()
+                .orElse(null);
     }
 
     @Override
@@ -69,7 +70,9 @@ public class RestaurantDaoImpl implements RestaurantDao {
 
     @Override
     public Restaurant findByName(String name) {
-        return jdbcTemplate.query(FIND_BY_NAME, restaurantRowMapper, name).stream().findFirst().orElse(null);
+        return jdbcTemplate.query(FIND_BY_NAME, restaurantRowMapper, name).stream()
+                .findFirst()
+                .orElse(null);
     }
 
     @Override

@@ -5,9 +5,7 @@ import kz.nurdaulet.dto.PageDto;
 import kz.nurdaulet.entity.CustomUserDetails;
 import kz.nurdaulet.entity.Order;
 import kz.nurdaulet.exception.CartOperationException;
-import kz.nurdaulet.service.FoodService;
 import kz.nurdaulet.service.OrderService;
-import kz.nurdaulet.service.RestaurantService;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -24,6 +22,16 @@ import java.util.List;
 @RequestMapping("/orders")
 public class OrderController {
     private static final int PAGE_SIZE = 5;
+    private static final String ORDERS_ATTRIBUTE = "orders";
+    private static final String PAGE_ATTRIBUTE = "page";
+    private static final String ORDER_ATTRIBUTE = "order";
+    private static final String ORDER_ITEMS_ATTRIBUTE = "orderItems";
+    private static final String ORDER_SUCCESS_ATTRIBUTE = "orderSuccess";
+    private static final String ORDER_ERROR_ATTRIBUTE = "orderError";
+    private static final String ORDERS_VIEW = "order/orders";
+    private static final String ORDER_DETAILS_VIEW = "order/order-details";
+    private static final String REDIRECT_ORDER_DETAILS = "redirect:/orders/";
+    private static final String PAYMENT_SUCCESS_MESSAGE = "Payment successful. The order is now being prepared.";
 
     private final OrderService orderService;
 
@@ -32,28 +40,28 @@ public class OrderController {
     }
 
     @GetMapping
-    public String orders(@AuthenticationPrincipal CustomUserDetails userDetails,
-                         @RequestParam(name = "page", defaultValue = "1") int page,
-                         Model model) {
+    public String getOrders(@AuthenticationPrincipal CustomUserDetails userDetails,
+                            @RequestParam(name = "page", defaultValue = "1") int page,
+                            Model model) {
         List<OrderSummaryDto> orders = orderService.getCustomerOrders(userDetails.getId());
         PageDto<OrderSummaryDto> orderPage = PageDto.of(orders, page, PAGE_SIZE);
 
-        model.addAttribute("orders", orderPage.getContent());
-        model.addAttribute("page", orderPage);
+        model.addAttribute(ORDERS_ATTRIBUTE, orderPage.getContent());
+        model.addAttribute(PAGE_ATTRIBUTE, orderPage);
 
-        return "order/orders";
+        return ORDERS_VIEW;
     }
 
     @GetMapping("/{orderId}")
-    public String orderDetails(@PathVariable("orderId") Long orderId,
-                               @AuthenticationPrincipal CustomUserDetails userDetails,
-                               Model model) {
+    public String getOrderDetails(@PathVariable("orderId") Long orderId,
+                                  @AuthenticationPrincipal CustomUserDetails userDetails,
+                                  Model model) {
         Order order = orderService.getCustomerOrder(userDetails.getId(), orderId);
 
-        model.addAttribute("order", order);
-        model.addAttribute("orderItems", orderService.getCustomerOrderItems(userDetails.getId(), orderId));
+        model.addAttribute(ORDER_ATTRIBUTE, order);
+        model.addAttribute(ORDER_ITEMS_ATTRIBUTE, orderService.getCustomerOrderItems(userDetails.getId(), orderId));
 
-        return "order/order-details";
+        return ORDER_DETAILS_VIEW;
     }
 
     @PostMapping("/{orderId}/pay")
@@ -62,11 +70,12 @@ public class OrderController {
                            RedirectAttributes redirectAttributes) {
         try {
             orderService.payOrder(userDetails.getId(), orderId);
-            redirectAttributes.addFlashAttribute("orderSuccess", "Оплата прошла успешно. Заказ начал готовиться.");
+
+            redirectAttributes.addFlashAttribute(ORDER_SUCCESS_ATTRIBUTE, PAYMENT_SUCCESS_MESSAGE);
         } catch (CartOperationException exception) {
-            redirectAttributes.addFlashAttribute("orderError", exception.getMessage());
+            redirectAttributes.addFlashAttribute(ORDER_ERROR_ATTRIBUTE, exception.getMessage());
         }
 
-        return "redirect:/orders/" + orderId;
+        return REDIRECT_ORDER_DETAILS + orderId;
     }
 }

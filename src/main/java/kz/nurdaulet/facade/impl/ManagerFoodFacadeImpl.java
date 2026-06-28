@@ -13,7 +13,8 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class ManagerFoodFacadeImpl implements ManagerFoodFacade {
-    public static final String DO_NOT_HAVE_PERMISSION = "You can not manage this restaurant";
+    private static final String DO_NOT_HAVE_PERMISSION = "You can not manage this restaurant";
+
     private final RestaurantService restaurantService;
     private final FoodService foodService;
     private final CategoryService categoryService;

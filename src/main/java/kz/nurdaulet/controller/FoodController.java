@@ -36,7 +36,6 @@ public class FoodController {
 
         model.addAttribute("foods", foodPage.getContent());
         model.addAttribute("page", foodPage);
-
         model.addAttribute("categories", categoryService.getAllCategories());
         model.addAttribute("restaurants", restaurantService.getAllRestaurants());
         model.addAttribute("selectedCategoryId", categoryId);

@@ -16,8 +16,6 @@ import java.time.LocalDateTime;
 
 @Service
 public class UserServiceImpl implements UserService {
-    public static final String EMAIL_ALREADY_EXISTS = "Email already exists";
-    public static final String USERNAME_ALREADY_EXISTS = "Username already exists";
     public static final String USER_NOT_FOUND = "User not found";
     public static final Logger log = LoggerFactory.getLogger(UserServiceImpl.class);
     public static final String LOG_USER_CREATED = "User {} created";
@@ -31,38 +29,23 @@ public class UserServiceImpl implements UserService {
     }
 
     public User create(UserCreateDto dto) {
-//        boolean emailExists = userDao.existsByEmail(dto.getEmail());
-//        boolean usernameExists = userDao.existsByUsername(dto.getUsername());
-//
-//        if (!emailExists && !usernameExists) {
-
         User user = createUser(dto);
 
         userDao.save(user);
         log.info(LOG_USER_CREATED, dto.getUsername());
 
         return user;
-
-//        } else if (emailExists) {
-//            log.warn(EMAIL_ALREADY_EXISTS);
-//
-//            throw new UserCreatingException(EMAIL_ALREADY_EXISTS);
-//        } else {
-//            log.warn(USERNAME_ALREADY_EXISTS);
-//
-//            throw new UserCreatingException(USERNAME_ALREADY_EXISTS);
-//        }
     }
 
     @Override
     public User getById(Long id) {
         User user = userDao.findById(id);
 
-        if (user == null) {
-            throw new UserNotFoundException(USER_NOT_FOUND);
+        if (user != null) {
+            return user;
         }
 
-        return user;
+        throw new UserNotFoundException(USER_NOT_FOUND);
     }
 
     @Override

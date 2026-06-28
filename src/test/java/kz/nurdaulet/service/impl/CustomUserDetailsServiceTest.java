@@ -16,10 +16,20 @@ import java.time.LocalDateTime;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 class CustomUserDetailsServiceTest {
+    private static final Long USER_ID = 1L;
+    private static final String FIRST_NAME = "John";
+    private static final String LAST_NAME = "Doe";
+    private static final String USERNAME = "john";
+    private static final String MISSING_USERNAME = "missing";
+    private static final String EMAIL = "john@example.com";
+    private static final String ENCODED_PASSWORD = "encoded";
+    private static final String MANAGER_AUTHORITY = "ROLE_MANAGER";
+
     @Mock
     private UserDao userDao;
 
@@ -28,33 +38,40 @@ class CustomUserDetailsServiceTest {
 
     @Test
     void shouldLoadUserByUsername() {
-        when(userDao.findByUsername("john")).thenReturn(createUser());
+        // given
+        when(userDao.findByUsername(USERNAME)).thenReturn(createUser());
 
-        CustomUserDetails result = (CustomUserDetails) testingInstance.loadUserByUsername("john");
+        // when
+        CustomUserDetails result = (CustomUserDetails) testingInstance.loadUserByUsername(USERNAME);
 
-        assertEquals(1L, result.getId());
-        assertEquals("john", result.getUsername());
-        assertEquals("encoded", result.getPassword());
+        // then
+        assertEquals(USER_ID, result.getId());
+        assertEquals(USERNAME, result.getUsername());
+        assertEquals(ENCODED_PASSWORD, result.getPassword());
         assertTrue(result.getAuthorities().stream()
-                .anyMatch(authority -> authority.getAuthority().equals("ROLE_MANAGER")));
+                .anyMatch(authority -> authority.getAuthority().equals(MANAGER_AUTHORITY)));
+        verify(userDao).findByUsername(USERNAME);
     }
 
     @Test
     void shouldThrowWhenUserNotFound() {
-        when(userDao.findByUsername("missing")).thenReturn(null);
+        // given
+        when(userDao.findByUsername(MISSING_USERNAME)).thenReturn(null);
 
+        // when / then
         assertThrows(UsernameNotFoundException.class,
-                () -> testingInstance.loadUserByUsername("missing"));
+                () -> testingInstance.loadUserByUsername(MISSING_USERNAME));
+        verify(userDao).findByUsername(MISSING_USERNAME);
     }
 
     private User createUser() {
         return new User(
-                1L,
-                "John",
-                "Doe",
-                "john",
-                "john@example.com",
-                "encoded",
+                USER_ID,
+                FIRST_NAME,
+                LAST_NAME,
+                USERNAME,
+                EMAIL,
+                ENCODED_PASSWORD,
                 Role.MANAGER,
                 true,
                 LocalDateTime.now()
