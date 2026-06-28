@@ -3,30 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AsapJe - создание ресторана</title>
+    <title>AsapJe - Создание ресторана</title>
     <link rel="stylesheet" th:href="@{/static/css/index.css}">
 </head>
 <body class="auth-page">
 <main class="auth-shell">
     <section class="auth-card auth-card-register">
         <div class="auth-hero">
-            <a class="auth-back" th:href="@{/}">На главную</a>
+            <a class="auth-back" th:href="@{/restaurants/manager/my-restaurants}">К моим ресторанам</a>
             <div class="auth-hero-content">
-                <div class="auth-food-mark">🍽️</div>
-                <h1>Добавь ресторан.<br>Начни принимать заказы.</h1>
-                <p>Заполни основную информацию о ресторане. После проверки он появится на платформе.</p>
+                <div class="auth-food-mark">AJ</div>
+                <h1>Добавьте ресторан.<br>Начните принимать заказы.</h1>
+                <p>После проверки администратором ресторан появится в каталоге.</p>
             </div>
         </div>
 
         <div class="auth-form-area">
             <a class="auth-logo" th:href="@{/}">
-                <span class="brand-mark">A</span>
+                <span class="brand-mark">AJ</span>
                 <span>AsapJe</span>
             </a>
 
             <div class="auth-heading">
                 <h2>Создание ресторана</h2>
-                <p>Укажи название, контакты, адрес и время работы</p>
+                <p>Укажите название, контакты, адрес и время работы</p>
             </div>
 
             <div class="auth-alert auth-alert-error" th:if="${restaurantError}" th:text="${restaurantError}">
@@ -87,8 +87,12 @@
                     </label>
                 </div>
 
-                <button class="btn btn-primary auth-submit" type="submit">Создать ресторан →</button>
+                <button class="btn btn-primary auth-submit" type="submit">Создать ресторан</button>
             </form>
+
+            <p class="auth-switch">
+                <a th:href="@{/restaurants/manager/my-restaurants}">Вернуться к ресторанам</a>
+            </p>
         </div>
     </section>
 </main>

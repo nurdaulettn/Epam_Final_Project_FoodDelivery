@@ -12,15 +12,22 @@
         <span class="brand-mark">AJ</span>
         <span>AsapJe</span>
     </a>
+
     <nav class="nav">
-        <a href="#restaurants">Рестораны</a>
-        <a href="#how-it-works">Как работает</a>
-        <a href="#roles">Для бизнеса</a>
+        <a th:href="@{/restaurants}">Рестораны</a>
+        <a th:href="@{/foods}">Блюда</a>
+        <a th:href="@{/categories}">Категории</a>
+        <a th:if="${currentUsername != null}" th:href="@{/cart}">Корзина</a>
+        <a th:if="${currentUsername != null}" th:href="@{/orders}">Мои заказы</a>
+        <a th:if="${currentUserManager}" th:href="@{/restaurants/manager/my-restaurants}">Панель менеджера</a>
+        <a th:if="${currentUserAdmin}" th:href="@{/admin/create-requests}">Админка</a>
     </nav>
+
     <div class="actions" th:if="${currentUsername == null}">
         <a class="btn btn-ghost" th:href="@{/login}">Войти</a>
         <a class="btn btn-primary" th:href="@{/register}">Создать аккаунт</a>
     </div>
+
     <div class="actions" th:if="${currentUsername != null}">
         <span class="account-pill">
             <span class="account-avatar" th:text="${#strings.substring(currentUsername,0,1)}">U</span>
@@ -42,17 +49,33 @@
             <p class="eyebrow">Доставка еды для города</p>
             <h1>Заказывайте любимые блюда без лишних шагов</h1>
             <p class="hero-text">
-                AsapJe соединяет клиентов, рестораны и менеджеров заказов в одном удобном сервисе.
+                Выберите ресторан, добавьте блюда в корзину, оформите заказ и отслеживайте статус в личной истории.
             </p>
             <div class="hero-actions">
-                <a class="btn btn-primary btn-large" th:href="@{/register}">Начать заказ</a>
-                <a class="btn btn-light btn-large" href="#restaurants">Посмотреть рестораны</a>
+                <a class="btn btn-primary btn-large"
+                   th:if="${currentUsername == null}"
+                   th:href="@{/register}">
+                    Создать аккаунт
+                </a>
+                <a class="btn btn-primary btn-large"
+                   th:if="${currentUsername != null}"
+                   th:href="@{/foods}">
+                    Перейти к блюдам
+                </a>
+                <a class="btn btn-light btn-large" th:href="@{/restaurants}">
+                    Смотреть рестораны
+                </a>
+                <a class="btn btn-light btn-large"
+                   th:if="${currentUsername != null}"
+                   th:href="@{/orders}">
+                    Мои заказы
+                </a>
             </div>
         </div>
         <div class="hero-panel" aria-label="Пример заказа">
             <div class="order-card">
                 <div>
-                    <span class="status">В пути</span>
+                    <span class="status">Готовится</span>
                     <h2>Burger House</h2>
                     <p>Бургер, картофель фри, напиток</p>
                 </div>
@@ -69,27 +92,36 @@
 
     <section class="section" id="restaurants">
         <div class="section-head">
-            <p class="eyebrow">Популярное</p>
-            <h2>Рестораны рядом</h2>
+            <p class="eyebrow">Каталог</p>
+            <h2>Быстрый доступ</h2>
         </div>
         <div class="cards">
             <article class="restaurant">
-                <div class="restaurant-image green">BH</div>
-                <h3>Burger House</h3>
-                <p>Бургеры, комбо, закуски</p>
-                <span>4.8 • 25-35 мин</span>
+                <div class="restaurant-image green">R</div>
+                <h3>Рестораны</h3>
+                <p>Выберите ресторан и откройте его меню.</p>
+                <a class="btn btn-primary" th:href="@{/restaurants}">Открыть</a>
             </article>
             <article class="restaurant">
-                <div class="restaurant-image yellow">PM</div>
-                <h3>Pizza Milano</h3>
-                <p>Пицца, паста, салаты</p>
-                <span>4.6 • 30-40 мин</span>
+                <div class="restaurant-image yellow">F</div>
+                <h3>Блюда</h3>
+                <p>Найдите блюдо по названию, категории или ресторану.</p>
+                <a class="btn btn-primary" th:href="@{/foods}">Открыть</a>
             </article>
             <article class="restaurant">
-                <div class="restaurant-image blue">SZ</div>
-                <h3>Sushi Zen</h3>
-                <p>Роллы, сеты, лапша</p>
-                <span>4.7 • 35-45 мин</span>
+                <div class="restaurant-image blue">O</div>
+                <h3>Заказы</h3>
+                <p>Проверьте статус текущих и прошлых заказов.</p>
+                <a class="btn btn-primary"
+                   th:if="${currentUsername != null}"
+                   th:href="@{/orders}">
+                    Открыть
+                </a>
+                <a class="btn btn-primary"
+                   th:if="${currentUsername == null}"
+                   th:href="@{/login}">
+                    Войти
+                </a>
             </article>
         </div>
     </section>
@@ -102,23 +134,8 @@
         <div class="steps">
             <article><strong>01</strong><span>Выберите ресторан и блюда</span></article>
             <article><strong>02</strong><span>Оформите заказ в корзине</span></article>
-            <article><strong>03</strong><span>Следите за статусом доставки</span></article>
+            <article><strong>03</strong><span>Оплатите и следите за статусом</span></article>
         </div>
-    </section>
-
-    <section class="section roles" id="roles">
-        <article>
-            <h3>Для клиентов</h3>
-            <p>Быстрый выбор ресторанов, история заказов и понятный статус доставки.</p>
-        </article>
-        <article>
-            <h3>Для менеджеров</h3>
-            <p>Управление меню, обработка заказов и контроль доступности блюд.</p>
-        </article>
-        <article>
-            <h3>Для администраторов</h3>
-            <p>Контроль пользователей, ресторанов и общей статистики платформы.</p>
-        </article>
     </section>
 </main>
 </body>

@@ -10,23 +10,23 @@
 <main class="auth-shell">
     <section class="auth-card">
         <div class="auth-hero">
-            <a class="auth-back" th:href="@{/}">О. ВХОД / РЕГИСТРАЦИЯ</a>
+            <a class="auth-back" th:href="@{/}">На главную</a>
             <div class="auth-hero-content">
-                <div class="auth-food-mark">🍔</div>
-                <h1>Еда рядом.<br>Быстро. Вкусно.</h1>
-                <p>Сотни ресторанов, доставка за 30 минут. Закажи прямо сейчас.</p>
+                <div class="auth-food-mark">AJ</div>
+                <h1>Еда рядом.<br>Быстро. Удобно.</h1>
+                <p>Войдите, чтобы оформлять заказы, управлять ресторанами или модерировать платформу.</p>
             </div>
         </div>
 
         <div class="auth-form-area">
             <a class="auth-logo" th:href="@{/}">
-                <span class="brand-mark">A</span>
+                <span class="brand-mark">AJ</span>
                 <span>AsapJe</span>
             </a>
 
             <div class="auth-heading">
-                <h2>Добро пожаловать!</h2>
-                <p>Войдите в свой аккаунт</p>
+                <h2>Добро пожаловать</h2>
+                <p>Введите логин и пароль</p>
             </div>
 
             <div class="auth-alert auth-alert-error" th:if="${param.error}">
@@ -40,6 +40,11 @@
             </div>
 
             <form class="auth-form" th:action="@{/login}" method="post">
+                <input type="hidden"
+                       th:if="${_csrf != null}"
+                       th:name="${_csrf.parameterName}"
+                       th:value="${_csrf.token}">
+
                 <label class="form-group">
                     <span class="form-label">Логин</span>
                     <input class="form-input"
@@ -55,17 +60,20 @@
                     <input class="form-input"
                            type="password"
                            name="password"
-                           placeholder="••••••••"
+                           placeholder="Пароль"
                            autocomplete="current-password"
                            required>
                 </label>
 
-                <button class="btn btn-primary auth-submit" type="submit">Войти →</button>
+                <button class="btn btn-primary auth-submit" type="submit">Войти</button>
             </form>
 
             <p class="auth-switch">
                 Нет аккаунта?
                 <a th:href="@{/register}">Зарегистрироваться</a>
+            </p>
+            <p class="auth-switch">
+                <a th:href="@{/foods}">Посмотреть блюда без входа</a>
             </p>
         </div>
     </section>

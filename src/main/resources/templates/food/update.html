@@ -15,9 +15,9 @@
                 К меню ресторана
             </a>
             <div class="auth-hero-content">
-                <div class="auth-food-mark">🍽</div>
-                <h1>Обнови блюдо.<br>Держи меню актуальным.</h1>
-                <p>Измени название, описание, цену или категорию блюда.</p>
+                <div class="auth-food-mark">AJ</div>
+                <h1>Обновите блюдо.<br>Держите меню актуальным.</h1>
+                <p>Измените название, описание, цену или категорию блюда.</p>
             </div>
         </div>
 
@@ -43,39 +43,20 @@
 
                 <label class="form-group">
                     <span class="form-label">Название</span>
-                    <input class="form-input"
-                           type="text"
-                           th:field="*{name}"
-                           minlength="3"
-                           maxlength="100"
-                           required>
-                    <span class="form-error"
-                          th:if="${#fields.hasErrors('name')}"
-                          th:errors="*{name}">Ошибка</span>
+                    <input class="form-input" type="text" th:field="*{name}" minlength="3" maxlength="100" required>
+                    <span class="form-error" th:if="${#fields.hasErrors('name')}" th:errors="*{name}">Ошибка</span>
                 </label>
 
                 <label class="form-group">
                     <span class="form-label">Описание</span>
-                    <textarea class="form-input"
-                              th:field="*{description}"
-                              maxlength="500"
-                              rows="3"></textarea>
-                    <span class="form-error"
-                          th:if="${#fields.hasErrors('description')}"
-                          th:errors="*{description}">Ошибка</span>
+                    <textarea class="form-input" th:field="*{description}" maxlength="500" rows="3"></textarea>
+                    <span class="form-error" th:if="${#fields.hasErrors('description')}" th:errors="*{description}">Ошибка</span>
                 </label>
 
                 <label class="form-group">
                     <span class="form-label">Цена</span>
-                    <input class="form-input"
-                           type="number"
-                           th:field="*{price}"
-                           min="1"
-                           step="1"
-                           required>
-                    <span class="form-error"
-                          th:if="${#fields.hasErrors('price')}"
-                          th:errors="*{price}">Ошибка</span>
+                    <input class="form-input" type="number" th:field="*{price}" min="1" step="1" required>
+                    <span class="form-error" th:if="${#fields.hasErrors('price')}" th:errors="*{price}">Ошибка</span>
                 </label>
 
                 <label class="form-group">
@@ -88,9 +69,7 @@
                             Category
                         </option>
                     </select>
-                    <span class="form-error"
-                          th:if="${#fields.hasErrors('categoryId')}"
-                          th:errors="*{categoryId}">Ошибка</span>
+                    <span class="form-error" th:if="${#fields.hasErrors('categoryId')}" th:errors="*{categoryId}">Ошибка</span>
                 </label>
 
                 <button class="btn btn-primary auth-submit" type="submit">

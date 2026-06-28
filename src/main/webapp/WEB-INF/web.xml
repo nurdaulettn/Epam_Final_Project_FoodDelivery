@@ -4,4 +4,9 @@
          xsi:schemaLocation="https://jakarta.ee/xml/ns/jakartaee https://jakarta.ee/xml/ns/jakartaee/web-app_6_0.xsd"
          version="6.0">
   <display-name>AsapJe</display-name>
+
+  <error-page>
+    <error-code>404</error-code>
+    <location>/error/404</location>
+  </error-page>
 </web-app>

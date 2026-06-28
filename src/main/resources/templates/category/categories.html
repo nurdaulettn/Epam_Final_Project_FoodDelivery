@@ -16,12 +16,18 @@
     <nav class="nav">
         <a th:href="@{/restaurants}">Рестораны</a>
         <a th:href="@{/categories}">Категории</a>
+        <a th:href="@{/foods}">Блюда</a>
+        <a th:href="@{/cart}" th:if="${currentUsername != null}">Корзина</a>
+        <a th:href="@{/orders}" th:if="${currentUsername != null}">Мои заказы</a>
+        <a th:href="@{/admin/create-requests}" th:if="${currentUserAdmin}">Админка</a>
     </nav>
 
     <div class="actions" th:if="${currentUsername != null}">
         <a class="btn btn-primary"
            th:if="${currentUserAdmin}"
-           th:href="@{/admin/categories/create}">+ Добавить категорию</a>
+           th:href="@{/admin/categories/create}">
+            + Категория
+        </a>
         <span class="account-pill">
             <span class="account-avatar" th:text="${#strings.substring(currentUsername,0,1)}">U</span>
             <span class="account-name" th:text="${currentUsername}">user</span>
@@ -49,7 +55,11 @@
         <article class="restaurant" th:each="category : ${categories}">
             <div class="restaurant-image green" th:text="${#strings.substring(category.name,0,1)}">C</div>
             <h3 th:text="${category.name}">Category</h3>
-            <p>Блюда этой категории доступны в ресторанах платформы.</p>
+            <p>Откройте блюда этой категории во всех доступных ресторанах.</p>
+            <a class="btn btn-primary"
+               th:href="@{/foods(category=${category.id})}">
+                Смотреть блюда
+            </a>
         </article>
     </div>
 

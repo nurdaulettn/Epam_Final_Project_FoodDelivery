@@ -12,9 +12,9 @@
         <div class="auth-hero">
             <a class="auth-back" th:href="@{/categories}">К категориям</a>
             <div class="auth-hero-content">
-                <div class="auth-food-mark">🍽</div>
-                <h1>Добавь категорию.<br>Упорядочь меню.</h1>
-                <p>Категории помогут клиентам быстрее находить нужные блюда.</p>
+                <div class="auth-food-mark">AJ</div>
+                <h1>Добавьте категорию.<br>Упорядочьте меню.</h1>
+                <p>Категории помогают клиентам быстрее находить нужные блюда.</p>
             </div>
         </div>
 
@@ -26,7 +26,7 @@
 
             <div class="auth-heading">
                 <h2>Создание категории</h2>
-                <p>Укажи короткое и понятное название</p>
+                <p>Укажите короткое и понятное название</p>
             </div>
 
             <form class="auth-form" th:action="@{/admin/categories/create}" th:object="${category}" method="post">
@@ -38,7 +38,7 @@
                     <span class="form-error" th:if="${#fields.hasErrors('name')}" th:errors="*{name}">Ошибка</span>
                 </label>
 
-                <button class="btn btn-primary auth-submit" type="submit">Создать категорию →</button>
+                <button class="btn btn-primary auth-submit" type="submit">Создать категорию</button>
             </form>
 
             <p class="auth-switch">
