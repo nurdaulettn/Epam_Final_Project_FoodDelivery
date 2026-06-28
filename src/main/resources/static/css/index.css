@@ -683,6 +683,17 @@ h2 {
     font-weight: 900;
 }
 
+.order-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: flex-end;
+}
+
+.order-actions form {
+    margin: 0;
+}
+
 @media (max-width: 860px) {
     .topbar {
         flex-wrap: wrap;
@@ -717,6 +728,10 @@ h2 {
     .order-row {
         grid-template-columns: 1fr;
         align-items: stretch;
+    }
+
+    .order-actions {
+        justify-content: flex-start;
     }
 
     .cart-quantity-form {

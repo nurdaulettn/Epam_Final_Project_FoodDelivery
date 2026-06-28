@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AsapJe - Заказы ресторана</title>
+    <link rel="stylesheet" th:href="@{/static/css/index.css}">
+</head>
+<body>
+<header class="topbar">
+    <a class="brand" th:href="@{/}">
+        <span class="brand-mark">AJ</span>
+        <span>AsapJe</span>
+    </a>
+
+    <nav class="nav">
+        <a th:href="@{/restaurants/manager/my-restaurants}">Мои рестораны</a>
+        <a th:href="@{/foods}">Все блюда</a>
+    </nav>
+
+    <div class="actions" th:if="${currentUsername != null}">
+        <span class="account-pill">
+            <span class="account-avatar" th:text="${#strings.substring(currentUsername,0,1)}">U</span>
+            <span class="account-name" th:text="${currentUsername}">user</span>
+        </span>
+        <form class="logout-form" th:action="@{/logout}" method="post">
+            <input type="hidden"
+                   th:if="${_csrf != null}"
+                   th:name="${_csrf.parameterName}"
+                   th:value="${_csrf.token}">
+            <button class="btn btn-ghost" type="submit">Выйти</button>
+        </form>
+    </div>
+</header>
+
+<main class="section">
+    <div class="section-head">
+        <p class="eyebrow">Панель менеджера</p>
+        <h2>
+            Заказы:
+            <span th:text="${restaurant.name}">Restaurant</span>
+        </h2>
+    </div>
+
+    <div style="display:flex; gap:12px; flex-wrap:wrap; margin-bottom:24px;">
+        <a class="btn btn-ghost"
+           th:href="@{/restaurants/manager/my-restaurants/{id}(id=${restaurant.id})}">
+            Назад к меню
+        </a>
+    </div>
+
+    <div class="auth-alert auth-alert-success"
+         th:if="${orderSuccess != null}"
+         th:text="${orderSuccess}">
+        Статус заказа обновлён
+    </div>
+
+    <div class="auth-alert auth-alert-error"
+         th:if="${orderError != null}"
+         th:text="${orderError}">
+        Ошибка заказа
+    </div>
+
+    <div th:if="${#lists.isEmpty(orders)}"
+         style="margin-top:40px; text-align:center;">
+        <h3>Оплаченных заказов пока нет</h3>
+        <a class="btn btn-primary" th:href="@{/restaurants/manager/my-restaurants}">
+            Мои рестораны
+        </a>
+    </div>
+
+    <section th:unless="${#lists.isEmpty(orders)}" class="order-list">
+        <article class="order-row" th:each="order : ${orders}">
+            <div>
+                <p class="eyebrow">
+                    Заказ #
+                    <span th:text="${order.id}">1</span>
+                </p>
+                <h3 th:text="${order.status.displayName}">Готовится</h3>
+                <p>
+                    Клиент ID:
+                    <span th:text="${order.userId}">1</span>
+                    ·
+                    <span th:text="${#temporals.format(order.createdAt, 'dd.MM.yyyy HH:mm')}">28.06.2026 12:00</span>
+                </p>
+                <p>
+                    <span th:text="${order.deliveryType.displayName}">Доставка</span>
+                    <span th:if="${order.deliveryAddress != null}">
+                        ·
+                        <span th:text="${order.deliveryAddress}">Address</span>
+                    </span>
+                </p>
+            </div>
+
+            <strong>
+                <span th:text="${order.totalPrice}">0</span>
+                ₸
+            </strong>
+
+            <div class="order-actions">
+                <form th:if="${order.status == T(kz.nurdaulet.entity.enums.OrderStatus).PREPARING}"
+                      th:action="@{/restaurants/manager/{restaurantId}/orders/{orderId}/status(restaurantId=${restaurant.id}, orderId=${order.id})}"
+                      method="post">
+                    <input type="hidden"
+                           th:if="${_csrf != null}"
+                           th:name="${_csrf.parameterName}"
+                           th:value="${_csrf.token}">
+                    <input type="hidden" name="status" value="READY">
+                    <button class="btn btn-primary" type="submit">
+                        Готов к выдаче
+                    </button>
+                </form>
+
+                <form th:if="${order.status == T(kz.nurdaulet.entity.enums.OrderStatus).READY}"
+                      th:action="@{/restaurants/manager/{restaurantId}/orders/{orderId}/status(restaurantId=${restaurant.id}, orderId=${order.id})}"
+                      method="post">
+                    <input type="hidden"
+                           th:if="${_csrf != null}"
+                           th:name="${_csrf.parameterName}"
+                           th:value="${_csrf.token}">
+                    <input type="hidden" name="status" value="COMPLETED">
+                    <button class="btn btn-primary" type="submit">
+                        Завершить
+                    </button>
+                </form>
+
+                <form th:if="${order.status == T(kz.nurdaulet.entity.enums.OrderStatus).PREPARING
+                            || order.status == T(kz.nurdaulet.entity.enums.OrderStatus).READY}"
+                      th:action="@{/restaurants/manager/{restaurantId}/orders/{orderId}/status(restaurantId=${restaurant.id}, orderId=${order.id})}"
+                      method="post">
+                    <input type="hidden"
+                           th:if="${_csrf != null}"
+                           th:name="${_csrf.parameterName}"
+                           th:value="${_csrf.token}">
+                    <input type="hidden" name="status" value="CANCELLED">
+                    <button class="btn btn-ghost" type="submit">
+                        Отменить
+                    </button>
+                </form>
+            </div>
+        </article>
+    </section>
+</main>
+</body>
+</html>

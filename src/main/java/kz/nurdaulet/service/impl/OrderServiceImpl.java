@@ -6,13 +6,16 @@ import kz.nurdaulet.dto.CheckoutDto;
 import kz.nurdaulet.entity.Food;
 import kz.nurdaulet.entity.Order;
 import kz.nurdaulet.entity.OrderItem;
+import kz.nurdaulet.entity.Restaurant;
 import kz.nurdaulet.entity.enums.DeliveryType;
 import kz.nurdaulet.entity.enums.OrderStatus;
 import kz.nurdaulet.exception.CartOperationException;
+import kz.nurdaulet.exception.OrderOperationException;
 import kz.nurdaulet.exception.OrderNotFoundException;
 import kz.nurdaulet.service.CartService;
 import kz.nurdaulet.service.FoodService;
 import kz.nurdaulet.service.OrderService;
+import kz.nurdaulet.service.RestaurantService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,20 +31,26 @@ public class OrderServiceImpl implements OrderService {
             "Cart can contain foods from only one restaurant";
     private static final String ORDER_NOT_FOUND = "Order with id %d not found";
     private static final String ORDER_CAN_NOT_BE_PAID = "Order can not be paid";
+    private static final String DO_NOT_HAVE_PERMISSION = "You can not manage this order";
+    private static final String INVALID_ORDER_STATUS = "Invalid order status";
+    private static final String INVALID_STATUS_TRANSITION = "Invalid order status transition";
 
     private final OrderDao orderDao;
     private final OrderItemDao orderItemDao;
     private final FoodService foodService;
     private final CartService cartService;
+    private final RestaurantService restaurantService;
 
     public OrderServiceImpl(OrderDao orderDao,
                             OrderItemDao orderItemDao,
                             FoodService foodService,
-                            CartService cartService) {
+                            CartService cartService,
+                            RestaurantService restaurantService) {
         this.orderDao = orderDao;
         this.orderItemDao = orderItemDao;
         this.foodService = foodService;
         this.cartService = cartService;
+        this.restaurantService = restaurantService;
     }
 
     @Override
@@ -117,6 +126,30 @@ public class OrderServiceImpl implements OrderService {
         return getCustomerOrder(userId, orderId);
     }
 
+    @Override
+    public List<Order> getManagerOrders(Long managerId, Long restaurantId) {
+        checkManagerRestaurant(managerId, restaurantId);
+
+        return orderDao.findPaidByRestaurantId(restaurantId);
+    }
+
+    @Override
+    public Order updateManagerOrderStatus(Long managerId, Long restaurantId, Long orderId, OrderStatus status) {
+        checkManagerRestaurant(managerId, restaurantId);
+        validateManagerTargetStatus(status);
+
+        Order order = orderDao.findById(orderId);
+
+        if (order == null || !order.getRestaurantId().equals(restaurantId)) {
+            throw new OrderNotFoundException(ORDER_NOT_FOUND.formatted(orderId));
+        }
+
+        validateManagerStatusTransition(order.getStatus(), status);
+        orderDao.updateStatus(orderId, status);
+
+        return orderDao.findById(orderId);
+    }
+
     private void validateCart(Map<Long, Integer> cart) {
         if (cart == null || cart.isEmpty()) {
             throw new CartOperationException(EMPTY_CART);
@@ -151,5 +184,32 @@ public class OrderServiceImpl implements OrderService {
         }
 
         return checkoutDto.getDeliveryAddress();
+    }
+
+    private void checkManagerRestaurant(Long managerId, Long restaurantId) {
+        Restaurant restaurant = restaurantService.getRestaurantById(restaurantId);
+
+        if (!restaurant.getManagerId().equals(managerId)) {
+            throw new OrderOperationException(DO_NOT_HAVE_PERMISSION);
+        }
+    }
+
+    private void validateManagerTargetStatus(OrderStatus status) {
+        if (!(OrderStatus.READY.equals(status)
+                || OrderStatus.COMPLETED.equals(status)
+                || OrderStatus.CANCELLED.equals(status))) {
+            throw new OrderOperationException(INVALID_ORDER_STATUS);
+        }
+    }
+
+    private void validateManagerStatusTransition(OrderStatus currentStatus, OrderStatus targetStatus) {
+        boolean validTransition = (OrderStatus.PREPARING.equals(currentStatus)
+                && (OrderStatus.READY.equals(targetStatus) || OrderStatus.CANCELLED.equals(targetStatus)))
+                || (OrderStatus.READY.equals(currentStatus)
+                && (OrderStatus.COMPLETED.equals(targetStatus) || OrderStatus.CANCELLED.equals(targetStatus)));
+
+        if (!validTransition) {
+            throw new OrderOperationException(INVALID_STATUS_TRANSITION);
+        }
     }
 }

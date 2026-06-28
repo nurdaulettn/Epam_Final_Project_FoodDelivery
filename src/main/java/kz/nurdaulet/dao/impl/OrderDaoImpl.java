@@ -23,6 +23,11 @@ public class OrderDaoImpl implements OrderDao {
             """;
     private static final String FIND_BY_ID = "SELECT * FROM orders WHERE id = ?";
     private static final String FIND_BY_USER_ID = "SELECT * FROM orders WHERE user_id = ? ORDER BY created_at DESC, id DESC";
+    private static final String FIND_PAID_BY_RESTAURANT_ID = """
+            SELECT * FROM orders
+            WHERE restaurant_id = ? AND status <> 'PENDING_PAYMENT'
+            ORDER BY created_at DESC, id DESC
+            """;
     private static final String UPDATE_STATUS = "UPDATE orders SET status = ?, updated_at = ? WHERE id = ?";
 
     private final JdbcTemplate jdbcTemplate;
@@ -75,6 +80,11 @@ public class OrderDaoImpl implements OrderDao {
     @Override
     public List<Order> findByUserId(Long userId) {
         return jdbcTemplate.query(FIND_BY_USER_ID, mapper, userId);
+    }
+
+    @Override
+    public List<Order> findPaidByRestaurantId(Long restaurantId) {
+        return jdbcTemplate.query(FIND_PAID_BY_RESTAURANT_ID, mapper, restaurantId);
     }
 
     @Override

@@ -44,6 +44,10 @@
            th:href="@{/restaurants/manager/{id}/foods/create(id=${restaurantId})}">
             + Добавить блюдо
         </a>
+        <a class="btn btn-primary"
+           th:href="@{/restaurants/manager/{id}/orders(id=${restaurantId})}">
+            Заказы
+        </a>
         <a class="btn btn-ghost" th:href="@{/restaurants/manager/my-restaurants}">
             Назад к ресторанам
         </a>

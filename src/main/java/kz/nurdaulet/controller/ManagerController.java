@@ -4,9 +4,12 @@ import jakarta.validation.Valid;
 import kz.nurdaulet.dto.FoodCreateDto;
 import kz.nurdaulet.dto.RestaurantCreateDto;
 import kz.nurdaulet.entity.CustomUserDetails;
+import kz.nurdaulet.entity.enums.OrderStatus;
+import kz.nurdaulet.exception.OrderOperationException;
 import kz.nurdaulet.facade.ManagerFoodFacade;
 import kz.nurdaulet.service.CategoryService;
 import kz.nurdaulet.service.FoodService;
+import kz.nurdaulet.service.OrderService;
 import kz.nurdaulet.service.RestaurantService;
 import kz.nurdaulet.validation.RestaurantValidator;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -14,6 +17,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequestMapping("/restaurants/manager")
@@ -22,13 +26,20 @@ public class ManagerController {
     private final RestaurantValidator restaurantValidator;
     private final CategoryService categoryService;
     private final FoodService foodService;
+    private final OrderService orderService;
     private final ManagerFoodFacade  managerFoodFacade;
 
-    public ManagerController(RestaurantService restaurantService, RestaurantValidator restaurantValidator, CategoryService categoryService, FoodService foodService, ManagerFoodFacade managerFoodFacade) {
+    public ManagerController(RestaurantService restaurantService,
+                             RestaurantValidator restaurantValidator,
+                             CategoryService categoryService,
+                             FoodService foodService,
+                             OrderService orderService,
+                             ManagerFoodFacade managerFoodFacade) {
         this.restaurantService = restaurantService;
         this.restaurantValidator = restaurantValidator;
         this.categoryService = categoryService;
         this.foodService = foodService;
+        this.orderService = orderService;
         this.managerFoodFacade = managerFoodFacade;
     }
 
@@ -164,8 +175,35 @@ public class ManagerController {
         managerFoodFacade.checkManagerAndRestaurant(userDetails.getId(), restaurantId);
 
         model.addAttribute("restaurants", restaurantService.getMyRestaurants(userDetails.getId()));
+        model.addAttribute("restaurantId", restaurantId);
         model.addAttribute("foods", foodService.getFoodByRestaurantIdForManager(restaurantId));
 
         return "restaurant/restaurantManage";
+    }
+
+    @GetMapping("/{restaurantId}/orders")
+    public String restaurantOrders(@PathVariable("restaurantId") Long restaurantId,
+                                   @AuthenticationPrincipal CustomUserDetails userDetails,
+                                   Model model) {
+        model.addAttribute("restaurant", restaurantService.getRestaurantById(restaurantId));
+        model.addAttribute("orders", orderService.getManagerOrders(userDetails.getId(), restaurantId));
+
+        return "order/manager-orders";
+    }
+
+    @PostMapping("/{restaurantId}/orders/{orderId}/status")
+    public String updateOrderStatus(@PathVariable("restaurantId") Long restaurantId,
+                                    @PathVariable("orderId") Long orderId,
+                                    @RequestParam("status") OrderStatus status,
+                                    @AuthenticationPrincipal CustomUserDetails userDetails,
+                                    RedirectAttributes redirectAttributes) {
+        try {
+            orderService.updateManagerOrderStatus(userDetails.getId(), restaurantId, orderId, status);
+            redirectAttributes.addFlashAttribute("orderSuccess", "Статус заказа обновлён");
+        } catch (OrderOperationException exception) {
+            redirectAttributes.addFlashAttribute("orderError", exception.getMessage());
+        }
+
+        return "redirect:/restaurants/manager/" + restaurantId + "/orders";
     }
 }

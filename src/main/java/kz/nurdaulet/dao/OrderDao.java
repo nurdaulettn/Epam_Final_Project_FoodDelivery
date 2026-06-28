@@ -12,5 +12,7 @@ public interface OrderDao {
 
     List<Order> findByUserId(Long userId);
 
+    List<Order> findPaidByRestaurantId(Long restaurantId);
+
     void updateStatus(Long id, OrderStatus status);
 }
