@@ -22,4 +22,8 @@ public interface UserDao {
     void save(User user);
 
     void deleteById(Long id);
+
+    void updateStatus(Long id, boolean status);
+
+    void updateRole(Long id, kz.nurdaulet.entity.enums.Role role);
 }

@@ -4,6 +4,7 @@ import kz.nurdaulet.dao.UserDao;
 import kz.nurdaulet.dto.UserCreateDto;
 import kz.nurdaulet.entity.User;
 import kz.nurdaulet.entity.enums.Role;
+import kz.nurdaulet.exception.UserCreatingException;
 import kz.nurdaulet.exception.UserNotFoundException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -14,11 +15,13 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -32,6 +35,7 @@ class UserServiceImplTest {
     private static final String ENCODED_PASSWORD = "encoded";
     private static final String MANAGER_ROLE = "MANAGER";
     private static final String INVALID_ROLE = "invalid";
+    private static final Long ADMIN_ID = 99L;
 
     @Mock
     private UserDao userDao;
@@ -112,6 +116,20 @@ class UserServiceImplTest {
     }
 
     @Test
+    void shouldGetAllUsers() {
+        // given
+        List<User> users = List.of(createUser());
+        when(userDao.findAll()).thenReturn(users);
+
+        // when
+        List<User> result = testingInstance.getAllUsers();
+
+        // then
+        assertEquals(users, result);
+        verify(userDao).findAll();
+    }
+
+    @Test
     void shouldThrowWhenUserByIdNotFound() {
         // given
         when(userDao.findById(USER_ID)).thenReturn(null);
@@ -132,6 +150,60 @@ class UserServiceImplTest {
         // then
         verify(userDao).existsById(USER_ID);
         verify(userDao).deleteById(USER_ID);
+    }
+
+    @Test
+    void shouldDeleteUserByAdmin() {
+        // given
+        when(userDao.findById(USER_ID)).thenReturn(createUser());
+        when(userDao.existsById(USER_ID)).thenReturn(true);
+
+        // when
+        testingInstance.deleteByAdmin(ADMIN_ID, USER_ID);
+
+        // then
+        verify(userDao).findById(USER_ID);
+        verify(userDao).existsById(USER_ID);
+        verify(userDao).deleteById(USER_ID);
+    }
+
+    @Test
+    void shouldUpdateUserStatusByAdmin() {
+        // given
+        boolean blockedStatus = false;
+        when(userDao.findById(USER_ID)).thenReturn(createUser());
+
+        // when
+        testingInstance.updateStatus(ADMIN_ID, USER_ID, blockedStatus);
+
+        // then
+        verify(userDao).findById(USER_ID);
+        verify(userDao).updateStatus(USER_ID, blockedStatus);
+    }
+
+    @Test
+    void shouldUpdateUserRoleByAdmin() {
+        // given
+        when(userDao.findById(USER_ID)).thenReturn(createUser());
+
+        // when
+        testingInstance.updateRole(ADMIN_ID, USER_ID, Role.MANAGER);
+
+        // then
+        verify(userDao).findById(USER_ID);
+        verify(userDao).updateRole(USER_ID, Role.MANAGER);
+    }
+
+    @Test
+    void shouldThrowWhenAdminManagesOwnAccount() {
+        // given
+        boolean blockedStatus = false;
+
+        // when / then
+        assertThrows(UserCreatingException.class,
+                () -> testingInstance.updateStatus(USER_ID, USER_ID, blockedStatus));
+        verify(userDao, never()).findById(USER_ID);
+        verify(userDao, never()).updateStatus(USER_ID, blockedStatus);
     }
 
     @Test

@@ -13,6 +13,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -20,6 +21,7 @@ public class UserServiceImpl implements UserService {
     public static final Logger log = LoggerFactory.getLogger(UserServiceImpl.class);
     public static final String LOG_USER_CREATED = "User {} created";
     public static final String LOG_USER_DELETE = "User {} deleted";
+    private static final String SELF_MANAGEMENT_IS_NOT_ALLOWED = "You can not manage your own admin account";
     private final UserDao userDao;
     private final PasswordEncoder encoder;
 
@@ -35,6 +37,11 @@ public class UserServiceImpl implements UserService {
         log.info(LOG_USER_CREATED, dto.getUsername());
 
         return user;
+    }
+
+    @Override
+    public List<User> getAllUsers() {
+        return userDao.findAll();
     }
 
     @Override
@@ -59,6 +66,32 @@ public class UserServiceImpl implements UserService {
 
             throw new UserNotFoundException(USER_NOT_FOUND);
         }
+    }
+
+    @Override
+    public void deleteByAdmin(Long adminId, Long targetUserId) {
+        validateTargetUser(adminId, targetUserId);
+        delete(targetUserId);
+    }
+
+    @Override
+    public void updateStatus(Long adminId, Long targetUserId, boolean status) {
+        validateTargetUser(adminId, targetUserId);
+        userDao.updateStatus(targetUserId, status);
+    }
+
+    @Override
+    public void updateRole(Long adminId, Long targetUserId, Role role) {
+        validateTargetUser(adminId, targetUserId);
+        userDao.updateRole(targetUserId, role);
+    }
+
+    private void validateTargetUser(Long adminId, Long targetUserId) {
+        if (adminId.equals(targetUserId)) {
+            throw new UserCreatingException(SELF_MANAGEMENT_IS_NOT_ALLOWED);
+        }
+
+        getById(targetUserId);
     }
 
     private User createUser(UserCreateDto dto) {

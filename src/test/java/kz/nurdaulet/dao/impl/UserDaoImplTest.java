@@ -32,6 +32,8 @@ class UserDaoImplTest {
     private static final String SELECT_USER_BY_USERNAME_QUERY = "SELECT * FROM users WHERE username = ?";
     private static final String SAVE_USER_QUERY = "INSERT INTO users (first_name, last_name, username, email, password, role, status, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
     private static final String DELETE_USER_QUERY = "DELETE FROM users WHERE id = ?";
+    private static final String UPDATE_STATUS_QUERY = "UPDATE users SET status = ? WHERE id = ?";
+    private static final String UPDATE_ROLE_QUERY = "UPDATE users SET role = ? WHERE id = ?";
     private static final String ID_COLUMN = "id";
     private static final String FIRST_NAME_COLUMN = "first_name";
     private static final String LAST_NAME_COLUMN = "last_name";
@@ -47,6 +49,7 @@ class UserDaoImplTest {
     private static final String EMAIL = "john@example.com";
     private static final String ENCODED_PASSWORD = "encoded";
     private static final String CUSTOMER_ROLE = "CUSTOMER";
+    private static final String MANAGER_ROLE = "MANAGER";
 
     @Mock
     private JdbcTemplate jdbcTemplate;
@@ -141,6 +144,20 @@ class UserDaoImplTest {
                 SAVE_USER_QUERY,
                 FIRST_NAME, LAST_NAME, USERNAME, EMAIL, ENCODED_PASSWORD, CUSTOMER_ROLE, true, user.getCreatedAt());
         verify(jdbcTemplate).update(DELETE_USER_QUERY, USER_ID);
+    }
+
+    @Test
+    void shouldUpdateUserStatusAndRole() {
+        // given
+        boolean blockedStatus = false;
+
+        // when
+        testingInstance.updateStatus(USER_ID, blockedStatus);
+        testingInstance.updateRole(USER_ID, Role.MANAGER);
+
+        // then
+        verify(jdbcTemplate).update(UPDATE_STATUS_QUERY, blockedStatus, USER_ID);
+        verify(jdbcTemplate).update(UPDATE_ROLE_QUERY, MANAGER_ROLE, USER_ID);
     }
 
     private User createUser() {

@@ -48,6 +48,7 @@ class CustomUserDetailsServiceTest {
         assertEquals(USER_ID, result.getId());
         assertEquals(USERNAME, result.getUsername());
         assertEquals(ENCODED_PASSWORD, result.getPassword());
+        assertTrue(result.isEnabled());
         assertTrue(result.getAuthorities().stream()
                 .anyMatch(authority -> authority.getAuthority().equals(MANAGER_AUTHORITY)));
         verify(userDao).findByUsername(USERNAME);

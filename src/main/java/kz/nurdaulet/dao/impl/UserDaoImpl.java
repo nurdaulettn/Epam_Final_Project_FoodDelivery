@@ -20,6 +20,8 @@ public class UserDaoImpl implements UserDao {
     private static final String FIND_BY_USERNAME = "SELECT * FROM users WHERE username = ?";
     private static final String SAVE_USER = "INSERT INTO users (first_name, last_name, username, email, password, role, status, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
     private static final String DELETE_USER = "DELETE FROM users WHERE id = ?";
+    private static final String UPDATE_STATUS = "UPDATE users SET status = ? WHERE id = ?";
+    private static final String UPDATE_ROLE = "UPDATE users SET role = ? WHERE id = ?";
     private static final Logger log = LoggerFactory.getLogger(UserDaoImpl.class);
 
     private final JdbcTemplate jdbcTemplate;
@@ -107,5 +109,15 @@ public class UserDaoImpl implements UserDao {
         jdbcTemplate.update(DELETE_USER, id);
 
         log.info("User {} deleted", id);
+    }
+
+    @Override
+    public void updateStatus(Long id, boolean status) {
+        jdbcTemplate.update(UPDATE_STATUS, status, id);
+    }
+
+    @Override
+    public void updateRole(Long id, Role role) {
+        jdbcTemplate.update(UPDATE_ROLE, role.name(), id);
     }
 }

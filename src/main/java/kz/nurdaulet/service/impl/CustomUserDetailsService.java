@@ -39,6 +39,7 @@ public class CustomUserDetailsService implements UserDetailsService {
                     user.getId(),
                     user.getUsername(),
                     user.getPassword(),
+                    user.getStatus(),
                     List.of(new SimpleGrantedAuthority(ROLE_FORMAT.formatted(user.getRole().name())))
             );
         } else {

@@ -10,6 +10,7 @@
 <header class="topbar">
     <a class="brand" th:href="@{/}"><span class="brand-mark">AJ</span><span>AsapJe</span></a>
     <nav class="nav">
+        <a th:href="@{/admin/users}" th:text="#{admin.users}">Users</a>
         <a th:href="@{/admin/create-requests}" th:text="#{admin.requests}">Requests</a>
         <a th:href="@{/admin/orders}" th:text="#{manager.orders}">Orders</a>
         <a th:href="@{/categories}" th:text="#{nav.categories}">Categories</a>
