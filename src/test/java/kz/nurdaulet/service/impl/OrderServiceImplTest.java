@@ -3,20 +3,24 @@ package kz.nurdaulet.service.impl;
 import kz.nurdaulet.dao.OrderDao;
 import kz.nurdaulet.dao.OrderItemDao;
 import kz.nurdaulet.dto.CheckoutDto;
+import kz.nurdaulet.dto.AdminOrderDto;
 import kz.nurdaulet.dto.OrderItemDetailsDto;
 import kz.nurdaulet.dto.OrderSummaryDto;
 import kz.nurdaulet.entity.Food;
 import kz.nurdaulet.entity.Order;
 import kz.nurdaulet.entity.OrderItem;
 import kz.nurdaulet.entity.Restaurant;
+import kz.nurdaulet.entity.User;
 import kz.nurdaulet.entity.enums.DeliveryType;
 import kz.nurdaulet.entity.enums.OrderStatus;
+import kz.nurdaulet.entity.enums.Role;
 import kz.nurdaulet.exception.CartOperationException;
 import kz.nurdaulet.exception.OrderNotFoundException;
 import kz.nurdaulet.exception.OrderOperationException;
 import kz.nurdaulet.service.CartService;
 import kz.nurdaulet.service.FoodService;
 import kz.nurdaulet.service.RestaurantService;
+import kz.nurdaulet.service.UserService;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
@@ -61,6 +65,9 @@ class OrderServiceImplTest {
 
     @Mock
     private RestaurantService restaurantService;
+
+    @Mock
+    private UserService userService;
 
     @InjectMocks
     private OrderServiceImpl testingInstance;
@@ -233,6 +240,27 @@ class OrderServiceImplTest {
     }
 
     @Test
+    void shouldGetAdminOrders() {
+        Order order = createOrder(OrderStatus.READY, USER_ID, RESTAURANT_ID);
+        User user = createUser();
+        Restaurant restaurant = createRestaurant(MANAGER_ID);
+        restaurant.setName("Burger House");
+
+        when(orderDao.findAll()).thenReturn(List.of(order));
+        when(userService.getById(USER_ID)).thenReturn(user);
+        when(restaurantService.getRestaurantById(RESTAURANT_ID)).thenReturn(restaurant);
+
+        List<AdminOrderDto> result = testingInstance.getAdminOrders();
+
+        assertEquals(1, result.size());
+        assertEquals(ORDER_ID, result.get(0).getId());
+        assertEquals("John Doe (john)", result.get(0).getClientName());
+        assertEquals("Burger House", result.get(0).getRestaurantName());
+        assertEquals(OrderStatus.READY, result.get(0).getStatus());
+        assertEquals(5000D, result.get(0).getTotalPrice());
+    }
+
+    @Test
     void shouldGetManagerOrders() {
         Restaurant restaurant = createRestaurant(MANAGER_ID);
         List<Order> orders = List.of(createOrder(OrderStatus.PREPARING, USER_ID, RESTAURANT_ID));
@@ -243,6 +271,41 @@ class OrderServiceImplTest {
         List<Order> result = testingInstance.getManagerOrders(MANAGER_ID, RESTAURANT_ID);
 
         assertEquals(orders, result);
+    }
+
+    @Test
+    void shouldGetManagerOrderItems() {
+        Restaurant restaurant = createRestaurant(MANAGER_ID);
+        Order order = createOrder(OrderStatus.PREPARING, USER_ID, RESTAURANT_ID);
+        OrderItem orderItem = new OrderItem(1L, ORDER_ID, BURGER_ID, 2, 2500D);
+
+        when(restaurantService.getRestaurantById(RESTAURANT_ID)).thenReturn(restaurant);
+        when(orderDao.findById(ORDER_ID)).thenReturn(order);
+        when(orderItemDao.findByOrderId(ORDER_ID)).thenReturn(List.of(orderItem));
+        when(foodService.getFoodById(BURGER_ID))
+                .thenReturn(createFood(BURGER_ID, 2500D, true, RESTAURANT_ID));
+
+        List<OrderItemDetailsDto> result = testingInstance.getManagerOrderItems(
+                MANAGER_ID, RESTAURANT_ID, ORDER_ID);
+
+        assertEquals(1, result.size());
+        assertEquals(BURGER_ID, result.get(0).getFoodId());
+        assertEquals(2, result.get(0).getQuantity());
+        assertEquals(5000D, result.get(0).getSubtotal());
+    }
+
+    @Test
+    void shouldNotGetPendingPaymentOrderForManager() {
+        Restaurant restaurant = createRestaurant(MANAGER_ID);
+        Order pendingOrder = createOrder(OrderStatus.PENDING_PAYMENT, USER_ID, RESTAURANT_ID);
+
+        when(restaurantService.getRestaurantById(RESTAURANT_ID)).thenReturn(restaurant);
+        when(orderDao.findById(ORDER_ID)).thenReturn(pendingOrder);
+
+        assertThrows(OrderNotFoundException.class,
+                () -> testingInstance.getManagerOrder(MANAGER_ID, RESTAURANT_ID, ORDER_ID));
+
+        verifyNoInteractions(orderItemDao);
     }
 
     @Test
@@ -307,5 +370,19 @@ class OrderServiceImplTest {
         restaurant.setManagerId(managerId);
 
         return restaurant;
+    }
+
+    private User createUser() {
+        return new User(
+                USER_ID,
+                "John",
+                "Doe",
+                "john",
+                "john@example.com",
+                "password",
+                Role.CUSTOMER,
+                true,
+                LocalDateTime.now()
+        );
     }
 }

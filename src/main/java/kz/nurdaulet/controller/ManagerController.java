@@ -191,10 +191,23 @@ public class ManagerController {
         return "order/manager-orders";
     }
 
+    @GetMapping("/{restaurantId}/orders/{orderId}")
+    public String restaurantOrderDetails(@PathVariable("restaurantId") Long restaurantId,
+                                         @PathVariable("orderId") Long orderId,
+                                         @AuthenticationPrincipal CustomUserDetails userDetails,
+                                         Model model) {
+        model.addAttribute("restaurant", restaurantService.getRestaurantById(restaurantId));
+        model.addAttribute("order", orderService.getManagerOrder(userDetails.getId(), restaurantId, orderId));
+        model.addAttribute("orderItems", orderService.getManagerOrderItems(userDetails.getId(), restaurantId, orderId));
+
+        return "order/manager-order-details";
+    }
+
     @PostMapping("/{restaurantId}/orders/{orderId}/status")
     public String updateOrderStatus(@PathVariable("restaurantId") Long restaurantId,
                                     @PathVariable("orderId") Long orderId,
                                     @RequestParam("status") OrderStatus status,
+                                    @RequestParam(value = "redirectToDetails", defaultValue = "false") boolean redirectToDetails,
                                     @AuthenticationPrincipal CustomUserDetails userDetails,
                                     RedirectAttributes redirectAttributes) {
         try {
@@ -202,6 +215,10 @@ public class ManagerController {
             redirectAttributes.addFlashAttribute("orderSuccess", "Статус заказа обновлён");
         } catch (OrderOperationException exception) {
             redirectAttributes.addFlashAttribute("orderError", exception.getMessage());
+        }
+
+        if (redirectToDetails) {
+            return "redirect:/restaurants/manager/" + restaurantId + "/orders/" + orderId;
         }
 
         return "redirect:/restaurants/manager/" + restaurantId + "/orders";

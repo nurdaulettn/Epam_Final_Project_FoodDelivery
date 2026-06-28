@@ -54,6 +54,18 @@ public class UserServiceImpl implements UserService {
 //        }
     }
 
+    @Override
+    public User getById(Long id) {
+        User user = userDao.findById(id);
+
+        if (user == null) {
+            throw new UserNotFoundException(USER_NOT_FOUND);
+        }
+
+        return user;
+    }
+
+    @Override
     public void delete(Long id) {
         if (userDao.existsById(id)) {
             userDao.deleteById(id);

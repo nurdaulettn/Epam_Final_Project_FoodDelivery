@@ -1,6 +1,7 @@
 package kz.nurdaulet.service;
 
 import kz.nurdaulet.dto.CheckoutDto;
+import kz.nurdaulet.dto.AdminOrderDto;
 import kz.nurdaulet.dto.OrderItemDetailsDto;
 import kz.nurdaulet.dto.OrderSummaryDto;
 import kz.nurdaulet.entity.Order;
@@ -19,6 +20,12 @@ public interface OrderService {
     List<OrderItemDetailsDto> getCustomerOrderItems(Long userId, Long orderId);
 
     Order payOrder(Long userId, Long orderId);
+
+    List<AdminOrderDto> getAdminOrders();
+
+    Order getManagerOrder(Long managerId, Long restaurantId, Long orderId);
+
+    List<OrderItemDetailsDto> getManagerOrderItems(Long managerId, Long restaurantId, Long orderId);
 
     List<Order> getManagerOrders(Long managerId, Long restaurantId);
 

@@ -10,6 +10,8 @@ public interface OrderDao {
 
     Order findById(Long id);
 
+    List<Order> findAll();
+
     List<Order> findByUserId(Long userId);
 
     List<Order> findPaidByRestaurantId(Long restaurantId);

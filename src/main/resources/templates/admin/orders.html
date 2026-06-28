@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AsapJe - Заказы</title>
+    <link rel="stylesheet" th:href="@{/static/css/index.css}">
+</head>
+<body>
+
+<header class="topbar">
+    <a class="brand" th:href="@{/}">
+        <span class="brand-mark">AJ</span>
+        <span>AsapJe</span>
+    </a>
+
+    <nav class="nav">
+        <a th:href="@{/admin/create-requests}">Заявки</a>
+        <a th:href="@{/admin/orders}">Заказы</a>
+        <a th:href="@{/categories}">Категории</a>
+        <a th:href="@{/admin/categories/create}">Создать категорию</a>
+        <a th:href="@{/restaurants}">Рестораны</a>
+        <a th:href="@{/foods}">Блюда</a>
+    </nav>
+
+    <div class="actions">
+        <span class="account-pill">
+            <span class="account-avatar" th:text="${#strings.substring(currentUsername,0,1)}">U</span>
+            <span class="account-name" th:text="${currentUsername}">user</span>
+        </span>
+        <form class="logout-form" th:action="@{/logout}" method="post">
+            <input type="hidden"
+                   th:if="${_csrf != null}"
+                   th:name="${_csrf.parameterName}"
+                   th:value="${_csrf.token}">
+            <button class="btn btn-ghost" type="submit">Выйти</button>
+        </form>
+    </div>
+</header>
+
+<main class="section">
+    <div class="section-head">
+        <p class="eyebrow">Панель администратора</p>
+        <h2>Все заказы</h2>
+        <p>Просмотр заказов клиентов без изменения статусов.</p>
+    </div>
+
+    <div th:if="${#lists.isEmpty(orders)}"
+         style="text-align:center;margin-top:50px">
+        <h3>Заказов пока нет</h3>
+        <a class="btn btn-primary" th:href="@{/admin/create-requests}">
+            Перейти к заявкам
+        </a>
+    </div>
+
+    <section th:unless="${#lists.isEmpty(orders)}" class="admin-table-wrap">
+        <table class="admin-table">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th>Клиент</th>
+                <th>Ресторан</th>
+                <th>Статус</th>
+                <th>Сумма</th>
+                <th>Дата</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="order : ${orders}">
+                <td>
+                    #
+                    <span th:text="${order.id}">1</span>
+                </td>
+                <td th:text="${order.clientName}">Client</td>
+                <td th:text="${order.restaurantName}">Restaurant</td>
+                <td>
+                    <span class="order-status" th:text="${order.status.displayName}">
+                        Готовится
+                    </span>
+                </td>
+                <td>
+                    <span th:text="${order.totalPrice}">0</span>
+                    ₸
+                </td>
+                <td th:text="${#temporals.format(order.createdAt, 'dd.MM.yyyy HH:mm')}">
+                    28.06.2026 12:00
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </section>
+</main>
+</body>
+</html>

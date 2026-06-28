@@ -2,6 +2,7 @@ package kz.nurdaulet.service.impl;
 
 import kz.nurdaulet.dao.OrderDao;
 import kz.nurdaulet.dao.OrderItemDao;
+import kz.nurdaulet.dto.AdminOrderDto;
 import kz.nurdaulet.dto.CheckoutDto;
 import kz.nurdaulet.dto.OrderItemDetailsDto;
 import kz.nurdaulet.dto.OrderSummaryDto;
@@ -9,6 +10,7 @@ import kz.nurdaulet.entity.Food;
 import kz.nurdaulet.entity.Order;
 import kz.nurdaulet.entity.OrderItem;
 import kz.nurdaulet.entity.Restaurant;
+import kz.nurdaulet.entity.User;
 import kz.nurdaulet.entity.enums.DeliveryType;
 import kz.nurdaulet.entity.enums.OrderStatus;
 import kz.nurdaulet.exception.CartOperationException;
@@ -18,6 +20,7 @@ import kz.nurdaulet.service.CartService;
 import kz.nurdaulet.service.FoodService;
 import kz.nurdaulet.service.OrderService;
 import kz.nurdaulet.service.RestaurantService;
+import kz.nurdaulet.service.UserService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -43,17 +46,20 @@ public class OrderServiceImpl implements OrderService {
     private final FoodService foodService;
     private final CartService cartService;
     private final RestaurantService restaurantService;
+    private final UserService userService;
 
     public OrderServiceImpl(OrderDao orderDao,
                             OrderItemDao orderItemDao,
                             FoodService foodService,
                             CartService cartService,
-                            RestaurantService restaurantService) {
+                            RestaurantService restaurantService,
+                            UserService userService) {
         this.orderDao = orderDao;
         this.orderItemDao = orderItemDao;
         this.foodService = foodService;
         this.cartService = cartService;
         this.restaurantService = restaurantService;
+        this.userService = userService;
     }
 
     @Override
@@ -130,6 +136,49 @@ public class OrderServiceImpl implements OrderService {
     }
 
     @Override
+    public List<AdminOrderDto> getAdminOrders() {
+        List<AdminOrderDto> result = new ArrayList<>();
+
+        for (Order order : orderDao.findAll()) {
+            User user = userService.getById(order.getUserId());
+            Restaurant restaurant = restaurantService.getRestaurantById(order.getRestaurantId());
+
+            result.add(new AdminOrderDto(
+                    order.getId(),
+                    buildClientName(user),
+                    restaurant.getName(),
+                    order.getStatus(),
+                    order.getTotalPrice(),
+                    order.getCreatedAt()
+            ));
+        }
+
+        return result;
+    }
+
+    @Override
+    public Order getManagerOrder(Long managerId, Long restaurantId, Long orderId) {
+        checkManagerRestaurant(managerId, restaurantId);
+
+        Order order = orderDao.findById(orderId);
+
+        if (order == null
+                || !order.getRestaurantId().equals(restaurantId)
+                || OrderStatus.PENDING_PAYMENT.equals(order.getStatus())) {
+            throw new OrderNotFoundException(ORDER_NOT_FOUND.formatted(orderId));
+        }
+
+        return order;
+    }
+
+    @Override
+    public List<OrderItemDetailsDto> getManagerOrderItems(Long managerId, Long restaurantId, Long orderId) {
+        getManagerOrder(managerId, restaurantId, orderId);
+
+        return buildOrderItemDetails(orderItemDao.findByOrderId(orderId));
+    }
+
+    @Override
     public List<Order> getManagerOrders(Long managerId, Long restaurantId) {
         checkManagerRestaurant(managerId, restaurantId);
 
@@ -138,14 +187,9 @@ public class OrderServiceImpl implements OrderService {
 
     @Override
     public Order updateManagerOrderStatus(Long managerId, Long restaurantId, Long orderId, OrderStatus status) {
-        checkManagerRestaurant(managerId, restaurantId);
         validateManagerTargetStatus(status);
 
-        Order order = orderDao.findById(orderId);
-
-        if (order == null || !order.getRestaurantId().equals(restaurantId)) {
-            throw new OrderNotFoundException(ORDER_NOT_FOUND.formatted(orderId));
-        }
+        Order order = getManagerOrder(managerId, restaurantId, orderId);
 
         validateManagerStatusTransition(order.getStatus(), status);
         orderDao.updateStatus(orderId, status);
@@ -186,6 +230,16 @@ public class OrderServiceImpl implements OrderService {
         }
 
         return details;
+    }
+
+    private String buildClientName(User user) {
+        String fullName = (user.getFirstName() + " " + user.getLastName()).trim();
+
+        if (!fullName.isBlank()) {
+            return fullName + " (" + user.getUsername() + ")";
+        }
+
+        return user.getUsername();
     }
 
     private void validateCart(Map<Long, Integer> cart) {

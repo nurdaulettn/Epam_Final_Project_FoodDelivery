@@ -1,5 +1,6 @@
 package kz.nurdaulet.controller;
 
+import kz.nurdaulet.service.OrderService;
 import kz.nurdaulet.service.RestaurantService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -12,9 +13,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/admin")
 public class AdminController {
     private final RestaurantService restaurantService;
+    private final OrderService orderService;
 
-    public AdminController(RestaurantService restaurantService) {
+    public AdminController(RestaurantService restaurantService,
+                           OrderService orderService) {
         this.restaurantService = restaurantService;
+        this.orderService = orderService;
     }
 
     @GetMapping("/create-requests")
@@ -23,6 +27,13 @@ public class AdminController {
                 restaurantService.getPendingRestaurants());
 
         return "admin/create-requests";
+    }
+
+    @GetMapping("/orders")
+    public String orders(Model model) {
+        model.addAttribute("orders", orderService.getAdminOrders());
+
+        return "admin/orders";
     }
 
     @PostMapping("/create-requests/{id}/confirm")
