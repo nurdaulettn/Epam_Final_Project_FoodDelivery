@@ -19,18 +19,26 @@ AsapJe is a Spring MVC web application for food delivery. It supports customer o
 - Role-based access: `CUSTOMER`, `MANAGER`, `ADMIN`
 - Restaurant browsing and search
 - Food browsing with category, restaurant, and search filters
+- Restaurant details with customer reviews and rating
+- Favorite foods
 - Cart and checkout flow
 - Delivery and pickup order types
 - Mock payment button that moves an order to preparing
 - Customer order history and order details
 - Manager food management
 - Manager order list, order details, and status updates
+- Manager order item details
+- Admin user management: list, block, unblock, delete, and role update
 - Admin restaurant approval/rejection
 - Admin order overview
+- Admin category management
 - Pagination for long lists
 - EN/RU internationalization with cookie-based language persistence
 - Centralized exception handling
+- Centralized request and business event logging
+- Duplicate form submission protection for critical actions
 - DAO and service unit tests
+- Javadoc on service interfaces
 
 ## Project Structure
 
@@ -154,6 +162,9 @@ Customer:
 - `/cart/checkout`
 - `/orders`
 - `/orders/{orderId}`
+- `/favorites`
+- `/restaurants/{restaurantId}`
+- `/restaurants/{restaurantId}/reviews`
 
 Manager:
 
@@ -165,9 +176,19 @@ Manager:
 
 Admin:
 
+- `/admin/users`
 - `/admin/create-requests`
 - `/admin/orders`
+- `/categories`
 - `/admin/categories/create`
+
+## Role Capabilities
+
+`CUSTOMER` can browse restaurants and foods, use the cart, choose delivery or pickup, pay with a mock payment button, track orders, add favorite foods, and leave restaurant reviews.
+
+`MANAGER` can create restaurant requests, manage restaurant foods, view restaurant orders, inspect order items, and update order statuses through allowed transitions.
+
+`ADMIN` can approve or reject restaurant requests, manage users, view all orders, and manage categories.
 
 ## Localization
 
@@ -184,6 +205,50 @@ Example:
 /foods?lang=en
 /foods?lang=ru
 ```
+
+## Architecture and Patterns
+
+The project follows layered MVC architecture:
+
+- Controller layer handles HTTP requests and view models.
+- Service layer contains business rules and transaction boundaries.
+- DAO layer isolates JDBC queries and database access.
+- Thymeleaf templates render the UI.
+
+Used patterns:
+
+- MVC Pattern: Spring MVC controllers, models, and Thymeleaf views separate web concerns.
+- DAO Pattern: each DAO hides SQL and JDBC details behind an interface.
+- Dependency Injection: Spring manages services, DAOs, validators, and configuration objects.
+- Facade Pattern: `ManagerFoodFacade` coordinates manager food operations across restaurant, category, and food services.
+- Interceptor Pattern: `RequestLoggingInterceptor` handles request logging as a cross-cutting concern.
+
+## Validation and Error Handling
+
+The application uses server-side validation with Bean Validation annotations and Spring `BindingResult` handling. The UI also uses browser validation attributes such as `required`, typed inputs, length limits, and numeric limits where appropriate.
+
+Errors are handled centrally by `GlobalExceptionHandler`, which returns user-friendly error pages and logs technical details through SLF4J/Logback.
+
+## Logging
+
+Logging is configured in:
+
+```text
+src/main/resources/logback.xml
+```
+
+Logging levels are used consistently:
+
+- `info` for important business events;
+- `warn` for rejected operations and business rule violations;
+- `debug` for technical details and frequent low-level operations;
+- `error` for unexpected failures.
+
+HTTP request logging is handled by a Spring MVC interceptor.
+
+## Duplicate Submission Protection
+
+The project uses the POST-Redirect-GET pattern for form submissions and disables critical submit buttons on the frontend after submission. Backend operations such as payment and manager status updates are also idempotent where repeated submissions could happen.
 
 ## Testing
 
@@ -206,6 +271,27 @@ The tests use:
 - `given / when / then` structure
 - `verify(...)` for mocked dependencies
 
+Current test suite status:
+
+```text
+Tests run: 108, Failures: 0, Errors: 0, Skipped: 0
+```
+
+## Requirements Coverage
+
+- Spring Core, Spring MVC, Spring Security, and Spring JDBC are used.
+- The project follows Controller -> Service -> DAO layering.
+- PostgreSQL stores domain data.
+- Plain JDBC/Spring JDBC is used; ORM frameworks are not used.
+- Passwords are stored as BCrypt hashes.
+- SQL scripts are provided under `src/main/resources/db_scripts`.
+- Transactions are used for critical order and review operations.
+- i18n is implemented with English and Russian resource bundles.
+- Pagination is implemented for long customer, manager, and admin lists.
+- Centralized logging and exception handling are configured.
+- DAO and service layers are covered by unit tests.
+- Service interfaces contain Javadoc comments.
+
 ## Notes
 
 - Passwords are stored as BCrypt hashes.
@@ -213,3 +299,4 @@ The tests use:
 - ORM frameworks are not used.
 - Order creation is transactional.
 - Payment is mocked: clicking the pay button changes the order status to `PREPARING`.
+- Real payment provider integration is intentionally out of scope.
