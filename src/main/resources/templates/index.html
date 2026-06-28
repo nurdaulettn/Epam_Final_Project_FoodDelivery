@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<html th:lang="${#locale.language}" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AsapJe - доставка еды</title>
+    <title th:text="#{home.title}">AsapJe - food delivery</title>
     <link rel="stylesheet" th:href="@{/static/css/index.css}">
 </head>
 <body>
@@ -14,18 +14,23 @@
     </a>
 
     <nav class="nav">
-        <a th:href="@{/restaurants}">Рестораны</a>
-        <a th:href="@{/foods}">Блюда</a>
-        <a th:href="@{/categories}">Категории</a>
-        <a th:if="${currentUsername != null}" th:href="@{/cart}">Корзина</a>
-        <a th:if="${currentUsername != null}" th:href="@{/orders}">Мои заказы</a>
-        <a th:if="${currentUserManager}" th:href="@{/restaurants/manager/my-restaurants}">Панель менеджера</a>
-        <a th:if="${currentUserAdmin}" th:href="@{/admin/create-requests}">Админка</a>
+        <a th:href="@{/restaurants}" th:text="#{nav.restaurants}">Restaurants</a>
+        <a th:href="@{/foods}" th:text="#{nav.foods}">Foods</a>
+        <a th:href="@{/categories}" th:text="#{nav.categories}">Categories</a>
+        <a th:if="${currentUsername != null}" th:href="@{/cart}" th:text="#{nav.cart}">Cart</a>
+        <a th:if="${currentUsername != null}" th:href="@{/orders}" th:text="#{nav.orders}">Orders</a>
+        <a th:if="${currentUserManager}" th:href="@{/restaurants/manager/my-restaurants}" th:text="#{nav.manager}">Manager</a>
+        <a th:if="${currentUserAdmin}" th:href="@{/admin/create-requests}" th:text="#{nav.admin}">Admin</a>
     </nav>
 
+    <div class="language-switch">
+        <a th:href="@{/(lang='ru')}" th:text="#{nav.lang.ru}">RU</a>
+        <a th:href="@{/(lang='en')}" th:text="#{nav.lang.en}">EN</a>
+    </div>
+
     <div class="actions" th:if="${currentUsername == null}">
-        <a class="btn btn-ghost" th:href="@{/login}">Войти</a>
-        <a class="btn btn-primary" th:href="@{/register}">Создать аккаунт</a>
+        <a class="btn btn-ghost" th:href="@{/login}" th:text="#{nav.login}">Log in</a>
+        <a class="btn btn-primary" th:href="@{/register}" th:text="#{nav.register}">Create account</a>
     </div>
 
     <div class="actions" th:if="${currentUsername != null}">
@@ -38,7 +43,7 @@
                    th:if="${_csrf != null}"
                    th:name="${_csrf.parameterName}"
                    th:value="${_csrf.token}">
-            <button class="btn btn-ghost" type="submit">Выйти</button>
+            <button class="btn btn-ghost" type="submit" th:text="#{nav.logout}">Log out</button>
         </form>
     </div>
 </header>
@@ -46,81 +51,112 @@
 <main>
     <section class="hero">
         <div class="hero-content">
-            <p class="eyebrow">Доставка еды для города</p>
-            <h1>Заказывайте любимые блюда без лишних шагов</h1>
-            <p class="hero-text">
-                Выберите ресторан, добавьте блюда в корзину, оформите заказ и отслеживайте статус в личной истории.
+            <p class="eyebrow" th:text="#{home.eyebrow}">Food delivery</p>
+            <h1 th:text="#{home.heading}">Order your favorite food</h1>
+            <p class="hero-text" th:text="#{home.text}">
+                Choose a restaurant, add food to cart and track the status.
             </p>
             <div class="hero-actions">
                 <a class="btn btn-primary btn-large"
                    th:if="${currentUsername == null}"
-                   th:href="@{/register}">
-                    Создать аккаунт
+                   th:href="@{/register}"
+                   th:text="#{home.cta.register}">
+                    Create account
                 </a>
                 <a class="btn btn-primary btn-large"
                    th:if="${currentUsername != null}"
-                   th:href="@{/foods}">
-                    Перейти к блюдам
+                   th:href="@{/foods}"
+                   th:text="#{home.cta.foods}">
+                    Go to foods
                 </a>
-                <a class="btn btn-light btn-large" th:href="@{/restaurants}">
-                    Смотреть рестораны
+                <a class="btn btn-light btn-large"
+                   th:href="@{/restaurants}"
+                   th:text="#{home.cta.restaurants}">
+                    View restaurants
                 </a>
                 <a class="btn btn-light btn-large"
                    th:if="${currentUsername != null}"
-                   th:href="@{/orders}">
-                    Мои заказы
+                   th:href="@{/orders}"
+                   th:text="#{nav.orders}">
+                    My orders
                 </a>
             </div>
         </div>
-        <div class="hero-panel" aria-label="Пример заказа">
+        <div class="hero-panel" th:attr="aria-label=#{home.demo.label}">
             <div class="order-card">
                 <div>
-                    <span class="status">Готовится</span>
+                    <span class="status" th:text="#{home.demo.status}">Preparing</span>
                     <h2>Burger House</h2>
-                    <p>Бургер, картофель фри, напиток</p>
+                    <p th:text="#{home.demo.items}">Burger, fries, drink</p>
                 </div>
-                <strong>28 мин</strong>
+                <strong th:text="#{home.demo.time}">28 min</strong>
             </div>
             <div class="dish-grid">
-                <article>Бургеры <span>от 1 590 ₸</span></article>
-                <article>Пицца <span>от 2 200 ₸</span></article>
-                <article>Суши <span>от 2 890 ₸</span></article>
-                <article>Напитки <span>от 490 ₸</span></article>
+                <article>
+                    <span th:text="#{home.burgers}">Burgers</span>
+                    <span>
+                        <span th:text="#{home.from}">from</span>
+                        1 590 ₸
+                    </span>
+                </article>
+                <article>
+                    <span th:text="#{home.pizza}">Pizza</span>
+                    <span>
+                        <span th:text="#{home.from}">from</span>
+                        2 200 ₸
+                    </span>
+                </article>
+                <article>
+                    <span th:text="#{home.sushi}">Sushi</span>
+                    <span>
+                        <span th:text="#{home.from}">from</span>
+                        2 890 ₸
+                    </span>
+                </article>
+                <article>
+                    <span th:text="#{home.drinks}">Drinks</span>
+                    <span>
+                        <span th:text="#{home.from}">from</span>
+                        490 ₸
+                    </span>
+                </article>
             </div>
         </div>
     </section>
 
     <section class="section" id="restaurants">
         <div class="section-head">
-            <p class="eyebrow">Каталог</p>
-            <h2>Быстрый доступ</h2>
+            <p class="eyebrow" th:text="#{home.catalog}">Catalog</p>
+            <h2 th:text="#{home.quick}">Quick access</h2>
         </div>
         <div class="cards">
             <article class="restaurant">
                 <div class="restaurant-image green">R</div>
-                <h3>Рестораны</h3>
-                <p>Выберите ресторан и откройте его меню.</p>
-                <a class="btn btn-primary" th:href="@{/restaurants}">Открыть</a>
+                <h3 th:text="#{nav.restaurants}">Restaurants</h3>
+                <p th:text="#{home.card.restaurants.text}">Choose a restaurant.</p>
+                <a class="btn btn-primary" th:href="@{/restaurants}" th:text="#{common.open}">Open</a>
             </article>
             <article class="restaurant">
                 <div class="restaurant-image yellow">F</div>
-                <h3>Блюда</h3>
-                <p>Найдите блюдо по названию, категории или ресторану.</p>
-                <a class="btn btn-primary" th:href="@{/foods}">Открыть</a>
+                <h3 th:text="#{nav.foods}">Foods</h3>
+                <p th:text="#{home.card.foods.text}">Find food.</p>
+                <a class="btn btn-primary" th:href="@{/foods}" th:text="#{common.open}">Open</a>
             </article>
             <article class="restaurant">
                 <div class="restaurant-image blue">O</div>
-                <h3>Заказы</h3>
-                <p>Проверьте статус текущих и прошлых заказов.</p>
+                <h3 th:text="#{nav.orders}">Orders</h3>
+                <p th:text="#{home.card.orders.text}">Check order status.</p>
                 <a class="btn btn-primary"
                    th:if="${currentUsername != null}"
-                   th:href="@{/orders}">
-                    Открыть
+                   th:href="@{/orders}"
+                   th:text="#{common.open}">
+                    Open
                 </a>
                 <a class="btn btn-primary"
                    th:if="${currentUsername == null}"
-                   th:href="@{/login}">
-                    Войти
+                   th:href="@{/login}"
+                   th:text="#{nav.login}">
+                    Log in
                 </a>
             </article>
         </div>
@@ -128,13 +164,13 @@
 
     <section class="section split" id="how-it-works">
         <div>
-            <p class="eyebrow">Процесс</p>
-            <h2>Три шага до заказа</h2>
+            <p class="eyebrow" th:text="#{home.process}">Process</p>
+            <h2 th:text="#{home.steps.title}">Three steps to order</h2>
         </div>
         <div class="steps">
-            <article><strong>01</strong><span>Выберите ресторан и блюда</span></article>
-            <article><strong>02</strong><span>Оформите заказ в корзине</span></article>
-            <article><strong>03</strong><span>Оплатите и следите за статусом</span></article>
+            <article><strong>01</strong><span th:text="#{home.step1}">Choose food</span></article>
+            <article><strong>02</strong><span th:text="#{home.step2}">Place order</span></article>
+            <article><strong>03</strong><span th:text="#{home.step3}">Pay and track</span></article>
         </div>
     </section>
 </main>

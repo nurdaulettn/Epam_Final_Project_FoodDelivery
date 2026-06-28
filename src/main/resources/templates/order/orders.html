@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<html th:lang="${#locale.language}" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AsapJe - Мои заказы</title>
+    <title th:text="#{orders.title}">AsapJe - My orders</title>
     <link rel="stylesheet" th:href="@{/static/css/index.css}">
 </head>
 <body>
@@ -14,12 +14,17 @@
     </a>
 
     <nav class="nav">
-        <a th:href="@{/restaurants}">Рестораны</a>
-        <a th:href="@{/categories}">Категории</a>
-        <a th:href="@{/foods}">Блюда</a>
-        <a th:href="@{/cart}">Корзина</a>
-        <a th:href="@{/orders}">Мои заказы</a>
+        <a th:href="@{/restaurants}" th:text="#{nav.restaurants}">Restaurants</a>
+        <a th:href="@{/categories}" th:text="#{nav.categories}">Categories</a>
+        <a th:href="@{/foods}" th:text="#{nav.foods}">Foods</a>
+        <a th:href="@{/cart}" th:text="#{nav.cart}">Cart</a>
+        <a th:href="@{/orders}" th:text="#{nav.orders}">My orders</a>
     </nav>
+
+    <div class="language-switch">
+        <a th:href="@{/orders(lang='ru', page=${page.currentPage})}">RU</a>
+        <a th:href="@{/orders(lang='en', page=${page.currentPage})}">EN</a>
+    </div>
 
     <div class="actions" th:if="${currentUsername != null}">
         <span class="account-pill">
@@ -31,22 +36,22 @@
                    th:if="${_csrf != null}"
                    th:name="${_csrf.parameterName}"
                    th:value="${_csrf.token}">
-            <button class="btn btn-ghost" type="submit">Выйти</button>
+            <button class="btn btn-ghost" type="submit" th:text="#{nav.logout}">Log out</button>
         </form>
     </div>
 </header>
 
 <main class="section">
     <div class="section-head">
-        <p class="eyebrow">История</p>
-        <h2>Мои заказы</h2>
+        <p class="eyebrow" th:text="#{orders.eyebrow}">History</p>
+        <h2 th:text="#{orders.heading}">My orders</h2>
     </div>
 
     <div th:if="${#lists.isEmpty(orders)}"
          style="margin-top:40px; text-align:center;">
-        <h3>У вас пока нет заказов</h3>
-        <a class="btn btn-primary" th:href="@{/foods}">
-            Перейти к блюдам
+        <h3 th:text="#{orders.empty}">You do not have orders yet</h3>
+        <a class="btn btn-primary" th:href="@{/foods}" th:text="#{orders.go.foods}">
+            Go to foods
         </a>
     </div>
 
@@ -54,32 +59,58 @@
         <article class="order-row" th:each="order : ${orders}">
             <div>
                 <p class="eyebrow">
-                    Заказ #
+                    <span th:text="#{orders.order}">Order</span>
+                    #
                     <span th:text="${order.id}">1</span>
                 </p>
                 <h3 th:text="${order.restaurantName}">Restaurant</h3>
                 <p>
                     <span th:text="${#temporals.format(order.createdAt, 'dd.MM.yyyy HH:mm')}">25.06.2026 18:30</span>
                     ·
-                    <span th:text="${order.deliveryType.displayName}">Доставка</span>
+                    <span th:text="#{${'delivery.' + order.deliveryType.name()}}">Delivery</span>
                 </p>
             </div>
 
             <div class="order-status">
-                <span th:text="${order.status.displayName}">Ожидает оплаты</span>
+                <span th:text="#{${'status.' + order.status.name()}}">Pending payment</span>
             </div>
 
             <strong>
                 <span th:text="${order.totalPrice}">0</span>
-                ₸
+                <span th:text="#{common.currency}">₸</span>
             </strong>
 
             <a class="btn btn-primary"
-               th:href="@{/orders/{orderId}(orderId=${order.id})}">
-                Подробнее
+               th:href="@{/orders/{orderId}(orderId=${order.id})}"
+               th:text="#{orders.details}">
+                Details
             </a>
         </article>
     </section>
+
+    <nav class="pagination" th:if="${page.totalPages > 1}">
+        <a class="page-link"
+           th:classappend="${!page.hasPrevious} ? ' disabled'"
+           th:href="@{/orders(page=${page.currentPage - 1})}"
+           th:text="#{common.back}">
+            Back
+        </a>
+
+        <a class="page-link"
+           th:each="pageNumber : ${#numbers.sequence(1, page.totalPages)}"
+           th:classappend="${pageNumber == page.currentPage} ? ' active'"
+           th:text="${pageNumber}"
+           th:href="@{/orders(page=${pageNumber})}">
+            1
+        </a>
+
+        <a class="page-link"
+           th:classappend="${!page.hasNext} ? ' disabled'"
+           th:href="@{/orders(page=${page.currentPage + 1})}"
+           th:text="#{common.next}">
+            Next
+        </a>
+    </nav>
 </main>
 </body>
 </html>

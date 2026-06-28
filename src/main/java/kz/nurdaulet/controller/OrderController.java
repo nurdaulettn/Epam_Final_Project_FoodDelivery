@@ -1,5 +1,7 @@
 package kz.nurdaulet.controller;
 
+import kz.nurdaulet.dto.OrderSummaryDto;
+import kz.nurdaulet.dto.PageDto;
 import kz.nurdaulet.entity.CustomUserDetails;
 import kz.nurdaulet.entity.Order;
 import kz.nurdaulet.exception.CartOperationException;
@@ -13,11 +15,16 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.util.List;
 
 @Controller
 @RequestMapping("/orders")
 public class OrderController {
+    private static final int PAGE_SIZE = 5;
+
     private final OrderService orderService;
 
     public OrderController(OrderService orderService) {
@@ -26,8 +33,13 @@ public class OrderController {
 
     @GetMapping
     public String orders(@AuthenticationPrincipal CustomUserDetails userDetails,
+                         @RequestParam(name = "page", defaultValue = "1") int page,
                          Model model) {
-        model.addAttribute("orders", orderService.getCustomerOrders(userDetails.getId()));
+        List<OrderSummaryDto> orders = orderService.getCustomerOrders(userDetails.getId());
+        PageDto<OrderSummaryDto> orderPage = PageDto.of(orders, page, PAGE_SIZE);
+
+        model.addAttribute("orders", orderPage.getContent());
+        model.addAttribute("page", orderPage);
 
         return "order/orders";
     }

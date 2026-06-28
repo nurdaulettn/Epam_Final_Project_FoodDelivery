@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<html th:lang="${#locale.language}" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AsapJe - Заказ</title>
+    <title th:text="#{orders.title}">AsapJe - Order</title>
     <link rel="stylesheet" th:href="@{/static/css/index.css}">
 </head>
 <body>
@@ -14,12 +14,17 @@
     </a>
 
     <nav class="nav">
-        <a th:href="@{/restaurants}">Рестораны</a>
-        <a th:href="@{/categories}">Категории</a>
-        <a th:href="@{/foods}">Блюда</a>
-        <a th:href="@{/cart}">Корзина</a>
-        <a th:href="@{/orders}">Мои заказы</a>
+        <a th:href="@{/restaurants}" th:text="#{nav.restaurants}">Restaurants</a>
+        <a th:href="@{/categories}" th:text="#{nav.categories}">Categories</a>
+        <a th:href="@{/foods}" th:text="#{nav.foods}">Foods</a>
+        <a th:href="@{/cart}" th:text="#{nav.cart}">Cart</a>
+        <a th:href="@{/orders}" th:text="#{nav.orders}">My orders</a>
     </nav>
+
+    <div class="language-switch">
+        <a th:href="@{/orders/{orderId}(orderId=${order.id}, lang='ru')}">RU</a>
+        <a th:href="@{/orders/{orderId}(orderId=${order.id}, lang='en')}">EN</a>
+    </div>
 
     <div class="actions" th:if="${currentUsername != null}">
         <span class="account-pill">
@@ -31,16 +36,17 @@
                    th:if="${_csrf != null}"
                    th:name="${_csrf.parameterName}"
                    th:value="${_csrf.token}">
-            <button class="btn btn-ghost" type="submit">Выйти</button>
+            <button class="btn btn-ghost" type="submit" th:text="#{nav.logout}">Log out</button>
         </form>
     </div>
 </header>
 
 <main class="section">
     <div class="section-head">
-        <p class="eyebrow">Заказ</p>
+        <p class="eyebrow" th:text="#{orders.order}">Order</p>
         <h2>
-            Заказ #
+            <span th:text="#{orders.order}">Order</span>
+            #
             <span th:text="${order.id}">1</span>
         </h2>
     </div>
@@ -48,13 +54,13 @@
     <div class="auth-alert auth-alert-success"
          th:if="${orderSuccess != null}"
          th:text="${orderSuccess}">
-        Заказ обновлён
+        Order updated
     </div>
 
     <div class="auth-alert auth-alert-error"
          th:if="${orderError != null}"
          th:text="${orderError}">
-        Ошибка заказа
+        Order error
     </div>
 
     <div class="checkout-layout">
@@ -64,26 +70,26 @@
                     <h3 th:text="${item.foodName}">Food name</h3>
                     <p>
                         <span th:text="${item.price}">0</span>
-                        ₸ за порцию
+                        <span th:text="#{common.price.each}">₸ per item</span>
                     </p>
                 </div>
 
                 <strong>
                     <span th:text="${item.quantity}">1</span>
-                    шт.
+                    <span th:text="#{common.quantity.short}">pcs.</span>
                 </strong>
 
                 <strong>
                     <span th:text="${item.subtotal}">0</span>
-                    ₸
+                    <span th:text="#{common.currency}">₸</span>
                 </strong>
             </article>
         </section>
 
         <aside class="cart-summary">
-            <p class="eyebrow">Статус</p>
-            <h2 class="status-title" th:text="${order.status.displayName}">
-                Ожидает оплаты
+            <p class="eyebrow" th:text="#{common.status}">Status</p>
+            <h2 class="status-title" th:text="#{${'status.' + order.status.name()}}">
+                Pending payment
             </h2>
 
             <form th:if="${order.status == T(kz.nurdaulet.entity.enums.OrderStatus).PENDING_PAYMENT}"
@@ -93,35 +99,35 @@
                        th:if="${_csrf != null}"
                        th:name="${_csrf.parameterName}"
                        th:value="${_csrf.token}">
-                <button class="btn btn-primary" type="submit">
-                    Оплатить
+                <button class="btn btn-primary" type="submit" th:text="#{orders.pay}">
+                    Pay
                 </button>
             </form>
 
             <div class="checkout-summary-item">
-                <span>Тип получения</span>
-                <strong th:text="${order.deliveryType.displayName}">Доставка</strong>
+                <span th:text="#{common.delivery.type}">Receiving type</span>
+                <strong th:text="#{${'delivery.' + order.deliveryType.name()}}">Delivery</strong>
             </div>
 
             <div class="checkout-summary-item" th:if="${order.deliveryAddress != null}">
-                <span>Адрес</span>
+                <span th:text="#{common.address}">Address</span>
                 <strong th:text="${order.deliveryAddress}">Address</strong>
             </div>
 
             <div class="checkout-summary-item">
-                <span>Сумма</span>
+                <span th:text="#{common.total}">Total</span>
                 <strong>
                     <span th:text="${order.totalPrice}">0</span>
-                    ₸
+                    <span th:text="#{common.currency}">₸</span>
                 </strong>
             </div>
 
-            <a class="btn btn-ghost" th:href="@{/foods}">
-                Вернуться к блюдам
+            <a class="btn btn-ghost" th:href="@{/foods}" th:text="#{orders.back.foods}">
+                Back to foods
             </a>
 
-            <a class="btn btn-ghost" th:href="@{/orders}">
-                Мои заказы
+            <a class="btn btn-ghost" th:href="@{/orders}" th:text="#{nav.orders}">
+                My orders
             </a>
         </aside>
     </div>

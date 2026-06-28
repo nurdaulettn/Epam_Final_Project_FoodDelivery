@@ -2,7 +2,9 @@ package kz.nurdaulet.controller;
 
 import jakarta.validation.Valid;
 import kz.nurdaulet.dto.FoodCreateDto;
+import kz.nurdaulet.dto.PageDto;
 import kz.nurdaulet.dto.RestaurantCreateDto;
+import kz.nurdaulet.entity.Order;
 import kz.nurdaulet.entity.CustomUserDetails;
 import kz.nurdaulet.entity.enums.OrderStatus;
 import kz.nurdaulet.exception.OrderOperationException;
@@ -22,6 +24,8 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 @Controller
 @RequestMapping("/restaurants/manager")
 public class ManagerController {
+    private static final int ORDER_PAGE_SIZE = 5;
+
     private final RestaurantService restaurantService;
     private final RestaurantValidator restaurantValidator;
     private final CategoryService categoryService;
@@ -184,9 +188,17 @@ public class ManagerController {
     @GetMapping("/{restaurantId}/orders")
     public String restaurantOrders(@PathVariable("restaurantId") Long restaurantId,
                                    @AuthenticationPrincipal CustomUserDetails userDetails,
+                                   @RequestParam(name = "page", defaultValue = "1") int page,
                                    Model model) {
+        PageDto<Order> orderPage = PageDto.of(
+                orderService.getManagerOrders(userDetails.getId(), restaurantId),
+                page,
+                ORDER_PAGE_SIZE
+        );
+
         model.addAttribute("restaurant", restaurantService.getRestaurantById(restaurantId));
-        model.addAttribute("orders", orderService.getManagerOrders(userDetails.getId(), restaurantId));
+        model.addAttribute("orders", orderPage.getContent());
+        model.addAttribute("page", orderPage);
 
         return "order/manager-orders";
     }

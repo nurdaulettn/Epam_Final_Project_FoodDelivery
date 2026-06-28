@@ -1,20 +1,24 @@
 <!DOCTYPE html>
-<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<html th:lang="${#locale.language}" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AsapJe - регистрация</title>
+    <title th:text="#{register.title}">AsapJe - registration</title>
     <link rel="stylesheet" th:href="@{/static/css/index.css}">
 </head>
 <body class="auth-page">
 <main class="auth-shell">
     <section class="auth-card auth-card-register">
         <div class="auth-hero">
-            <a class="auth-back" th:href="@{/}">На главную</a>
+            <a class="auth-back" th:href="@{/}" th:text="#{login.back.home}">Home</a>
+            <div class="language-switch auth-language-switch">
+                <a th:href="@{/register(lang='ru')}">RU</a>
+                <a th:href="@{/register(lang='en')}">EN</a>
+            </div>
             <div class="auth-hero-content">
                 <div class="auth-food-mark">AJ</div>
-                <h1>Создайте аккаунт.<br>Заказывайте быстрее.</h1>
-                <p>Клиент может оформлять заказы, менеджер - управлять рестораном после подтверждения.</p>
+                <h1 th:text="#{register.hero.title}">Create account.</h1>
+                <p th:text="#{register.hero.text}">Customer can order, manager can manage restaurant.</p>
             </div>
         </div>
 
@@ -25,69 +29,63 @@
             </a>
 
             <div class="auth-heading">
-                <h2>Регистрация</h2>
-                <p>Заполните данные для нового аккаунта</p>
+                <h2 th:text="#{register.heading}">Registration</h2>
+                <p th:text="#{register.subtitle}">Fill in details</p>
             </div>
 
             <div class="auth-alert auth-alert-error" th:if="${registrationError}" th:text="${registrationError}">
-                Ошибка регистрации.
+                Registration error.
             </div>
 
-            <form class="auth-form"
-                  th:action="@{/register}"
-                  th:object="${user}"
-                  method="post">
-                <input type="hidden"
-                       th:if="${_csrf != null}"
-                       th:name="${_csrf.parameterName}"
-                       th:value="${_csrf.token}">
+            <form class="auth-form" th:action="@{/register}" th:object="${user}" method="post">
+                <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
 
                 <div class="form-row">
                     <label class="form-group">
-                        <span class="form-label">Имя</span>
+                        <span class="form-label" th:text="#{form.firstName}">First name</span>
                         <input class="form-input" type="text" th:field="*{firstName}" autocomplete="given-name" minlength="2" required>
-                        <span class="form-error" th:if="${#fields.hasErrors('firstName')}" th:errors="*{firstName}">Ошибка</span>
+                        <span class="form-error" th:if="${#fields.hasErrors('firstName')}" th:errors="*{firstName}" th:text="#{form.error}">Error</span>
                     </label>
 
                     <label class="form-group">
-                        <span class="form-label">Фамилия</span>
+                        <span class="form-label" th:text="#{form.lastName}">Last name</span>
                         <input class="form-input" type="text" th:field="*{lastName}" autocomplete="family-name" minlength="2" required>
-                        <span class="form-error" th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}">Ошибка</span>
+                        <span class="form-error" th:if="${#fields.hasErrors('lastName')}" th:errors="*{lastName}" th:text="#{form.error}">Error</span>
                     </label>
                 </div>
 
                 <label class="form-group">
-                    <span class="form-label">Логин</span>
+                    <span class="form-label" th:text="#{form.username}">Username</span>
                     <input class="form-input" type="text" th:field="*{username}" autocomplete="username" minlength="3" required>
-                    <span class="form-error" th:if="${#fields.hasErrors('username')}" th:errors="*{username}">Ошибка</span>
+                    <span class="form-error" th:if="${#fields.hasErrors('username')}" th:errors="*{username}" th:text="#{form.error}">Error</span>
                 </label>
 
                 <label class="form-group">
-                    <span class="form-label">Email</span>
+                    <span class="form-label" th:text="#{form.email}">Email</span>
                     <input class="form-input" type="email" th:field="*{email}" autocomplete="email" required>
-                    <span class="form-error" th:if="${#fields.hasErrors('email')}" th:errors="*{email}">Ошибка</span>
+                    <span class="form-error" th:if="${#fields.hasErrors('email')}" th:errors="*{email}" th:text="#{form.error}">Error</span>
                 </label>
 
                 <label class="form-group">
-                    <span class="form-label">Пароль</span>
+                    <span class="form-label" th:text="#{form.password}">Password</span>
                     <input class="form-input" type="password" th:field="*{password}" autocomplete="new-password" minlength="6" required>
-                    <span class="form-error" th:if="${#fields.hasErrors('password')}" th:errors="*{password}">Ошибка</span>
+                    <span class="form-error" th:if="${#fields.hasErrors('password')}" th:errors="*{password}" th:text="#{form.error}">Error</span>
                 </label>
 
                 <label class="form-group">
-                    <span class="form-label">Роль</span>
+                    <span class="form-label" th:text="#{form.role}">Role</span>
                     <select class="form-input" th:field="*{role}">
-                        <option value="CUSTOMER">Клиент</option>
-                        <option value="MANAGER">Менеджер ресторана</option>
+                        <option value="CUSTOMER" th:text="#{register.customer}">Customer</option>
+                        <option value="MANAGER" th:text="#{register.manager}">Restaurant manager</option>
                     </select>
                 </label>
 
-                <button class="btn btn-primary auth-submit" type="submit">Создать аккаунт</button>
+                <button class="btn btn-primary auth-submit" type="submit" th:text="#{register.submit}">Create account</button>
             </form>
 
             <p class="auth-switch">
-                Уже есть аккаунт?
-                <a th:href="@{/login}">Войти</a>
+                <span th:text="#{register.have.account}">Already have an account?</span>
+                <a th:href="@{/login}" th:text="#{nav.login}">Log in</a>
             </p>
         </div>
     </section>

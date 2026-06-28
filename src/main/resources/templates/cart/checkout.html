@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<html th:lang="${#locale.language}" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AsapJe - Оформление заказа</title>
+    <title th:text="#{checkout.title}">AsapJe - Checkout</title>
     <link rel="stylesheet" th:href="@{/static/css/index.css}">
 </head>
 <body>
@@ -14,12 +14,17 @@
     </a>
 
     <nav class="nav">
-        <a th:href="@{/restaurants}">Рестораны</a>
-        <a th:href="@{/categories}">Категории</a>
-        <a th:href="@{/foods}">Блюда</a>
-        <a th:href="@{/cart}">Корзина</a>
-        <a th:href="@{/orders}">Мои заказы</a>
+        <a th:href="@{/restaurants}" th:text="#{nav.restaurants}">Restaurants</a>
+        <a th:href="@{/categories}" th:text="#{nav.categories}">Categories</a>
+        <a th:href="@{/foods}" th:text="#{nav.foods}">Foods</a>
+        <a th:href="@{/cart}" th:text="#{nav.cart}">Cart</a>
+        <a th:href="@{/orders}" th:text="#{nav.orders}">My orders</a>
     </nav>
+
+    <div class="language-switch">
+        <a th:href="@{/cart/checkout(lang='ru')}">RU</a>
+        <a th:href="@{/cart/checkout(lang='en')}">EN</a>
+    </div>
 
     <div class="actions" th:if="${currentUsername != null}">
         <span class="account-pill">
@@ -31,15 +36,15 @@
                    th:if="${_csrf != null}"
                    th:name="${_csrf.parameterName}"
                    th:value="${_csrf.token}">
-            <button class="btn btn-ghost" type="submit">Выйти</button>
+            <button class="btn btn-ghost" type="submit" th:text="#{nav.logout}">Log out</button>
         </form>
     </div>
 </header>
 
 <main class="section">
     <div class="section-head">
-        <p class="eyebrow">Оформление</p>
-        <h2>Проверьте заказ</h2>
+        <p class="eyebrow" th:text="#{checkout.eyebrow}">Checkout</p>
+        <h2 th:text="#{checkout.heading}">Review your order</h2>
     </div>
 
     <div class="checkout-layout">
@@ -57,54 +62,58 @@
                      th:if="${#fields.hasGlobalErrors()}"
                      th:each="error : ${#fields.globalErrors()}"
                      th:text="${error}">
-                    Ошибка оформления
+                    Checkout error
                 </div>
 
                 <div class="form-group">
-                    <label class="form-label">Тип получения</label>
+                    <label class="form-label" th:text="#{common.delivery.type}">Receiving type</label>
                     <div class="checkout-options">
                         <label class="checkout-option">
                             <input type="radio"
                                    th:field="*{deliveryType}"
                                    value="DELIVERY">
-                            <span>Доставка</span>
+                            <span th:text="#{checkout.delivery}">Delivery</span>
                         </label>
 
                         <label class="checkout-option">
                             <input type="radio"
                                    th:field="*{deliveryType}"
                                    value="PICKUP">
-                            <span>Самовывоз</span>
+                            <span th:text="#{checkout.pickup}">Pickup</span>
                         </label>
                     </div>
                     <span class="form-error"
                           th:if="${#fields.hasErrors('deliveryType')}"
                           th:errors="*{deliveryType}">
-                        Выберите тип получения
+                        Choose receiving type
                     </span>
                 </div>
 
                 <div class="form-group" id="deliveryAddressGroup">
-                    <label class="form-label" for="deliveryAddress">Адрес доставки</label>
+                    <label class="form-label"
+                           for="deliveryAddress"
+                           th:text="#{checkout.delivery.address}">
+                        Delivery address
+                    </label>
                     <textarea class="form-input checkout-address"
                               id="deliveryAddress"
                               th:field="*{deliveryAddress}"
-                              placeholder="Например: Алматы, Абая 15, квартира 12"></textarea>
+                              th:placeholder="#{checkout.address.placeholder}"></textarea>
                     <span class="form-error"
                           th:if="${#fields.hasErrors('deliveryAddress')}"
                           th:errors="*{deliveryAddress}">
-                        Адрес доставки обязателен
+                        Delivery address is required
                     </span>
                 </div>
 
-                <button class="btn btn-primary" type="submit">
-                    Создать заказ
+                <button class="btn btn-primary" type="submit" th:text="#{checkout.create}">
+                    Create order
                 </button>
             </form>
         </section>
 
         <aside class="cart-summary">
-            <p class="eyebrow">Ваш заказ</p>
+            <p class="eyebrow" th:text="#{checkout.your.order}">Your order</p>
             <div class="checkout-summary-item"
                  th:each="item : ${cartItems}">
                 <span th:text="${item.foodName}">Food</span>
@@ -112,17 +121,17 @@
                     <span th:text="${item.quantity}">1</span>
                     x
                     <span th:text="${item.price}">0</span>
-                    ₸
+                    <span th:text="#{common.currency}">₸</span>
                 </strong>
             </div>
 
             <h2>
                 <span th:text="${total}">0</span>
-                ₸
+                <span th:text="#{common.currency}">₸</span>
             </h2>
 
-            <a class="btn btn-ghost" th:href="@{/cart}">
-                Назад в корзину
+            <a class="btn btn-ghost" th:href="@{/cart}" th:text="#{checkout.back.cart}">
+                Back to cart
             </a>
         </aside>
     </div>

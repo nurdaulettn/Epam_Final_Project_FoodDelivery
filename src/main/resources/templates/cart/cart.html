@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<html th:lang="${#locale.language}" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AsapJe - Корзина</title>
+    <title th:text="#{cart.title}">AsapJe - Cart</title>
     <link rel="stylesheet" th:href="@{/static/css/index.css}">
 </head>
 <body>
@@ -14,12 +14,17 @@
     </a>
 
     <nav class="nav">
-        <a th:href="@{/restaurants}">Рестораны</a>
-        <a th:href="@{/categories}">Категории</a>
-        <a th:href="@{/foods}">Блюда</a>
-        <a th:href="@{/cart}">Корзина</a>
-        <a th:href="@{/orders}">Мои заказы</a>
+        <a th:href="@{/restaurants}" th:text="#{nav.restaurants}">Restaurants</a>
+        <a th:href="@{/categories}" th:text="#{nav.categories}">Categories</a>
+        <a th:href="@{/foods}" th:text="#{nav.foods}">Foods</a>
+        <a th:href="@{/cart}" th:text="#{nav.cart}">Cart</a>
+        <a th:href="@{/orders}" th:text="#{nav.orders}">My orders</a>
     </nav>
+
+    <div class="language-switch">
+        <a th:href="@{/cart(lang='ru')}">RU</a>
+        <a th:href="@{/cart(lang='en')}">EN</a>
+    </div>
 
     <div class="actions" th:if="${currentUsername != null}">
         <span class="account-pill">
@@ -31,34 +36,34 @@
                    th:if="${_csrf != null}"
                    th:name="${_csrf.parameterName}"
                    th:value="${_csrf.token}">
-            <button class="btn btn-ghost" type="submit">Выйти</button>
+            <button class="btn btn-ghost" type="submit" th:text="#{nav.logout}">Log out</button>
         </form>
     </div>
 </header>
 
 <main class="section">
     <div class="section-head">
-        <p class="eyebrow">Заказ</p>
-        <h2>Корзина</h2>
+        <p class="eyebrow" th:text="#{cart.eyebrow}">Order</p>
+        <h2 th:text="#{cart.heading}">Cart</h2>
     </div>
 
     <div class="auth-alert auth-alert-success"
          th:if="${cartSuccess != null}"
          th:text="${cartSuccess}">
-        Корзина обновлена
+        Cart updated
     </div>
 
     <div class="auth-alert auth-alert-error"
          th:if="${cartError != null}"
          th:text="${cartError}">
-        Ошибка корзины
+        Cart error
     </div>
 
     <div th:if="${#lists.isEmpty(cartItems)}"
          style="margin-top:40px; text-align:center;">
-        <h3>Корзина пуста</h3>
-        <a class="btn btn-primary" th:href="@{/foods}">
-            Перейти к блюдам
+        <h3 th:text="#{cart.empty}">Cart is empty</h3>
+        <a class="btn btn-primary" th:href="@{/foods}" th:text="#{cart.go.foods}">
+            Go to foods
         </a>
     </div>
 
@@ -69,7 +74,7 @@
                     <h3 th:text="${item.foodName}">Food name</h3>
                     <p>
                         <span th:text="${item.price}">0</span>
-                        ₸ за порцию
+                        <span th:text="#{common.price.each}">₸ per item</span>
                     </p>
                 </div>
 
@@ -85,12 +90,12 @@
                            name="quantity"
                            min="1"
                            th:value="${item.quantity}">
-                    <button class="btn btn-ghost" type="submit">Обновить</button>
+                    <button class="btn btn-ghost" type="submit" th:text="#{cart.update}">Update</button>
                 </form>
 
                 <strong>
                     <span th:text="${item.subtotal}">0</span>
-                    ₸
+                    <span th:text="#{common.currency}">₸</span>
                 </strong>
 
                 <form th:action="@{/cart/remove/{foodId}(foodId=${item.foodId})}"
@@ -99,20 +104,20 @@
                            th:if="${_csrf != null}"
                            th:name="${_csrf.parameterName}"
                            th:value="${_csrf.token}">
-                    <button class="btn btn-ghost" type="submit">Удалить</button>
+                    <button class="btn btn-ghost" type="submit" th:text="#{cart.remove}">Remove</button>
                 </form>
             </article>
         </section>
 
         <aside class="cart-summary">
-            <p class="eyebrow">Итого</p>
+            <p class="eyebrow" th:text="#{common.total}">Total</p>
             <h2>
                 <span th:text="${total}">0</span>
-                ₸
+                <span th:text="#{common.currency}">₸</span>
             </h2>
 
-            <a class="btn btn-primary" th:href="@{/cart/checkout}">
-                Перейти к оформлению
+            <a class="btn btn-primary" th:href="@{/cart/checkout}" th:text="#{cart.checkout}">
+                Proceed to checkout
             </a>
 
             <form th:action="@{/cart/clear}" method="post">
@@ -120,7 +125,7 @@
                        th:if="${_csrf != null}"
                        th:name="${_csrf.parameterName}"
                        th:value="${_csrf.token}">
-                <button class="btn btn-ghost" type="submit">Очистить корзину</button>
+                <button class="btn btn-ghost" type="submit" th:text="#{cart.clear}">Clear cart</button>
             </form>
         </aside>
     </div>

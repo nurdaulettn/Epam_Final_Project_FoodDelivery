@@ -1,109 +1,69 @@
 <!DOCTYPE html>
-<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<html th:lang="${#locale.language}" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AsapJe - Заявки ресторанов</title>
+    <title th:text="#{admin.requests.title}">AsapJe - Restaurant requests</title>
     <link rel="stylesheet" th:href="@{/static/css/index.css}">
 </head>
 <body>
-
 <header class="topbar">
-    <a class="brand" th:href="@{/}">
-        <span class="brand-mark">AJ</span>
-        <span>AsapJe</span>
-    </a>
-
+    <a class="brand" th:href="@{/}"><span class="brand-mark">AJ</span><span>AsapJe</span></a>
     <nav class="nav">
-        <a th:href="@{/admin/orders}">Заказы</a>
-        <a th:href="@{/admin/create-requests}">Заявки</a>
-        <a th:href="@{/categories}">Категории</a>
-        <a th:href="@{/admin/categories/create}">Создать категорию</a>
-        <a th:href="@{/restaurants}">Рестораны</a>
-        <a th:href="@{/foods}">Блюда</a>
+        <a th:href="@{/admin/orders}" th:text="#{manager.orders}">Orders</a>
+        <a th:href="@{/admin/create-requests}" th:text="#{admin.requests}">Requests</a>
+        <a th:href="@{/categories}" th:text="#{nav.categories}">Categories</a>
+        <a th:href="@{/admin/categories/create}" th:text="#{admin.create.category}">Create category</a>
+        <a th:href="@{/restaurants}" th:text="#{nav.restaurants}">Restaurants</a>
+        <a th:href="@{/foods}" th:text="#{nav.foods}">Foods</a>
     </nav>
-
+    <div class="language-switch">
+        <a th:href="@{/admin/create-requests(lang='ru')}">RU</a>
+        <a th:href="@{/admin/create-requests(lang='en')}">EN</a>
+    </div>
     <div class="actions">
-        <span class="account-pill">
-            <span class="account-avatar" th:text="${#strings.substring(currentUsername,0,1)}">U</span>
-            <span class="account-name" th:text="${currentUsername}">user</span>
-        </span>
+        <span class="account-pill"><span class="account-avatar" th:text="${#strings.substring(currentUsername,0,1)}">U</span><span class="account-name" th:text="${currentUsername}">user</span></span>
         <form class="logout-form" th:action="@{/logout}" method="post">
-            <input type="hidden"
-                   th:if="${_csrf != null}"
-                   th:name="${_csrf.parameterName}"
-                   th:value="${_csrf.token}">
-            <button class="btn btn-ghost" type="submit">Выйти</button>
+            <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+            <button class="btn btn-ghost" type="submit" th:text="#{nav.logout}">Log out</button>
         </form>
     </div>
 </header>
 
 <main class="section">
     <div class="section-head">
-        <p class="eyebrow">Панель администратора</p>
-        <h2>Заявки на создание ресторанов</h2>
+        <p class="eyebrow" th:text="#{admin.panel}">Admin panel</p>
+        <h2 th:text="#{admin.requests.heading}">Restaurant requests</h2>
     </div>
 
     <div class="cards">
-        <article class="restaurant"
-                 th:each="restaurant : ${restaurants}">
-            <div class="restaurant-image green"
-                 th:text="${#strings.substring(restaurant.name,0,1)}">
-                R
-            </div>
-
+        <article class="restaurant" th:each="restaurant : ${restaurants}">
+            <div class="restaurant-image green" th:text="${#strings.substring(restaurant.name,0,1)}">R</div>
             <h3 th:text="${restaurant.name}">Restaurant</h3>
             <p th:text="${restaurant.description}">Description</p>
-
+            <p><span th:text="#{restaurants.address}">Address</span>: <span th:text="${restaurant.address}">Address</span></p>
+            <p><span th:text="#{restaurants.phone}">Phone</span>: <span th:text="${restaurant.phone}">Phone</span></p>
             <p>
-                Адрес:
-                <span th:text="${restaurant.address}">Address</span>
-            </p>
-
-            <p>
-                Телефон:
-                <span th:text="${restaurant.phone}">Phone</span>
-            </p>
-
-            <p>
-                Время:
-                <span th:text="${restaurant.openingTime}">09:00</span>
-                -
+                <span th:text="#{admin.requests.time}">Time</span>:
+                <span th:text="${restaurant.openingTime}">09:00</span> -
                 <span th:text="${restaurant.closingTime}">22:00</span>
             </p>
-
             <div class="actions" style="margin-top:20px; margin-left:0;">
-                <form th:action="@{/admin/create-requests/{id}/confirm(id=${restaurant.id})}"
-                      method="post">
-                    <input type="hidden"
-                           th:if="${_csrf != null}"
-                           th:name="${_csrf.parameterName}"
-                           th:value="${_csrf.token}">
-                    <button class="btn btn-primary" type="submit">
-                        Подтвердить
-                    </button>
+                <form th:action="@{/admin/create-requests/{id}/confirm(id=${restaurant.id})}" method="post">
+                    <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                    <button class="btn btn-primary" type="submit" th:text="#{admin.requests.confirm}">Confirm</button>
                 </form>
-
-                <form th:action="@{/admin/create-requests/{id}/reject(id=${restaurant.id})}"
-                      method="post">
-                    <input type="hidden"
-                           th:if="${_csrf != null}"
-                           th:name="${_csrf.parameterName}"
-                           th:value="${_csrf.token}">
-                    <button class="btn btn-ghost" type="submit">
-                        Отклонить
-                    </button>
+                <form th:action="@{/admin/create-requests/{id}/reject(id=${restaurant.id})}" method="post">
+                    <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                    <button class="btn btn-ghost" type="submit" th:text="#{admin.requests.reject}">Reject</button>
                 </form>
             </div>
         </article>
     </div>
 
-    <div th:if="${#lists.isEmpty(restaurants)}"
-         style="text-align:center;margin-top:50px">
-        <h3>Нет заявок на подтверждение</h3>
-        <a class="btn btn-primary" th:href="@{/restaurants}">
-            Открыть рестораны
-        </a>
+    <div th:if="${#lists.isEmpty(restaurants)}" style="text-align:center;margin-top:50px">
+        <h3 th:text="#{admin.requests.empty}">No requests</h3>
+        <a class="btn btn-primary" th:href="@{/restaurants}" th:text="#{admin.requests.open.restaurants}">Open restaurants</a>
     </div>
 </main>
 </body>

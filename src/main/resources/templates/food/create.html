@@ -1,20 +1,24 @@
 <!DOCTYPE html>
-<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<html th:lang="${#locale.language}" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AsapJe - Создание блюда</title>
+    <title th:text="#{food.create.title}">AsapJe - Create food</title>
     <link rel="stylesheet" th:href="@{/static/css/index.css}">
 </head>
 <body class="auth-page">
 <main class="auth-shell">
     <section class="auth-card auth-card-register">
         <div class="auth-hero">
-            <a class="auth-back" th:href="@{/restaurants/manager/my-restaurants/{id}(id=${restaurantId})}">К меню ресторана</a>
+            <a class="auth-back" th:href="@{/restaurants/manager/my-restaurants/{id}(id=${restaurantId})}" th:text="#{food.create.back}">To menu</a>
+            <div class="language-switch auth-language-switch">
+                <a th:href="@{/restaurants/manager/{id}/foods/create(id=${restaurantId}, lang='ru')}">RU</a>
+                <a th:href="@{/restaurants/manager/{id}/foods/create(id=${restaurantId}, lang='en')}">EN</a>
+            </div>
             <div class="auth-hero-content">
                 <div class="auth-food-mark">AJ</div>
-                <h1>Добавьте блюдо.<br>Обновите меню.</h1>
-                <p>Укажите название, описание, цену и категорию блюда.</p>
+                <h1 th:text="#{food.create.hero.title}">Add food.</h1>
+                <p th:text="#{food.create.hero.text}">Enter food details.</p>
             </div>
         </div>
 
@@ -23,59 +27,41 @@
                 <span class="brand-mark">AJ</span>
                 <span>AsapJe</span>
             </a>
-
             <div class="auth-heading">
-                <h2>Создание блюда</h2>
-                <p>Блюдо появится в меню выбранного ресторана</p>
+                <h2 th:text="#{food.create.heading}">Create food</h2>
+                <p th:text="#{food.create.subtitle}">Food will appear in menu</p>
             </div>
 
-            <form class="auth-form"
-                  th:action="@{/restaurants/manager/{id}/foods/create(id=${restaurantId})}"
-                  th:object="${food}"
-                  method="post">
-                <input type="hidden"
-                       th:if="${_csrf != null}"
-                       th:name="${_csrf.parameterName}"
-                       th:value="${_csrf.token}">
-
+            <form class="auth-form" th:action="@{/restaurants/manager/{id}/foods/create(id=${restaurantId})}" th:object="${food}" method="post">
+                <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
                 <label class="form-group">
-                    <span class="form-label">Название</span>
+                    <span class="form-label" th:text="#{form.name}">Name</span>
                     <input class="form-input" type="text" th:field="*{name}" minlength="3" maxlength="100" required>
-                    <span class="form-error" th:if="${#fields.hasErrors('name')}" th:errors="*{name}">Ошибка</span>
+                    <span class="form-error" th:if="${#fields.hasErrors('name')}" th:errors="*{name}" th:text="#{form.error}">Error</span>
                 </label>
-
                 <label class="form-group">
-                    <span class="form-label">Описание</span>
+                    <span class="form-label" th:text="#{form.description}">Description</span>
                     <textarea class="form-input" th:field="*{description}" maxlength="500" rows="3"></textarea>
-                    <span class="form-error" th:if="${#fields.hasErrors('description')}" th:errors="*{description}">Ошибка</span>
+                    <span class="form-error" th:if="${#fields.hasErrors('description')}" th:errors="*{description}" th:text="#{form.error}">Error</span>
                 </label>
-
                 <label class="form-group">
-                    <span class="form-label">Цена</span>
+                    <span class="form-label" th:text="#{form.price}">Price</span>
                     <input class="form-input" type="number" th:field="*{price}" min="1" step="1" required>
-                    <span class="form-error" th:if="${#fields.hasErrors('price')}" th:errors="*{price}">Ошибка</span>
+                    <span class="form-error" th:if="${#fields.hasErrors('price')}" th:errors="*{price}" th:text="#{form.error}">Error</span>
                 </label>
-
                 <label class="form-group">
-                    <span class="form-label">Категория</span>
+                    <span class="form-label" th:text="#{form.category}">Category</span>
                     <select class="form-input" th:field="*{categoryId}" required>
-                        <option value="">Выберите категорию</option>
-                        <option th:each="category : ${category}"
-                                th:value="${category.id}"
-                                th:text="${category.name}">
-                            Category
-                        </option>
+                        <option value="" th:text="#{form.select.category}">Choose category</option>
+                        <option th:each="category : ${category}" th:value="${category.id}" th:text="${category.name}">Category</option>
                     </select>
-                    <span class="form-error" th:if="${#fields.hasErrors('categoryId')}" th:errors="*{categoryId}">Ошибка</span>
+                    <span class="form-error" th:if="${#fields.hasErrors('categoryId')}" th:errors="*{categoryId}" th:text="#{form.error}">Error</span>
                 </label>
-
-                <button class="btn btn-primary auth-submit" type="submit">
-                    Создать блюдо
-                </button>
+                <button class="btn btn-primary auth-submit" type="submit" th:text="#{food.create.submit}">Create food</button>
             </form>
 
             <p class="auth-switch">
-                <a th:href="@{/restaurants/manager/my-restaurants/{id}(id=${restaurantId})}">Вернуться к меню ресторана</a>
+                <a th:href="@{/restaurants/manager/my-restaurants/{id}(id=${restaurantId})}" th:text="#{food.back.menu}">Back to menu</a>
             </p>
         </div>
     </section>

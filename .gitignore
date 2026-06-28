@@ -40,5 +40,6 @@ build/
 .DS_Store
 
 *.properties
+!src/main/resources/messages*.properties
 
 requirements

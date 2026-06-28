@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<html th:lang="${#locale.language}" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AsapJe - Категории</title>
+    <title th:text="#{categories.title}">AsapJe - Categories</title>
     <link rel="stylesheet" th:href="@{/static/css/index.css}">
 </head>
 <body>
@@ -14,19 +14,24 @@
     </a>
 
     <nav class="nav">
-        <a th:href="@{/restaurants}">Рестораны</a>
-        <a th:href="@{/categories}">Категории</a>
-        <a th:href="@{/foods}">Блюда</a>
-        <a th:href="@{/cart}" th:if="${currentUsername != null}">Корзина</a>
-        <a th:href="@{/orders}" th:if="${currentUsername != null}">Мои заказы</a>
-        <a th:href="@{/admin/create-requests}" th:if="${currentUserAdmin}">Админка</a>
+        <a th:href="@{/restaurants}" th:text="#{nav.restaurants}">Restaurants</a>
+        <a th:href="@{/categories}" th:text="#{nav.categories}">Categories</a>
+        <a th:href="@{/foods}" th:text="#{nav.foods}">Foods</a>
+        <a th:href="@{/cart}" th:if="${currentUsername != null}" th:text="#{nav.cart}">Cart</a>
+        <a th:href="@{/orders}" th:if="${currentUsername != null}" th:text="#{nav.orders}">My orders</a>
+        <a th:href="@{/admin/create-requests}" th:if="${currentUserAdmin}" th:text="#{nav.admin}">Admin</a>
     </nav>
+
+    <div class="language-switch">
+        <a th:href="@{/categories(lang='ru', search=${search})}">RU</a>
+        <a th:href="@{/categories(lang='en', search=${search})}">EN</a>
+    </div>
 
     <div class="actions" th:if="${currentUsername != null}">
         <a class="btn btn-primary"
            th:if="${currentUserAdmin}"
            th:href="@{/admin/categories/create}">
-            + Категория
+            + <span th:text="#{categories.add}">Category</span>
         </a>
         <span class="account-pill">
             <span class="account-avatar" th:text="${#strings.substring(currentUsername,0,1)}">U</span>
@@ -34,38 +39,39 @@
         </span>
         <form class="logout-form" th:action="@{/logout}" method="post">
             <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
-            <button class="btn btn-ghost" type="submit">Выйти</button>
+            <button class="btn btn-ghost" type="submit" th:text="#{nav.logout}">Log out</button>
         </form>
     </div>
 </header>
 
 <main class="section">
     <div class="section-head">
-        <p class="eyebrow">Каталог</p>
-        <h2>Категории еды</h2>
+        <p class="eyebrow" th:text="#{home.catalog}">Catalog</p>
+        <h2 th:text="#{categories.heading}">Food categories</h2>
     </div>
 
     <form th:action="@{/categories}" method="get" style="display:flex; gap:12px; margin-bottom:28px; max-width:620px;">
-        <input class="form-input" type="text" name="search" th:value="${search}" placeholder="Поиск по названию категории">
-        <button class="btn btn-primary" type="submit">Найти</button>
-        <a class="btn btn-ghost" th:href="@{/categories}">Сбросить</a>
+        <input class="form-input" type="text" name="search" th:value="${search}" th:placeholder="#{categories.search.placeholder}">
+        <button class="btn btn-primary" type="submit" th:text="#{common.search}">Search</button>
+        <a class="btn btn-ghost" th:href="@{/categories}" th:text="#{common.reset}">Reset</a>
     </form>
 
     <div class="cards">
         <article class="restaurant" th:each="category : ${categories}">
             <div class="restaurant-image green" th:text="${#strings.substring(category.name,0,1)}">C</div>
             <h3 th:text="${category.name}">Category</h3>
-            <p>Откройте блюда этой категории во всех доступных ресторанах.</p>
+            <p th:text="#{categories.card.text}">Open foods from this category.</p>
             <a class="btn btn-primary"
-               th:href="@{/foods(category=${category.id})}">
-                Смотреть блюда
+               th:href="@{/foods(category=${category.id})}"
+               th:text="#{categories.view.foods}">
+                View foods
             </a>
         </article>
     </div>
 
     <div th:if="${#lists.isEmpty(categories)}" style="margin-top:40px; text-align:center;">
-        <h3>Категории не найдены</h3>
-        <a class="btn btn-primary" th:href="@{/categories}">Показать все категории</a>
+        <h3 th:text="#{categories.empty}">Categories not found</h3>
+        <a class="btn btn-primary" th:href="@{/categories}" th:text="#{categories.show.all}">Show all categories</a>
     </div>
 </main>
 </body>

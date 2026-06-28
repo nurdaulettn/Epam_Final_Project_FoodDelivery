@@ -1,129 +1,72 @@
 <!DOCTYPE html>
-<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<html th:lang="${#locale.language}" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Мои рестораны</title>
+    <title th:text="#{restaurants.my}">My restaurants</title>
     <link rel="stylesheet" th:href="@{/static/css/index.css}">
 </head>
 <body>
-
 <header class="topbar">
-    <a class="brand" th:href="@{/}">
-        <span class="brand-mark">AJ</span>
-        <span>AsapJe</span>
-    </a>
-
+    <a class="brand" th:href="@{/}"><span class="brand-mark">AJ</span><span>AsapJe</span></a>
+    <div class="language-switch">
+        <a th:href="@{/restaurants/manager/my-restaurants(lang='ru')}">RU</a>
+        <a th:href="@{/restaurants/manager/my-restaurants(lang='en')}">EN</a>
+    </div>
     <div class="actions">
-        <a class="btn btn-primary"
-           th:href="@{/restaurants/manager/create}">
-            + Добавить ресторан
-        </a>
-        <span class="account-pill">
-            <span class="account-avatar" th:text="${#strings.substring(currentUsername,0,1)}">U</span>
-            <span class="account-name" th:text="${currentUsername}">user</span>
-        </span>
+        <a class="btn btn-primary" th:href="@{/restaurants/manager/create}">+ <span th:text="#{restaurants.add}">Add restaurant</span></a>
+        <span class="account-pill"><span class="account-avatar" th:text="${#strings.substring(currentUsername,0,1)}">U</span><span class="account-name" th:text="${currentUsername}">user</span></span>
         <form class="logout-form" th:action="@{/logout}" method="post">
-            <input type="hidden"
-                   th:if="${_csrf != null}"
-                   th:name="${_csrf.parameterName}"
-                   th:value="${_csrf.token}">
-            <button class="btn btn-ghost" type="submit">Выйти</button>
+            <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+            <button class="btn btn-ghost" type="submit" th:text="#{nav.logout}">Log out</button>
         </form>
     </div>
 </header>
 
 <main class="section">
-
     <div class="section-head">
-        <p class="eyebrow">Панель менеджера</p>
-        <h2>Мои рестораны</h2>
+        <p class="eyebrow" th:text="#{manager.panel}">Manager panel</p>
+        <h2 th:text="#{restaurants.my}">My restaurants</h2>
     </div>
 
     <div class="cards">
-        <article class="restaurant"
-                 th:each="restaurant : ${restaurants}">
-
-            <div class="restaurant-image green"
-                 th:text="${#strings.substring(restaurant.name,0,1)}">
-                R
-            </div>
-
-            <h3 th:text="${restaurant.name}">
-                Restaurant Name
-            </h3>
-
-            <p th:text="${restaurant.description}">
-                Description
-            </p>
-
+        <article class="restaurant" th:each="restaurant : ${restaurants}">
+            <div class="restaurant-image green" th:text="${#strings.substring(restaurant.name,0,1)}">R</div>
+            <h3 th:text="${restaurant.name}">Restaurant Name</h3>
+            <p th:text="${restaurant.description}">Description</p>
             <span>
-                Рейтинг:
+                <span th:text="#{restaurants.rating}">Rating</span>:
                 <span th:text="${restaurant.ratingAvg}">0.0</span>
-                (<span th:text="${restaurant.ratingCount}">0</span> отзывов)
+                (<span th:text="${restaurant.ratingCount}">0</span> <span th:text="#{restaurants.reviews}">reviews</span>)
             </span>
-
             <br><br>
-
-            <small>
-                Адрес:
-                <span th:text="${restaurant.address}">Address</span>
-            </small>
-
+            <small><span th:text="#{restaurants.address}">Address</span>: <span th:text="${restaurant.address}">Address</span></small>
             <br>
-
-            <small>
-                Телефон:
-                <span th:text="${restaurant.phone}">Phone</span>
-            </small>
-
+            <small><span th:text="#{restaurants.phone}">Phone</span>: <span th:text="${restaurant.phone}">Phone</span></small>
             <br>
-
             <small>
-                Время работы:
-                <span th:text="${restaurant.openingTime}">09:00</span>
-                -
+                <span th:text="#{restaurants.working.hours}">Working hours</span>:
+                <span th:text="${restaurant.openingTime}">09:00</span> -
                 <span th:text="${restaurant.closingTime}">22:00</span>
             </small>
-
             <br><br>
+            <span th:if="${restaurant.status.name() == 'ACTIVE'}" th:text="#{restaurants.status.active}">Approved</span>
+            <span th:if="${restaurant.status.name() == 'PENDING'}" th:text="#{restaurants.status.pending}">Pending</span>
+            <span th:if="${restaurant.status.name() == 'INACTIVE'}" th:text="#{restaurants.status.inactive}">Inactive</span>
+            <span th:if="${restaurant.status.name() == 'REJECTED'}" th:text="#{restaurants.status.rejected}">Rejected</span>
 
-            <span th:if="${restaurant.status.name() == 'ACTIVE'}">Подтверждён</span>
-            <span th:if="${restaurant.status.name() == 'PENDING'}">На модерации</span>
-            <span th:if="${restaurant.status.name() == 'INACTIVE'}">Не активный</span>
-            <span th:if="${restaurant.status.name() == 'REJECTED'}">Отклонён</span>
-
-            <div class="actions"
-                 th:if="${restaurant.status.name() == 'ACTIVE'}"
-                 style="margin-top:18px; margin-left:0;">
-                <a class="btn btn-ghost"
-                   th:href="@{/restaurants/manager/my-restaurants/{id}(id=${restaurant.id})}">
-                    Управлять меню
-                </a>
-                <a class="btn btn-primary"
-                   th:href="@{/restaurants/manager/{id}/orders(id=${restaurant.id})}">
-                    Заказы
-                </a>
-                <a class="btn btn-primary"
-                   th:href="@{/restaurants/manager/{id}/foods/create(id=${restaurant.id})}">
-                    + Добавить блюдо
-                </a>
+            <div class="actions" th:if="${restaurant.status.name() == 'ACTIVE'}" style="margin-top:18px; margin-left:0;">
+                <a class="btn btn-ghost" th:href="@{/restaurants/manager/my-restaurants/{id}(id=${restaurant.id})}" th:text="#{manager.menu.manage}">Manage menu</a>
+                <a class="btn btn-primary" th:href="@{/restaurants/manager/{id}/orders(id=${restaurant.id})}" th:text="#{manager.orders}">Orders</a>
+                <a class="btn btn-primary" th:href="@{/restaurants/manager/{id}/foods/create(id=${restaurant.id})}">+ <span th:text="#{manager.add.food}">Add food</span></a>
             </div>
-
         </article>
     </div>
 
-    <div th:if="${#lists.isEmpty(restaurants)}"
-         style="margin-top: 40px; text-align:center;">
-        <h3>У вас пока нет ресторанов</h3>
-
-        <a class="btn btn-primary"
-           th:href="@{/restaurants/manager/create}">
-            Создать первый ресторан
-        </a>
+    <div th:if="${#lists.isEmpty(restaurants)}" style="margin-top: 40px; text-align:center;">
+        <h3 th:text="#{restaurants.none}">You do not have restaurants yet</h3>
+        <a class="btn btn-primary" th:href="@{/restaurants/manager/create}" th:text="#{restaurants.create.first}">Create first restaurant</a>
     </div>
-
 </main>
-
 </body>
 </html>

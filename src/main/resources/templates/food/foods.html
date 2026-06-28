@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<html th:lang="${#locale.language}" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AsapJe - Блюда</title>
+    <title th:text="#{foods.title}">AsapJe - Foods</title>
     <link rel="stylesheet" th:href="@{/static/css/index.css}">
 </head>
 <body>
@@ -14,12 +14,17 @@
     </a>
 
     <nav class="nav">
-        <a th:href="@{/restaurants}">Рестораны</a>
-        <a th:href="@{/categories}">Категории</a>
-        <a th:href="@{/foods}">Блюда</a>
-        <a th:href="@{/cart}">Корзина</a>
-        <a th:href="@{/orders}">Мои заказы</a>
+        <a th:href="@{/restaurants}" th:text="#{nav.restaurants}">Restaurants</a>
+        <a th:href="@{/categories}" th:text="#{nav.categories}">Categories</a>
+        <a th:href="@{/foods}" th:text="#{nav.foods}">Foods</a>
+        <a th:href="@{/cart}" th:text="#{nav.cart}">Cart</a>
+        <a th:href="@{/orders}" th:text="#{nav.orders}">My orders</a>
     </nav>
+
+    <div class="language-switch">
+        <a th:href="@{/foods(lang='ru', search=${search}, category=${selectedCategoryId}, restaurant=${selectedRestaurantId}, page=${page.currentPage})}">RU</a>
+        <a th:href="@{/foods(lang='en', search=${search}, category=${selectedCategoryId}, restaurant=${selectedRestaurantId}, page=${page.currentPage})}">EN</a>
+    </div>
 
     <div class="actions" th:if="${currentUsername != null}">
         <span class="account-pill">
@@ -31,27 +36,27 @@
                    th:if="${_csrf != null}"
                    th:name="${_csrf.parameterName}"
                    th:value="${_csrf.token}">
-            <button class="btn btn-ghost" type="submit">Выйти</button>
+            <button class="btn btn-ghost" type="submit" th:text="#{nav.logout}">Log out</button>
         </form>
     </div>
 </header>
 
 <main class="section">
     <div class="section-head">
-        <p class="eyebrow">Меню</p>
-        <h2>Блюда</h2>
+        <p class="eyebrow" th:text="#{foods.eyebrow}">Menu</p>
+        <h2 th:text="#{foods.heading}">Foods</h2>
     </div>
 
     <div class="auth-alert auth-alert-success"
          th:if="${cartSuccess != null}"
          th:text="${cartSuccess}">
-        Блюдо добавлено в корзину
+        Food added to cart
     </div>
 
     <div class="auth-alert auth-alert-error"
          th:if="${cartError != null}"
          th:text="${cartError}">
-        Ошибка корзины
+        Cart error
     </div>
 
     <form th:action="@{/foods}"
@@ -62,10 +67,10 @@
                type="text"
                name="search"
                th:value="${search}"
-               placeholder="Поиск по названию блюда">
+               th:placeholder="#{foods.search.placeholder}">
 
         <select class="form-input" name="category">
-            <option value="">Все категории</option>
+            <option value="" th:text="#{foods.all.categories}">All categories</option>
             <option th:each="category : ${categories}"
                     th:value="${category.id}"
                     th:text="${category.name}"
@@ -75,7 +80,7 @@
         </select>
 
         <select class="form-input" name="restaurant">
-            <option value="">Все рестораны</option>
+            <option value="" th:text="#{foods.all.restaurants}">All restaurants</option>
             <option th:each="restaurant : ${restaurants}"
                     th:value="${restaurant.id}"
                     th:text="${restaurant.name}"
@@ -84,9 +89,9 @@
             </option>
         </select>
 
-        <button class="btn btn-primary" type="submit">Найти</button>
+        <button class="btn btn-primary" type="submit" th:text="#{common.search}">Search</button>
 
-        <a class="btn btn-ghost" th:href="@{/foods}">Сбросить</a>
+        <a class="btn btn-ghost" th:href="@{/foods}" th:text="#{common.reset}">Reset</a>
     </form>
 
     <div class="cards">
@@ -104,13 +109,13 @@
 
             <span>
                 <span th:text="${food.price}">0</span>
-                ₸
+                <span th:text="#{common.currency}">₸</span>
             </span>
 
             <br><br>
 
             <small>
-                Ресторан:
+                <span th:text="#{foods.restaurant}">Restaurant</span>:
                 <span th:each="restaurant : ${restaurants}"
                       th:if="${restaurant.id == food.restaurantId}"
                       th:text="${restaurant.name}">Restaurant</span>
@@ -119,7 +124,7 @@
             <br>
 
             <small>
-                Категория:
+                <span th:text="#{foods.category}">Category</span>:
                 <span th:each="category : ${categories}"
                       th:if="${category.id == food.categoryId}"
                       th:text="${category.name}">Category</span>
@@ -127,12 +132,12 @@
 
             <br><br>
 
-            <span th:if="${food.available}">
-                Доступно
+            <span th:if="${food.available}" th:text="#{foods.available}">
+                Available
             </span>
 
-            <span th:unless="${food.available}">
-                Недоступно
+            <span th:unless="${food.available}" th:text="#{foods.unavailable}">
+                Unavailable
             </span>
 
             <form th:if="${food.available}"
@@ -143,18 +148,42 @@
                        th:if="${_csrf != null}"
                        th:name="${_csrf.parameterName}"
                        th:value="${_csrf.token}">
-                <button class="btn btn-primary" type="submit">
-                    Добавить в корзину
+                <button class="btn btn-primary" type="submit" th:text="#{foods.add}">
+                    Add to cart
                 </button>
             </form>
         </article>
     </div>
 
+    <nav class="pagination" th:if="${page.totalPages > 1}">
+        <a class="page-link"
+           th:classappend="${!page.hasPrevious} ? ' disabled'"
+           th:href="@{/foods(page=${page.currentPage - 1}, search=${search}, category=${selectedCategoryId}, restaurant=${selectedRestaurantId})}"
+           th:text="#{common.back}">
+            Back
+        </a>
+
+        <a class="page-link"
+           th:each="pageNumber : ${#numbers.sequence(1, page.totalPages)}"
+           th:classappend="${pageNumber == page.currentPage} ? ' active'"
+           th:text="${pageNumber}"
+           th:href="@{/foods(page=${pageNumber}, search=${search}, category=${selectedCategoryId}, restaurant=${selectedRestaurantId})}">
+            1
+        </a>
+
+        <a class="page-link"
+           th:classappend="${!page.hasNext} ? ' disabled'"
+           th:href="@{/foods(page=${page.currentPage + 1}, search=${search}, category=${selectedCategoryId}, restaurant=${selectedRestaurantId})}"
+           th:text="#{common.next}">
+            Next
+        </a>
+    </nav>
+
     <div th:if="${#lists.isEmpty(foods)}"
          style="margin-top:40px; text-align:center;">
-        <h3>Блюда не найдены</h3>
-        <a class="btn btn-primary" th:href="@{/foods}">
-            Показать все блюда
+        <h3 th:text="#{foods.empty}">No foods found</h3>
+        <a class="btn btn-primary" th:href="@{/foods}" th:text="#{foods.show.all}">
+            Show all foods
         </a>
     </div>
 </main>

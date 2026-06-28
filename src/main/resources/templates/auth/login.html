@@ -1,20 +1,26 @@
 <!DOCTYPE html>
-<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<html th:lang="${#locale.language}" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AsapJe - вход</title>
+    <title th:text="#{login.title}">AsapJe - login</title>
     <link rel="stylesheet" th:href="@{/static/css/index.css}">
 </head>
 <body class="auth-page">
 <main class="auth-shell">
     <section class="auth-card">
         <div class="auth-hero">
-            <a class="auth-back" th:href="@{/}">На главную</a>
+            <a class="auth-back" th:href="@{/}" th:text="#{login.back.home}">Home</a>
+            <div class="language-switch auth-language-switch">
+                <a th:href="@{/login(lang='ru')}">RU</a>
+                <a th:href="@{/login(lang='en')}">EN</a>
+            </div>
             <div class="auth-hero-content">
                 <div class="auth-food-mark">AJ</div>
-                <h1>Еда рядом.<br>Быстро. Удобно.</h1>
-                <p>Войдите, чтобы оформлять заказы, управлять ресторанами или модерировать платформу.</p>
+                <h1 th:text="#{login.hero.title}">Food nearby. Fast. Convenient.</h1>
+                <p th:text="#{login.hero.text}">
+                    Log in to place orders, manage restaurants, or moderate the platform.
+                </p>
             </div>
         </div>
 
@@ -25,18 +31,18 @@
             </a>
 
             <div class="auth-heading">
-                <h2>Добро пожаловать</h2>
-                <p>Введите логин и пароль</p>
+                <h2 th:text="#{login.welcome}">Welcome back</h2>
+                <p th:text="#{login.subtitle}">Enter username and password</p>
             </div>
 
-            <div class="auth-alert auth-alert-error" th:if="${param.error}">
-                Неверный логин или пароль.
+            <div class="auth-alert auth-alert-error" th:if="${param.error}" th:text="#{login.error}">
+                Incorrect username or password.
             </div>
-            <div class="auth-alert auth-alert-success" th:if="${param.logout}">
-                Вы вышли из аккаунта.
+            <div class="auth-alert auth-alert-success" th:if="${param.logout}" th:text="#{login.logout.success}">
+                You have logged out.
             </div>
-            <div class="auth-alert auth-alert-success" th:if="${param.registered}">
-                Аккаунт создан. Теперь можно войти.
+            <div class="auth-alert auth-alert-success" th:if="${param.registered}" th:text="#{login.registered}">
+                Account created. You can log in now.
             </div>
 
             <form class="auth-form" th:action="@{/login}" method="post">
@@ -46,7 +52,7 @@
                        th:value="${_csrf.token}">
 
                 <label class="form-group">
-                    <span class="form-label">Логин</span>
+                    <span class="form-label" th:text="#{login.username}">Username</span>
                     <input class="form-input"
                            type="text"
                            name="username"
@@ -56,24 +62,24 @@
                 </label>
 
                 <label class="form-group">
-                    <span class="form-label">Пароль</span>
+                    <span class="form-label" th:text="#{login.password}">Password</span>
                     <input class="form-input"
                            type="password"
                            name="password"
-                           placeholder="Пароль"
+                           th:placeholder="#{login.password}"
                            autocomplete="current-password"
                            required>
                 </label>
 
-                <button class="btn btn-primary auth-submit" type="submit">Войти</button>
+                <button class="btn btn-primary auth-submit" type="submit" th:text="#{login.submit}">Log in</button>
             </form>
 
             <p class="auth-switch">
-                Нет аккаунта?
-                <a th:href="@{/register}">Зарегистрироваться</a>
+                <span th:text="#{login.no.account}">No account?</span>
+                <a th:href="@{/register}" th:text="#{login.register.link}">Register</a>
             </p>
             <p class="auth-switch">
-                <a th:href="@{/foods}">Посмотреть блюда без входа</a>
+                <a th:href="@{/foods}" th:text="#{login.view.foods}">View foods</a>
             </p>
         </div>
     </section>

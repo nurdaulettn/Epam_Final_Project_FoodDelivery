@@ -65,6 +65,40 @@ a {
     font-size: 14px;
 }
 
+.language-switch {
+    display: inline-flex;
+    gap: 6px;
+    align-items: center;
+    padding: 4px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--surface);
+}
+
+.language-switch a {
+    display: inline-flex;
+    min-width: 34px;
+    min-height: 30px;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 900;
+    text-decoration: none;
+}
+
+.language-switch a:hover {
+    background: #dff9ef;
+    color: var(--green-dark);
+}
+
+.auth-language-switch {
+    position: absolute;
+    top: 22px;
+    right: 22px;
+}
+
 .actions {
     display: flex;
     align-items: center;
@@ -725,6 +759,40 @@ h2 {
 
 .admin-table tr:last-child td {
     border-bottom: 0;
+}
+
+.pagination {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 8px;
+    margin-top: 28px;
+}
+
+.page-link {
+    display: inline-flex;
+    min-width: 42px;
+    min-height: 42px;
+    align-items: center;
+    justify-content: center;
+    padding: 0 14px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--surface);
+    color: var(--text);
+    font-weight: 800;
+    text-decoration: none;
+}
+
+.page-link.active {
+    border-color: var(--green);
+    background: var(--green);
+    color: #ffffff;
+}
+
+.page-link.disabled {
+    pointer-events: none;
+    opacity: 0.45;
 }
 
 .error-section {

@@ -1,13 +1,12 @@
 <!DOCTYPE html>
-<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<html th:lang="${#locale.language}" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AsapJe - Рестораны</title>
+    <title th:text="#{restaurants.title}">AsapJe - Restaurants</title>
     <link rel="stylesheet" th:href="@{/static/css/index.css}">
 </head>
 <body>
-
 <header class="topbar">
     <a class="brand" th:href="@{/}">
         <span class="brand-mark">AJ</span>
@@ -15,128 +14,99 @@
     </a>
 
     <nav class="nav">
-        <a th:href="@{/restaurants}">Рестораны</a>
-        <a th:href="@{/categories}">Категории</a>
-        <a th:href="@{/foods}">Блюда</a>
-        <a th:href="@{/cart}">Корзина</a>
-        <a th:href="@{/orders}">Мои заказы</a>
+        <a th:href="@{/restaurants}" th:text="#{nav.restaurants}">Restaurants</a>
+        <a th:href="@{/categories}" th:text="#{nav.categories}">Categories</a>
+        <a th:href="@{/foods}" th:text="#{nav.foods}">Foods</a>
+        <a th:href="@{/cart}" th:text="#{nav.cart}">Cart</a>
+        <a th:href="@{/orders}" th:text="#{nav.orders}">My orders</a>
     </nav>
 
+    <div class="language-switch">
+        <a th:href="@{/restaurants(lang='ru', search=${search}, page=${page.currentPage})}">RU</a>
+        <a th:href="@{/restaurants(lang='en', search=${search}, page=${page.currentPage})}">EN</a>
+    </div>
+
     <div class="actions" th:if="${currentUsername == null}">
-        <a class="btn btn-ghost" th:href="@{/login}">Войти</a>
-        <a class="btn btn-primary" th:href="@{/register}">Регистрация</a>
+        <a class="btn btn-ghost" th:href="@{/login}" th:text="#{nav.login}">Log in</a>
+        <a class="btn btn-primary" th:href="@{/register}" th:text="#{nav.register}">Create account</a>
     </div>
     <div class="actions" th:if="${currentUsername != null}">
         <a class="btn btn-primary"
            th:if="${currentUserManager}"
-           th:href="@{/restaurants/manager/my-restaurants}">
-            Мои рестораны
+           th:href="@{/restaurants/manager/my-restaurants}"
+           th:text="#{restaurants.my}">
+            My restaurants
         </a>
         <span class="account-pill">
             <span class="account-avatar" th:text="${#strings.substring(currentUsername,0,1)}">U</span>
             <span class="account-name" th:text="${currentUsername}">user</span>
         </span>
         <form class="logout-form" th:action="@{/logout}" method="post">
-            <input type="hidden"
-                   th:if="${_csrf != null}"
-                   th:name="${_csrf.parameterName}"
-                   th:value="${_csrf.token}">
-            <button class="btn btn-ghost" type="submit">Выйти</button>
+            <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+            <button class="btn btn-ghost" type="submit" th:text="#{nav.logout}">Log out</button>
         </form>
     </div>
 </header>
 
 <main class="section">
-
     <div class="section-head">
-        <p class="eyebrow">Каталог</p>
-        <h2>Рестораны</h2>
+        <p class="eyebrow" th:text="#{restaurants.eyebrow}">Catalog</p>
+        <h2 th:text="#{restaurants.heading}">Restaurants</h2>
     </div>
 
-    <form th:action="@{/restaurants}"
-          method="get"
-          style="display:flex; gap:12px; margin-bottom:28px; max-width:620px;">
-        <input class="form-input"
-               type="text"
-               name="search"
-               th:value="${search}"
-               placeholder="Поиск по названию ресторана"
-               style="min-height:44px; flex:1;">
-
-        <button class="btn btn-primary" type="submit">
-            Найти
-        </button>
-
-        <a class="btn btn-ghost" th:href="@{/restaurants}">
-            Сбросить
-        </a>
+    <form th:action="@{/restaurants}" method="get" style="display:flex; gap:12px; margin-bottom:28px; max-width:620px;">
+        <input class="form-input" type="text" name="search" th:value="${search}"
+               th:placeholder="#{restaurants.search.placeholder}" style="min-height:44px; flex:1;">
+        <button class="btn btn-primary" type="submit" th:text="#{common.search}">Search</button>
+        <a class="btn btn-ghost" th:href="@{/restaurants}" th:text="#{common.reset}">Reset</a>
     </form>
 
     <div class="cards">
-        <article class="restaurant"
-                 th:each="restaurant : ${restaurants}">
-
-            <div class="restaurant-image green"
-                 th:text="${#strings.substring(restaurant.name,0,1)}">
-                R
-            </div>
-
-            <h3 th:text="${restaurant.name}">
-                Restaurant Name
-            </h3>
-
-            <p th:text="${restaurant.description}">
-                Description
-            </p>
+        <article class="restaurant" th:each="restaurant : ${restaurants}">
+            <div class="restaurant-image green" th:text="${#strings.substring(restaurant.name,0,1)}">R</div>
+            <h3 th:text="${restaurant.name}">Restaurant Name</h3>
+            <p th:text="${restaurant.description}">Description</p>
 
             <span>
-                Рейтинг:
+                <span th:text="#{restaurants.rating}">Rating</span>:
                 <span th:text="${restaurant.ratingAvg}">0.0</span>
-                (<span th:text="${restaurant.ratingCount}">0</span> отзывов)
+                (<span th:text="${restaurant.ratingCount}">0</span> <span th:text="#{restaurants.reviews}">reviews</span>)
             </span>
-
             <br><br>
-
-            <small>
-                Адрес:
-                <span th:text="${restaurant.address}">Address</span>
-            </small>
-
+            <small><span th:text="#{restaurants.address}">Address</span>: <span th:text="${restaurant.address}">Address</span></small>
             <br>
-
-            <small>
-                Телефон:
-                <span th:text="${restaurant.phone}">Phone</span>
-            </small>
-
+            <small><span th:text="#{restaurants.phone}">Phone</span>: <span th:text="${restaurant.phone}">Phone</span></small>
             <br>
-
             <small>
-                Время работы:
-                <span th:text="${restaurant.openingTime}">09:00</span>
-                -
+                <span th:text="#{restaurants.working.hours}">Working hours</span>:
+                <span th:text="${restaurant.openingTime}">09:00</span> -
                 <span th:text="${restaurant.closingTime}">22:00</span>
             </small>
 
             <div style="margin-top:18px;">
                 <a class="btn btn-primary"
-                   th:href="@{/foods(restaurant=${restaurant.id})}">
-                    Посмотреть блюда
+                   th:href="@{/foods(restaurant=${restaurant.id})}"
+                   th:text="#{restaurants.view.foods}">
+                    View foods
                 </a>
             </div>
-
         </article>
     </div>
 
-    <div th:if="${#lists.isEmpty(restaurants)}"
-         style="margin-top:40px; text-align:center;">
-        <h3>Рестораны не найдены</h3>
-        <a class="btn btn-primary" th:href="@{/restaurants}">
-            Показать все рестораны
-        </a>
+    <nav class="pagination" th:if="${page.totalPages > 1}">
+        <a class="page-link" th:classappend="${!page.hasPrevious} ? ' disabled'"
+           th:href="@{/restaurants(page=${page.currentPage - 1}, search=${search})}" th:text="#{common.back}">Back</a>
+        <a class="page-link" th:each="pageNumber : ${#numbers.sequence(1, page.totalPages)}"
+           th:classappend="${pageNumber == page.currentPage} ? ' active'"
+           th:text="${pageNumber}" th:href="@{/restaurants(page=${pageNumber}, search=${search})}">1</a>
+        <a class="page-link" th:classappend="${!page.hasNext} ? ' disabled'"
+           th:href="@{/restaurants(page=${page.currentPage + 1}, search=${search})}" th:text="#{common.next}">Next</a>
+    </nav>
+
+    <div th:if="${#lists.isEmpty(restaurants)}" style="margin-top:40px; text-align:center;">
+        <h3 th:text="#{restaurants.empty}">Restaurants not found</h3>
+        <a class="btn btn-primary" th:href="@{/restaurants}" th:text="#{restaurants.show.all}">Show all restaurants</a>
     </div>
-
 </main>
-
 </body>
 </html>
