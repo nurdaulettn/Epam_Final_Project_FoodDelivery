@@ -21,6 +21,9 @@ import org.springframework.web.servlet.resource.NoResourceFoundException;
 @ControllerAdvice
 public class GlobalExceptionHandler {
     private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
+    private static final String LOG_RESOURCE_NOT_FOUND = "Resource not found: {}";
+    private static final String LOG_BUSINESS_RULE_VIOLATION = "Business rule violation: {}";
+    private static final String LOG_UNEXPECTED_APPLICATION_ERROR = "Unexpected application error";
     private static final String ERROR_VIEW = "error";
     private static final String HOME_URL = "/";
     private static final String NOT_FOUND_TITLE = "Nothing found";
@@ -43,7 +46,7 @@ public class GlobalExceptionHandler {
             OrderNotFoundException.class
     })
     public ModelAndView handleNotFound(RuntimeException exception) {
-        log.warn("Resource not found: {}", exception.getMessage());
+        log.warn(LOG_RESOURCE_NOT_FOUND, exception.getMessage());
 
         return errorView(
                 HttpStatus.NOT_FOUND,
@@ -60,7 +63,7 @@ public class GlobalExceptionHandler {
             DeletingActiveFoodException.class
     })
     public ModelAndView handleBusinessRule(RuntimeException exception) {
-        log.warn("Business rule violation: {}", exception.getMessage());
+        log.warn(LOG_BUSINESS_RULE_VIOLATION, exception.getMessage());
 
         return errorView(
                 HttpStatus.BAD_REQUEST,
@@ -72,7 +75,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ModelAndView handleUnexpected(Exception exception) {
-        log.error("Unexpected application error", exception);
+        log.error(LOG_UNEXPECTED_APPLICATION_ERROR, exception);
 
         return errorView(
                 HttpStatus.INTERNAL_SERVER_ERROR,

@@ -22,6 +22,9 @@ public class UserServiceImpl implements UserService {
     public static final String LOG_USER_CREATED = "User {} created";
     public static final String LOG_USER_DELETE = "User {} deleted";
     private static final String SELF_MANAGEMENT_IS_NOT_ALLOWED = "You can not manage your own admin account";
+    private static final String LOG_ADMIN_UPDATED_USER_STATUS = "Admin {} updated user {} status to {}";
+    private static final String LOG_ADMIN_UPDATED_USER_ROLE = "Admin {} updated user {} role to {}";
+    private static final String LOG_ADMIN_SELF_MANAGEMENT_REJECTED = "Admin {} tried to manage their own account";
     private final UserDao userDao;
     private final PasswordEncoder encoder;
 
@@ -78,16 +81,19 @@ public class UserServiceImpl implements UserService {
     public void updateStatus(Long adminId, Long targetUserId, boolean status) {
         validateTargetUser(adminId, targetUserId);
         userDao.updateStatus(targetUserId, status);
+        log.info(LOG_ADMIN_UPDATED_USER_STATUS, adminId, targetUserId, status);
     }
 
     @Override
     public void updateRole(Long adminId, Long targetUserId, Role role) {
         validateTargetUser(adminId, targetUserId);
         userDao.updateRole(targetUserId, role);
+        log.info(LOG_ADMIN_UPDATED_USER_ROLE, adminId, targetUserId, role);
     }
 
     private void validateTargetUser(Long adminId, Long targetUserId) {
         if (adminId.equals(targetUserId)) {
+            log.warn(LOG_ADMIN_SELF_MANAGEMENT_REJECTED, adminId);
             throw new UserCreatingException(SELF_MANAGEMENT_IS_NOT_ALLOWED);
         }
 

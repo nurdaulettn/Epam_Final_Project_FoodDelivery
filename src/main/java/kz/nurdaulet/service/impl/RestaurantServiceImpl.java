@@ -6,6 +6,8 @@ import kz.nurdaulet.entity.Restaurant;
 import kz.nurdaulet.entity.enums.RestaurantStatus;
 import kz.nurdaulet.exception.RestaurantNotFoundException;
 import kz.nurdaulet.service.RestaurantService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -13,7 +15,17 @@ import java.util.List;
 
 @Service
 public class RestaurantServiceImpl implements RestaurantService {
+    private static final Logger log = LoggerFactory.getLogger(RestaurantServiceImpl.class);
     private static final String RESTAURANT_NOT_FOUND = "Restaurant with id %d not found";
+    private static final String LOG_RESTAURANT_REQUEST_SUBMITTED =
+            "Restaurant creation request submitted: name={}, managerId={}";
+    private static final String LOG_RESTAURANT_CONFIRMED = "Restaurant {} confirmed by admin";
+    private static final String LOG_RESTAURANT_CONFIRMATION_NOT_FOUND =
+            "Restaurant {} confirmation failed because restaurant was not found";
+    private static final String LOG_RESTAURANT_REJECTED = "Restaurant {} rejected by admin";
+    private static final String LOG_RESTAURANT_REJECTION_NOT_FOUND =
+            "Restaurant {} rejection failed because restaurant was not found";
+    private static final String LOG_RESTAURANT_NOT_FOUND = "Restaurant {} was not found";
     private final RestaurantDao restaurantDao;
 
     public RestaurantServiceImpl(RestaurantDao restaurantDao) {
@@ -45,6 +57,7 @@ public class RestaurantServiceImpl implements RestaurantService {
         restaurant.setUpdatedAt(LocalDateTime.now());
 
         restaurantDao.save(restaurant);
+        log.info(LOG_RESTAURANT_REQUEST_SUBMITTED, restaurant.getName(), userId);
 
         return restaurant;
     }
@@ -63,7 +76,9 @@ public class RestaurantServiceImpl implements RestaurantService {
     public void confirmRestaurant(Long id) {
         if (restaurantDao.existsById(id)) {
             restaurantDao.activateRestaurant(id);
+            log.info(LOG_RESTAURANT_CONFIRMED, id);
         } else {
+            log.warn(LOG_RESTAURANT_CONFIRMATION_NOT_FOUND, id);
             throw new RestaurantNotFoundException(RESTAURANT_NOT_FOUND.formatted(id));
         }
     }
@@ -72,7 +87,9 @@ public class RestaurantServiceImpl implements RestaurantService {
     public void rejectRestaurant(Long id) {
         if (restaurantDao.existsById(id)) {
             restaurantDao.rejectRestaurant(id);
+            log.info(LOG_RESTAURANT_REJECTED, id);
         } else {
+            log.warn(LOG_RESTAURANT_REJECTION_NOT_FOUND, id);
             throw new RestaurantNotFoundException(RESTAURANT_NOT_FOUND.formatted(id));
         }
     }
@@ -82,6 +99,7 @@ public class RestaurantServiceImpl implements RestaurantService {
         Restaurant restaurant = restaurantDao.findById(id);
 
         if (restaurant == null) {
+            log.warn(LOG_RESTAURANT_NOT_FOUND, id);
             throw new RestaurantNotFoundException(RESTAURANT_NOT_FOUND.formatted(id));
         }
 

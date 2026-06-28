@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html th:lang="${#locale.language}" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="#{admin.users.title}">AsapJe - Users</title>
+    <link rel="stylesheet" th:href="@{/static/css/index.css}">
+</head>
+<body>
+<header class="topbar">
+    <a class="brand" th:href="@{/}"><span class="brand-mark">AJ</span><span>AsapJe</span></a>
+    <nav class="nav">
+        <a th:href="@{/admin/users}" th:text="#{admin.users}">Users</a>
+        <a th:href="@{/admin/orders}" th:text="#{manager.orders}">Orders</a>
+        <a th:href="@{/admin/create-requests}" th:text="#{admin.requests}">Requests</a>
+        <a th:href="@{/categories}" th:text="#{nav.categories}">Categories</a>
+        <a th:href="@{/admin/categories/create}" th:text="#{admin.create.category}">Create category</a>
+        <a th:href="@{/restaurants}" th:text="#{nav.restaurants}">Restaurants</a>
+        <a th:href="@{/foods}" th:text="#{nav.foods}">Foods</a>
+    </nav>
+    <div class="language-switch">
+        <a th:href="@{/admin/users(page=${page.currentPage}, lang='ru')}">RU</a>
+        <a th:href="@{/admin/users(page=${page.currentPage}, lang='en')}">EN</a>
+    </div>
+    <div class="actions">
+        <span class="account-pill"><span class="account-avatar" th:text="${#strings.substring(currentUsername,0,1)}">U</span><span class="account-name" th:text="${currentUsername}">user</span></span>
+        <form class="logout-form" th:action="@{/logout}" method="post">
+            <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+            <button class="btn btn-ghost" type="submit" th:text="#{nav.logout}">Log out</button>
+        </form>
+    </div>
+</header>
+
+<main class="section">
+    <div class="section-head">
+        <p class="eyebrow" th:text="#{admin.panel}">Administrator panel</p>
+        <h2 th:text="#{admin.users.heading}">Users</h2>
+        <p th:text="#{admin.users.subtitle}">Manage user access and roles.</p>
+    </div>
+
+    <section class="admin-table-wrap">
+        <table class="admin-table">
+            <thead>
+            <tr>
+                <th>ID</th>
+                <th th:text="#{form.username}">Username</th>
+                <th th:text="#{form.email}">Email</th>
+                <th th:text="#{form.role}">Role</th>
+                <th th:text="#{common.status}">Status</th>
+                <th th:text="#{admin.users.actions}">Actions</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="user : ${users}">
+                <td>#<span th:text="${user.id}">1</span></td>
+                <td>
+                    <strong th:text="${user.username}">username</strong>
+                    <br>
+                    <small><span th:text="${user.firstName}">First</span> <span th:text="${user.lastName}">Last</span></small>
+                </td>
+                <td th:text="${user.email}">email@example.com</td>
+                <td>
+                    <form th:if="${user.id != currentUserId}" th:action="@{/admin/users/{id}/role(id=${user.id})}" method="post" style="display:flex; gap:8px; align-items:center;">
+                        <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                        <select class="form-input" name="role" style="min-height:38px;">
+                            <option th:each="role : ${roles}"
+                                    th:value="${role.name()}"
+                                    th:text="${role.name()}"
+                                    th:selected="${role == user.role}">
+                                CUSTOMER
+                            </option>
+                        </select>
+                        <button class="btn btn-ghost" type="submit" th:text="#{admin.users.change.role}">Change</button>
+                    </form>
+                    <span th:if="${user.id == currentUserId}" th:text="${user.role.name()}">ADMIN</span>
+                </td>
+                <td>
+                    <span class="order-status"
+                          th:text="${user.status} ? #{admin.users.active} : #{admin.users.blocked}">
+                        Active
+                    </span>
+                </td>
+                <td>
+                    <div th:if="${user.id != currentUserId}" style="display:flex; gap:8px; flex-wrap:wrap;">
+                        <form th:if="${user.status}" th:action="@{/admin/users/{id}/block(id=${user.id})}" method="post">
+                            <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                            <button class="btn btn-ghost" type="submit" th:text="#{admin.users.block}">Block</button>
+                        </form>
+                        <form th:unless="${user.status}" th:action="@{/admin/users/{id}/unblock(id=${user.id})}" method="post">
+                            <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                            <button class="btn btn-primary" type="submit" th:text="#{admin.users.unblock}">Unblock</button>
+                        </form>
+                        <form th:action="@{/admin/users/{id}/delete(id=${user.id})}" method="post">
+                            <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                            <button class="btn btn-ghost" type="submit" th:text="#{manager.delete}">Delete</button>
+                        </form>
+                    </div>
+                    <span th:if="${user.id == currentUserId}" th:text="#{admin.users.current}">Current admin</span>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </section>
+
+    <nav class="pagination" th:if="${page.totalPages > 1}">
+        <a class="page-link" th:classappend="${!page.hasPrevious} ? ' disabled'" th:href="@{/admin/users(page=${page.currentPage - 1})}" th:text="#{common.back}">Back</a>
+        <a class="page-link" th:each="pageNumber : ${#numbers.sequence(1, page.totalPages)}" th:classappend="${pageNumber == page.currentPage} ? ' active'" th:text="${pageNumber}" th:href="@{/admin/users(page=${pageNumber})}">1</a>
+        <a class="page-link" th:classappend="${!page.hasNext} ? ' disabled'" th:href="@{/admin/users(page=${page.currentPage + 1})}" th:text="#{common.next}">Next</a>
+    </nav>
+</main>
+</body>
+</html>

@@ -23,6 +23,11 @@ import java.util.Locale;
 @EnableWebMvc
 @ComponentScan("kz.nurdaulet")
 public class WebConfig implements WebMvcConfigurer {
+    private final RequestLoggingInterceptor requestLoggingInterceptor;
+
+    public WebConfig(RequestLoggingInterceptor requestLoggingInterceptor) {
+        this.requestLoggingInterceptor = requestLoggingInterceptor;
+    }
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
@@ -33,6 +38,8 @@ public class WebConfig implements WebMvcConfigurer {
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
+        registry.addInterceptor(requestLoggingInterceptor)
+                .excludePathPatterns("/static/**");
         registry.addInterceptor(localeChangeInterceptor());
     }
 

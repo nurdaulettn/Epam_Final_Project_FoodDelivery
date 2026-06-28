@@ -11,6 +11,9 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 public class CustomConnectionPool {
     private static final Logger log = LoggerFactory.getLogger(CustomConnectionPool.class);
+    private static final String LOG_CONNECTION_POOL_CREATED = "Created connection pool";
+    private static final String LOG_CONNECTION_BORROWED = "Connection borrowed from the pool";
+    private static final String LOG_CONNECTION_RETURNED = "Connection returned to the pool";
     private final BlockingQueue<Connection> pool;
 
     public CustomConnectionPool(String url, String user, String password, int size)
@@ -21,13 +24,13 @@ public class CustomConnectionPool {
             pool.add(DriverManager.getConnection(url, user, password));
         }
 
-        log.info("Created connection pool");
+        log.info(LOG_CONNECTION_POOL_CREATED);
     }
 
     public Connection getConnection() throws InterruptedException {
         Connection real = pool.take();
 
-        log.info("Connection borrowed from the pool");
+        log.debug(LOG_CONNECTION_BORROWED);
         return new ProxyConnection(real, this);
     }
 
@@ -38,6 +41,6 @@ public class CustomConnectionPool {
             pool.offer(connection);
         }
 
-        log.info("Connection returned to the pool");
+        log.debug(LOG_CONNECTION_RETURNED);
     }
 }

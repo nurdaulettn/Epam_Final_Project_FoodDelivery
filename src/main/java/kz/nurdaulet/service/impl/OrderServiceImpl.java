@@ -21,6 +21,8 @@ import kz.nurdaulet.service.FoodService;
 import kz.nurdaulet.service.OrderService;
 import kz.nurdaulet.service.RestaurantService;
 import kz.nurdaulet.service.UserService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,6 +33,7 @@ import java.util.Map;
 
 @Service
 public class OrderServiceImpl implements OrderService {
+    private static final Logger log = LoggerFactory.getLogger(OrderServiceImpl.class);
     private static final String EMPTY_CART = "Cart is empty";
     private static final String FOOD_IS_NOT_AVAILABLE = "Food is not available";
     private static final String FOODS_FROM_DIFFERENT_RESTAURANTS = "Cart can contain foods from only one restaurant";
@@ -39,6 +42,27 @@ public class OrderServiceImpl implements OrderService {
     private static final String DO_NOT_HAVE_PERMISSION = "You can not manage this order";
     private static final String INVALID_ORDER_STATUS = "Invalid order status";
     private static final String INVALID_STATUS_TRANSITION = "Invalid order status transition";
+    private static final String LOG_ORDER_CREATED =
+            "Order {} created: userId={}, restaurantId={}, totalPrice={}, deliveryType={}";
+    private static final String LOG_PAYMENT_ALREADY_HANDLED =
+            "Payment request ignored because order {} is already paid";
+    private static final String LOG_PAYMENT_REJECTED = "Payment rejected for order {} with status {}";
+    private static final String LOG_ORDER_PAID = "Order {} paid by user {} and moved to {}";
+    private static final String LOG_ORDER_STATUS_ALREADY_SET =
+            "Order status update ignored because order {} already has status {}";
+    private static final String LOG_MANAGER_UPDATED_ORDER_STATUS =
+            "Manager {} updated order {} status from {} to {}";
+    private static final String LOG_EMPTY_CART_REJECTED = "Order creation rejected because cart is empty";
+    private static final String LOG_UNAVAILABLE_FOOD_REJECTED =
+            "Order creation rejected because food {} is not available";
+    private static final String LOG_DIFFERENT_RESTAURANTS_REJECTED =
+            "Order creation rejected because cart contains restaurants {} and {}";
+    private static final String LOG_MANAGER_PERMISSION_REJECTED =
+            "Manager {} tried to manage order for restaurant {}";
+    private static final String LOG_INVALID_MANAGER_TARGET_STATUS_REJECTED =
+            "Rejected manager order status update to invalid target status {}";
+    private static final String LOG_INVALID_STATUS_TRANSITION_REJECTED =
+            "Rejected invalid order status transition from {} to {}";
 
     private final OrderDao orderDao;
     private final OrderItemDao orderItemDao;
@@ -94,6 +118,12 @@ public class OrderServiceImpl implements OrderService {
         }
 
         cartService.clear(cart);
+        log.info(LOG_ORDER_CREATED,
+                orderId,
+                userId,
+                restaurantId,
+                totalPrice,
+                order.getDeliveryType());
 
         return orderDao.findById(orderId);
     }
@@ -126,14 +156,17 @@ public class OrderServiceImpl implements OrderService {
         Order order = getCustomerOrder(userId, orderId);
 
         if (OrderStatus.PREPARING.equals(order.getStatus())) {
+            log.info(LOG_PAYMENT_ALREADY_HANDLED, orderId);
             return order;
         }
 
         if (!OrderStatus.PENDING_PAYMENT.equals(order.getStatus())) {
+            log.warn(LOG_PAYMENT_REJECTED, orderId, order.getStatus());
             throw new CartOperationException(ORDER_CAN_NOT_BE_PAID);
         }
 
         orderDao.updateStatus(orderId, OrderStatus.PREPARING);
+        log.info(LOG_ORDER_PAID, orderId, userId, OrderStatus.PREPARING);
 
         return getCustomerOrder(userId, orderId);
     }
@@ -195,11 +228,17 @@ public class OrderServiceImpl implements OrderService {
         Order order = getManagerOrder(managerId, restaurantId, orderId);
 
         if (order.getStatus().equals(status)) {
+            log.info(LOG_ORDER_STATUS_ALREADY_SET, orderId, status);
             return order;
         }
 
         validateManagerStatusTransition(order.getStatus(), status);
         orderDao.updateStatus(orderId, status);
+        log.info(LOG_MANAGER_UPDATED_ORDER_STATUS,
+                managerId,
+                orderId,
+                order.getStatus(),
+                status);
 
         return orderDao.findById(orderId);
     }
@@ -251,6 +290,7 @@ public class OrderServiceImpl implements OrderService {
 
     private void validateCart(Map<Long, Integer> cart) {
         if (cart == null || cart.isEmpty()) {
+            log.warn(LOG_EMPTY_CART_REJECTED);
             throw new CartOperationException(EMPTY_CART);
         }
 
@@ -264,12 +304,16 @@ public class OrderServiceImpl implements OrderService {
             Food food = foodService.getFoodById(foodId);
 
             if (!Boolean.TRUE.equals(food.getAvailable())) {
+                log.warn(LOG_UNAVAILABLE_FOOD_REJECTED, food.getId());
                 throw new CartOperationException(FOOD_IS_NOT_AVAILABLE);
             }
 
             if (restaurantId == null) {
                 restaurantId = food.getRestaurantId();
             } else if (!restaurantId.equals(food.getRestaurantId())) {
+                log.warn(LOG_DIFFERENT_RESTAURANTS_REJECTED,
+                        restaurantId,
+                        food.getRestaurantId());
                 throw new CartOperationException(FOODS_FROM_DIFFERENT_RESTAURANTS);
             }
         }
@@ -289,6 +333,7 @@ public class OrderServiceImpl implements OrderService {
         Restaurant restaurant = restaurantService.getRestaurantById(restaurantId);
 
         if (!restaurant.getManagerId().equals(managerId)) {
+            log.warn(LOG_MANAGER_PERMISSION_REJECTED, managerId, restaurantId);
             throw new OrderOperationException(DO_NOT_HAVE_PERMISSION);
         }
     }
@@ -297,6 +342,7 @@ public class OrderServiceImpl implements OrderService {
         if (!(OrderStatus.READY.equals(status)
                 || OrderStatus.COMPLETED.equals(status)
                 || OrderStatus.CANCELLED.equals(status))) {
+            log.warn(LOG_INVALID_MANAGER_TARGET_STATUS_REJECTED, status);
             throw new OrderOperationException(INVALID_ORDER_STATUS);
         }
     }
@@ -308,6 +354,7 @@ public class OrderServiceImpl implements OrderService {
                 && (OrderStatus.COMPLETED.equals(targetStatus) || OrderStatus.CANCELLED.equals(targetStatus)));
 
         if (!validTransition) {
+            log.warn(LOG_INVALID_STATUS_TRANSITION_REJECTED, currentStatus, targetStatus);
             throw new OrderOperationException(INVALID_STATUS_TRANSITION);
         }
     }
