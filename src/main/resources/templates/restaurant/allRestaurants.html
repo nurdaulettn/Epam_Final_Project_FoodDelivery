@@ -84,6 +84,11 @@
             </small>
 
             <div style="margin-top:18px;">
+                <a class="btn btn-ghost"
+                   th:href="@{/restaurants/{id}(id=${restaurant.id})}"
+                   th:text="#{restaurants.details}">
+                    Details
+                </a>
                 <a class="btn btn-primary"
                    th:href="@{/foods(restaurant=${restaurant.id})}"
                    th:text="#{restaurants.view.foods}">

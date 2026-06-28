@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html th:lang="${#locale.language}" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="#{favorites.title}">AsapJe - Favorites</title>
+    <link rel="stylesheet" th:href="@{/static/css/index.css}">
+</head>
+<body>
+<header class="topbar">
+    <a class="brand" th:href="@{/}">
+        <span class="brand-mark">AJ</span>
+        <span>AsapJe</span>
+    </a>
+    <nav class="nav">
+        <a th:href="@{/restaurants}" th:text="#{nav.restaurants}">Restaurants</a>
+        <a th:href="@{/foods}" th:text="#{nav.foods}">Foods</a>
+        <a th:href="@{/favorites}" th:text="#{nav.favorites}">Favorites</a>
+        <a th:href="@{/cart}" th:text="#{nav.cart}">Cart</a>
+    </nav>
+    <div class="language-switch">
+        <a th:href="@{/favorites(page=${page.currentPage}, lang='ru')}">RU</a>
+        <a th:href="@{/favorites(page=${page.currentPage}, lang='en')}">EN</a>
+    </div>
+    <div class="actions" th:if="${currentUsername != null}">
+        <span class="account-pill">
+            <span class="account-avatar" th:text="${#strings.substring(currentUsername,0,1)}">U</span>
+            <span class="account-name" th:text="${currentUsername}">user</span>
+        </span>
+        <form class="logout-form" th:action="@{/logout}" method="post">
+            <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+            <button class="btn btn-ghost" type="submit" th:text="#{nav.logout}">Log out</button>
+        </form>
+    </div>
+</header>
+
+<main class="section">
+    <div class="section-head">
+        <p class="eyebrow" th:text="#{favorites.eyebrow}">Saved</p>
+        <h2 th:text="#{favorites.heading}">Favorite foods</h2>
+    </div>
+
+    <div class="cards">
+        <article class="restaurant" th:each="food : ${foods}">
+            <div class="restaurant-image green" th:text="${#strings.substring(food.name,0,1)}">F</div>
+            <h3 th:text="${food.name}">Food name</h3>
+            <p th:text="${food.description}">Description</p>
+            <span><span th:text="${food.price}">0</span> <span th:text="#{common.currency}">₸</span></span>
+
+            <form th:if="${food.available}" th:action="@{/cart/add/{foodId}(foodId=${food.id})}" method="post" style="margin-top:18px;">
+                <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                <button class="btn btn-primary" type="submit" th:text="#{foods.add}">Add to cart</button>
+            </form>
+
+            <form th:action="@{/favorites/{foodId}/remove(foodId=${food.id})}" method="post" style="margin-top:10px;">
+                <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                <button class="btn btn-ghost" type="submit" th:text="#{favorites.remove}">Remove favorite</button>
+            </form>
+        </article>
+    </div>
+
+    <nav class="pagination" th:if="${page.totalPages > 1}">
+        <a class="page-link" th:classappend="${!page.hasPrevious} ? ' disabled'" th:href="@{/favorites(page=${page.currentPage - 1})}" th:text="#{common.back}">Back</a>
+        <a class="page-link" th:each="pageNumber : ${#numbers.sequence(1, page.totalPages)}" th:classappend="${pageNumber == page.currentPage} ? ' active'" th:text="${pageNumber}" th:href="@{/favorites(page=${pageNumber})}">1</a>
+        <a class="page-link" th:classappend="${!page.hasNext} ? ' disabled'" th:href="@{/favorites(page=${page.currentPage + 1})}" th:text="#{common.next}">Next</a>
+    </nav>
+
+    <div th:if="${#lists.isEmpty(foods)}" style="margin-top:40px; text-align:center;">
+        <h3 th:text="#{favorites.empty}">You do not have favorite foods yet</h3>
+        <a class="btn btn-primary" th:href="@{/foods}" th:text="#{foods.show.all}">Show all foods</a>
+    </div>
+</main>
+</body>
+</html>

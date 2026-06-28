@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html th:lang="${#locale.language}" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title th:text="${restaurant.name}">Restaurant details</title>
+    <link rel="stylesheet" th:href="@{/static/css/index.css}">
+</head>
+<body>
+<header class="topbar">
+    <a class="brand" th:href="@{/}">
+        <span class="brand-mark">AJ</span>
+        <span>AsapJe</span>
+    </a>
+    <nav class="nav">
+        <a th:href="@{/restaurants}" th:text="#{nav.restaurants}">Restaurants</a>
+        <a th:href="@{/foods}" th:text="#{nav.foods}">Foods</a>
+        <a th:href="@{/favorites}" th:text="#{nav.favorites}">Favorites</a>
+        <a th:href="@{/orders}" th:text="#{nav.orders}">My orders</a>
+    </nav>
+    <div class="language-switch">
+        <a th:href="@{/restaurants/{id}(id=${restaurant.id}, lang='ru')}">RU</a>
+        <a th:href="@{/restaurants/{id}(id=${restaurant.id}, lang='en')}">EN</a>
+    </div>
+    <div class="actions" th:if="${currentUsername != null}">
+        <span class="account-pill">
+            <span class="account-avatar" th:text="${#strings.substring(currentUsername,0,1)}">U</span>
+            <span class="account-name" th:text="${currentUsername}">user</span>
+        </span>
+        <form class="logout-form" th:action="@{/logout}" method="post">
+            <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+            <button class="btn btn-ghost" type="submit" th:text="#{nav.logout}">Log out</button>
+        </form>
+    </div>
+</header>
+
+<main class="section">
+    <div class="section-head">
+        <p class="eyebrow" th:text="#{restaurants.details}">Restaurant details</p>
+        <h2 th:text="${restaurant.name}">Restaurant</h2>
+        <p th:text="${restaurant.description}">Description</p>
+    </div>
+
+    <div class="checkout-layout">
+        <section class="cart-items">
+            <article class="cart-item">
+                <div>
+                    <h3 th:text="#{restaurants.info}">Restaurant information</h3>
+                    <p><span th:text="#{restaurants.address}">Address</span>: <span th:text="${restaurant.address}">Address</span></p>
+                    <p><span th:text="#{restaurants.phone}">Phone</span>: <span th:text="${restaurant.phone}">Phone</span></p>
+                    <p>
+                        <span th:text="#{restaurants.working.hours}">Working hours</span>:
+                        <span th:text="${restaurant.openingTime}">09:00</span> -
+                        <span th:text="${restaurant.closingTime}">22:00</span>
+                    </p>
+                    <p>
+                        <span th:text="#{restaurants.rating}">Rating</span>:
+                        <strong th:text="${restaurant.ratingAvg}">0.0</strong>
+                        (<span th:text="${restaurant.ratingCount}">0</span> <span th:text="#{restaurants.reviews}">reviews</span>)
+                    </p>
+                </div>
+            </article>
+
+            <div style="display:flex; gap:12px; flex-wrap:wrap; margin:20px 0;">
+                <a class="btn btn-primary" th:href="@{/foods(restaurant=${restaurant.id})}" th:text="#{restaurants.view.foods}">View foods</a>
+                <a class="btn btn-ghost" th:href="@{/restaurants}" th:text="#{restaurants.back.list}">Back to restaurants</a>
+            </div>
+
+            <h3 th:text="#{reviews.heading}">Reviews</h3>
+            <article class="cart-item" th:each="item : ${reviews}">
+                <div>
+                    <p class="eyebrow">
+                        <span th:text="#{reviews.rating}">Rating</span>:
+                        <strong th:text="${item.rating}">5</strong>/5
+                    </p>
+                    <p th:text="${item.comment != null ? item.comment : '-'}">Comment</p>
+                </div>
+                <small th:text="${#temporals.format(item.createdAt, 'dd.MM.yyyy HH:mm')}">28.06.2026 12:00</small>
+            </article>
+
+            <div th:if="${#lists.isEmpty(reviews)}" style="margin-top:20px;">
+                <p th:text="#{reviews.empty}">There are no reviews yet.</p>
+            </div>
+        </section>
+
+        <aside class="cart-summary">
+            <p class="eyebrow" th:text="#{reviews.form.eyebrow}">Your review</p>
+            <h2 th:text="${customerReviewExists} ? #{reviews.update} : #{reviews.create}">Leave a review</h2>
+
+            <form th:if="${currentUsername != null}"
+                  th:action="@{/restaurants/{id}/reviews(id=${restaurant.id})}"
+                  th:object="${review}"
+                  method="post">
+                <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+
+                <div class="form-group">
+                    <label class="form-label" for="rating" th:text="#{reviews.rating}">Rating</label>
+                    <select class="form-input" id="rating" th:field="*{rating}" required>
+                        <option value="" th:text="#{reviews.rating.choose}">Choose rating</option>
+                        <option th:each="ratingValue : ${#numbers.sequence(1, 5)}"
+                                th:value="${ratingValue}"
+                                th:text="${ratingValue}">
+                            5
+                        </option>
+                    </select>
+                    <span class="form-error" th:if="${#fields.hasErrors('rating')}" th:errors="*{rating}">Rating error</span>
+                </div>
+
+                <div class="form-group">
+                    <label class="form-label" for="comment" th:text="#{reviews.comment}">Comment</label>
+                    <textarea class="form-input checkout-address"
+                              id="comment"
+                              th:field="*{comment}"
+                              th:placeholder="#{reviews.comment.placeholder}"></textarea>
+                    <span class="form-error" th:if="${#fields.hasErrors('comment')}" th:errors="*{comment}">Comment error</span>
+                </div>
+
+                <button class="btn btn-primary" type="submit" th:text="#{reviews.submit}">Save review</button>
+            </form>
+
+            <a th:if="${currentUsername == null}" class="btn btn-primary" th:href="@{/login}" th:text="#{login.submit}">Log in</a>
+        </aside>
+    </div>
+</main>
+</body>
+</html>

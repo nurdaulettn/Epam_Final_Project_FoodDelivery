@@ -36,6 +36,7 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
@@ -219,15 +220,18 @@ class OrderServiceImplTest {
     }
 
     @Test
-    void shouldNotPayOrderTwice() {
+    void shouldReturnPreparingOrderWhenPaymentSubmitIsDuplicated() {
         // given
         Order preparingOrder = createOrder(OrderStatus.PREPARING, USER_ID, RESTAURANT_ID);
         when(orderDao.findById(ORDER_ID)).thenReturn(preparingOrder);
 
-        // when / then
-        assertThrows(CartOperationException.class,
-                () -> testingInstance.payOrder(USER_ID, ORDER_ID));
+        // when
+        Order result = testingInstance.payOrder(USER_ID, ORDER_ID);
+
+        // then
+        assertEquals(preparingOrder, result);
         verify(orderDao).findById(ORDER_ID);
+        verify(orderDao, never()).updateStatus(ORDER_ID, OrderStatus.PREPARING);
     }
 
     @Test
@@ -412,6 +416,26 @@ class OrderServiceImplTest {
         verify(orderDao, org.mockito.Mockito.times(2)).findById(ORDER_ID);
         verify(orderDao).updateStatus(ORDER_ID, OrderStatus.READY);
         assertEquals(OrderStatus.READY, result.getStatus());
+    }
+
+    @Test
+    void shouldIgnoreDuplicatedManagerStatusSubmit() {
+        // given
+        Restaurant restaurant = createRestaurant(MANAGER_ID);
+        Order readyOrder = createOrder(OrderStatus.READY, USER_ID, RESTAURANT_ID);
+
+        when(restaurantService.getRestaurantById(RESTAURANT_ID)).thenReturn(restaurant);
+        when(orderDao.findById(ORDER_ID)).thenReturn(readyOrder);
+
+        // when
+        Order result = testingInstance.updateManagerOrderStatus(
+                MANAGER_ID, RESTAURANT_ID, ORDER_ID, OrderStatus.READY);
+
+        // then
+        assertEquals(readyOrder, result);
+        verify(restaurantService).getRestaurantById(RESTAURANT_ID);
+        verify(orderDao).findById(ORDER_ID);
+        verify(orderDao, never()).updateStatus(ORDER_ID, OrderStatus.READY);
     }
 
     @Test

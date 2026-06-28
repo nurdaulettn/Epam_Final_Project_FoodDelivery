@@ -92,14 +92,15 @@
                 Pending payment
             </h2>
 
-            <form th:if="${order.status == T(kz.nurdaulet.entity.enums.OrderStatus).PENDING_PAYMENT}"
+            <form class="js-disable-on-submit"
+                  th:if="${order.status == T(kz.nurdaulet.entity.enums.OrderStatus).PENDING_PAYMENT}"
                   th:action="@{/orders/{orderId}/pay(orderId=${order.id})}"
                   method="post">
                 <input type="hidden"
                        th:if="${_csrf != null}"
                        th:name="${_csrf.parameterName}"
                        th:value="${_csrf.token}">
-                <button class="btn btn-primary" type="submit" th:text="#{orders.pay}">
+                <button class="btn btn-primary" type="submit" th:attr="data-submitting-text=#{common.processing}" th:text="#{orders.pay}">
                     Pay
                 </button>
             </form>
@@ -132,5 +133,18 @@
         </aside>
     </div>
 </main>
+<script>
+    document.querySelectorAll('.js-disable-on-submit').forEach((form) => {
+        form.addEventListener('submit', () => {
+            form.querySelectorAll('button[type="submit"]').forEach((button) => {
+                const submittingText = button.dataset.submittingText;
+                if (submittingText) {
+                    button.textContent = submittingText;
+                }
+                button.disabled = true;
+            });
+        });
+    });
+</script>
 </body>
 </html>

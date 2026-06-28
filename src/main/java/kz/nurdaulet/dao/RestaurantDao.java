@@ -28,4 +28,6 @@ public interface RestaurantDao {
     void activateRestaurant(Long id);
 
     void rejectRestaurant(Long id);
+
+    void updateRating(Long id, Double ratingAvg, Integer ratingCount);
 }

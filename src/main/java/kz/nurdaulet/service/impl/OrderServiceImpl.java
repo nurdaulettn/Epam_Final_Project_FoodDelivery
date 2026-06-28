@@ -125,6 +125,10 @@ public class OrderServiceImpl implements OrderService {
     public Order payOrder(Long userId, Long orderId) {
         Order order = getCustomerOrder(userId, orderId);
 
+        if (OrderStatus.PREPARING.equals(order.getStatus())) {
+            return order;
+        }
+
         if (!OrderStatus.PENDING_PAYMENT.equals(order.getStatus())) {
             throw new CartOperationException(ORDER_CAN_NOT_BE_PAID);
         }
@@ -189,6 +193,10 @@ public class OrderServiceImpl implements OrderService {
         validateManagerTargetStatus(status);
 
         Order order = getManagerOrder(managerId, restaurantId, orderId);
+
+        if (order.getStatus().equals(status)) {
+            return order;
+        }
 
         validateManagerStatusTransition(order.getStatus(), status);
         orderDao.updateStatus(orderId, status);

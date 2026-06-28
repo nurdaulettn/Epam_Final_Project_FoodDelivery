@@ -63,20 +63,20 @@
             <strong><span th:text="${order.totalPrice}">0</span> <span th:text="#{common.currency}">₸</span></strong>
             <div class="order-actions">
                 <a class="btn btn-ghost" th:href="@{/restaurants/manager/{restaurantId}/orders/{orderId}(restaurantId=${restaurant.id}, orderId=${order.id})}" th:text="#{manager.order.details}">Order details</a>
-                <form th:if="${order.status == T(kz.nurdaulet.entity.enums.OrderStatus).PREPARING}" th:action="@{/restaurants/manager/{restaurantId}/orders/{orderId}/status(restaurantId=${restaurant.id}, orderId=${order.id})}" method="post">
+                <form class="js-disable-on-submit" th:if="${order.status == T(kz.nurdaulet.entity.enums.OrderStatus).PREPARING}" th:action="@{/restaurants/manager/{restaurantId}/orders/{orderId}/status(restaurantId=${restaurant.id}, orderId=${order.id})}" method="post">
                     <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
                     <input type="hidden" name="status" value="READY">
-                    <button class="btn btn-primary" type="submit" th:text="#{manager.ready}">Ready</button>
+                    <button class="btn btn-primary" type="submit" th:attr="data-submitting-text=#{common.processing}" th:text="#{manager.ready}">Ready</button>
                 </form>
-                <form th:if="${order.status == T(kz.nurdaulet.entity.enums.OrderStatus).READY}" th:action="@{/restaurants/manager/{restaurantId}/orders/{orderId}/status(restaurantId=${restaurant.id}, orderId=${order.id})}" method="post">
+                <form class="js-disable-on-submit" th:if="${order.status == T(kz.nurdaulet.entity.enums.OrderStatus).READY}" th:action="@{/restaurants/manager/{restaurantId}/orders/{orderId}/status(restaurantId=${restaurant.id}, orderId=${order.id})}" method="post">
                     <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
                     <input type="hidden" name="status" value="COMPLETED">
-                    <button class="btn btn-primary" type="submit" th:text="#{manager.complete}">Complete</button>
+                    <button class="btn btn-primary" type="submit" th:attr="data-submitting-text=#{common.processing}" th:text="#{manager.complete}">Complete</button>
                 </form>
-                <form th:if="${order.status == T(kz.nurdaulet.entity.enums.OrderStatus).PREPARING || order.status == T(kz.nurdaulet.entity.enums.OrderStatus).READY}" th:action="@{/restaurants/manager/{restaurantId}/orders/{orderId}/status(restaurantId=${restaurant.id}, orderId=${order.id})}" method="post">
+                <form class="js-disable-on-submit" th:if="${order.status == T(kz.nurdaulet.entity.enums.OrderStatus).PREPARING || order.status == T(kz.nurdaulet.entity.enums.OrderStatus).READY}" th:action="@{/restaurants/manager/{restaurantId}/orders/{orderId}/status(restaurantId=${restaurant.id}, orderId=${order.id})}" method="post">
                     <input type="hidden" th:if="${_csrf != null}" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
                     <input type="hidden" name="status" value="CANCELLED">
-                    <button class="btn btn-ghost" type="submit" th:text="#{manager.cancel}">Cancel</button>
+                    <button class="btn btn-ghost" type="submit" th:attr="data-submitting-text=#{common.processing}" th:text="#{manager.cancel}">Cancel</button>
                 </form>
             </div>
         </article>
@@ -88,5 +88,18 @@
         <a class="page-link" th:classappend="${!page.hasNext} ? ' disabled'" th:href="@{/restaurants/manager/{restaurantId}/orders(restaurantId=${restaurant.id}, page=${page.currentPage + 1})}" th:text="#{common.next}">Next</a>
     </nav>
 </main>
+<script>
+    document.querySelectorAll('.js-disable-on-submit').forEach((form) => {
+        form.addEventListener('submit', () => {
+            form.querySelectorAll('button[type="submit"]').forEach((button) => {
+                const submittingText = button.dataset.submittingText;
+                if (submittingText) {
+                    button.textContent = submittingText;
+                }
+                button.disabled = true;
+            });
+        });
+    });
+</script>
 </body>
 </html>

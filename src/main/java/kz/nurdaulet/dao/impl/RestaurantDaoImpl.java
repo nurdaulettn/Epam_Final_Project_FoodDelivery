@@ -26,6 +26,7 @@ public class RestaurantDaoImpl implements RestaurantDao {
     private static final String FIND_PENDING = "SELECT * FROM restaurants WHERE status='PENDING'";
     private static final String CONFIRM_RESTAURANT = "UPDATE restaurants SET status='ACTIVE' WHERE id = ?";
     private static final String REJECT_RESTAURANT = "UPDATE restaurants SET status='REJECTED' WHERE id = ?";
+    private static final String UPDATE_RATING = "UPDATE restaurants SET rating_avg = ?, rating_count = ?, updated_at = ? WHERE id = ?";
     private static final Logger log = LoggerFactory.getLogger(RestaurantDaoImpl.class);
 
     private final JdbcTemplate jdbcTemplate;
@@ -122,6 +123,11 @@ public class RestaurantDaoImpl implements RestaurantDao {
     @Override
     public void rejectRestaurant(Long id) {
         jdbcTemplate.update(REJECT_RESTAURANT, id);
+    }
+
+    @Override
+    public void updateRating(Long id, Double ratingAvg, Integer ratingCount) {
+        jdbcTemplate.update(UPDATE_RATING, ratingAvg, ratingCount, LocalDateTime.now(), id);
     }
 
 }

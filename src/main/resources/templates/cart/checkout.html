@@ -49,7 +49,7 @@
 
     <div class="checkout-layout">
         <section>
-            <form class="checkout-form"
+            <form class="checkout-form js-disable-on-submit"
                   th:action="@{/cart/checkout}"
                   th:object="${checkout}"
                   method="post">
@@ -106,7 +106,7 @@
                     </span>
                 </div>
 
-                <button class="btn btn-primary" type="submit" th:text="#{checkout.create}">
+                <button class="btn btn-primary" type="submit" th:attr="data-submitting-text=#{common.processing}" th:text="#{checkout.create}">
                     Create order
                 </button>
             </form>
@@ -156,6 +156,18 @@
     deliveryInput.addEventListener('change', updateAddressVisibility);
     pickupInput.addEventListener('change', updateAddressVisibility);
     updateAddressVisibility();
+
+    document.querySelectorAll('.js-disable-on-submit').forEach((form) => {
+        form.addEventListener('submit', () => {
+            form.querySelectorAll('button[type="submit"]').forEach((button) => {
+                const submittingText = button.dataset.submittingText;
+                if (submittingText) {
+                    button.textContent = submittingText;
+                }
+                button.disabled = true;
+            });
+        });
+    });
 </script>
 </body>
 </html>

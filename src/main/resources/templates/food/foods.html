@@ -17,6 +17,7 @@
         <a th:href="@{/restaurants}" th:text="#{nav.restaurants}">Restaurants</a>
         <a th:href="@{/categories}" th:text="#{nav.categories}">Categories</a>
         <a th:href="@{/foods}" th:text="#{nav.foods}">Foods</a>
+        <a th:href="@{/favorites}" th:text="#{nav.favorites}">Favorites</a>
         <a th:href="@{/cart}" th:text="#{nav.cart}">Cart</a>
         <a th:href="@{/orders}" th:text="#{nav.orders}">My orders</a>
     </nav>
@@ -150,6 +151,32 @@
                        th:value="${_csrf.token}">
                 <button class="btn btn-primary" type="submit" th:text="#{foods.add}">
                     Add to cart
+                </button>
+            </form>
+
+            <form th:if="${currentUsername != null && !favoriteFoodIds.contains(food.id)}"
+                  th:action="@{/favorites/{foodId}/add(foodId=${food.id})}"
+                  method="post"
+                  style="margin-top:10px;">
+                <input type="hidden"
+                       th:if="${_csrf != null}"
+                       th:name="${_csrf.parameterName}"
+                       th:value="${_csrf.token}">
+                <button class="btn btn-ghost" type="submit" th:text="#{favorites.add}">
+                    Add to favorites
+                </button>
+            </form>
+
+            <form th:if="${currentUsername != null && favoriteFoodIds.contains(food.id)}"
+                  th:action="@{/favorites/{foodId}/remove(foodId=${food.id})}"
+                  method="post"
+                  style="margin-top:10px;">
+                <input type="hidden"
+                       th:if="${_csrf != null}"
+                       th:name="${_csrf.parameterName}"
+                       th:value="${_csrf.token}">
+                <button class="btn btn-ghost" type="submit" th:text="#{favorites.remove}">
+                    Remove favorite
                 </button>
             </form>
         </article>
