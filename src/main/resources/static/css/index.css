@@ -694,6 +694,33 @@ h2 {
     margin: 0;
 }
 
+.error-section {
+    display: grid;
+    min-height: calc(100vh - 68px);
+    place-items: center;
+}
+
+.error-panel {
+    width: min(620px, 100%);
+    padding: 28px;
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    background: var(--surface);
+    box-shadow: 0 18px 50px rgba(16, 35, 31, 0.08);
+}
+
+.error-panel p:not(.eyebrow) {
+    color: var(--muted);
+    line-height: 1.6;
+}
+
+.error-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 22px;
+}
+
 @media (max-width: 860px) {
     .topbar {
         flex-wrap: wrap;

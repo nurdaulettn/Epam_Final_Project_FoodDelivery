@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AsapJe - Ошибка</title>
+    <link rel="stylesheet" th:href="@{/static/css/index.css}">
+</head>
+<body>
+<header class="topbar">
+    <a class="brand" th:href="@{/}">
+        <span class="brand-mark">AJ</span>
+        <span>AsapJe</span>
+    </a>
+
+    <nav class="nav">
+        <a th:href="@{/restaurants}">Рестораны</a>
+        <a th:href="@{/foods}">Блюда</a>
+        <a th:href="@{/cart}">Корзина</a>
+        <a th:href="@{/orders}">Мои заказы</a>
+    </nav>
+
+    <div class="actions" th:if="${currentUsername != null}">
+        <span class="account-pill">
+            <span class="account-avatar" th:text="${#strings.substring(currentUsername,0,1)}">U</span>
+            <span class="account-name" th:text="${currentUsername}">user</span>
+        </span>
+        <form class="logout-form" th:action="@{/logout}" method="post">
+            <input type="hidden"
+                   th:if="${_csrf != null}"
+                   th:name="${_csrf.parameterName}"
+                   th:value="${_csrf.token}">
+            <button class="btn btn-ghost" type="submit">Выйти</button>
+        </form>
+    </div>
+</header>
+
+<main class="section error-section">
+    <div class="error-panel">
+        <p class="eyebrow">
+            Ошибка
+            <span th:text="${errorStatus}">404</span>
+        </p>
+        <h2 th:text="${errorTitle}">Ничего не найдено</h2>
+        <p th:text="${errorMessage}">
+            Запрошенный объект не найден.
+        </p>
+
+        <div class="error-actions">
+            <a class="btn btn-primary" th:href="@{${errorBackUrl}}">
+                На главную
+            </a>
+            <a class="btn btn-ghost" th:href="@{/foods}">
+                К блюдам
+            </a>
+        </div>
+    </div>
+</main>
+</body>
+</html>

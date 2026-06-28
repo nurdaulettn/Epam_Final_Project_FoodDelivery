@@ -15,6 +15,8 @@ public class SpringInitializer implements WebApplicationInitializer {
         context.register(WebConfig.class);
 
         DispatcherServlet dispatcherServlet = new DispatcherServlet(context);
+        dispatcherServlet.setThrowExceptionIfNoHandlerFound(true);
+
         ServletRegistration.Dynamic servlet =
                 servletContext.addServlet("dispatcherServlet", dispatcherServlet);
 
